@@ -1,0 +1,18 @@
+/* CSS crunched with Crunch - http://crunchapp.net/ */
+body .notifyjs-bootstrap-success {
+  background-color: rgba(76, 76, 76, 0.8);
+  padding: 15px 20px 15px 48px;
+  background: url("../../../images/sysico.png") 15px -61px no-repeat;
+  border: 1px solid #f6ad40;
+}
+body .notifyjs-bootstrap-error {
+  background-color: rgba(76, 76, 76, 0.8);
+  padding: 15px 20px 15px 48px;
+  background: url("../../../images/sysico.png") 15px 10px no-repeat;
+  border: 1px solid #b00707;
+}
+body .notifyjs-bootstrap-base {
+  color: #d9d9d9;
+  font-size: 13px;
+  font-weight: normal;
+}

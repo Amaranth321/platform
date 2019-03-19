@@ -1,0 +1,27 @@
+<script>
+
+    $(function () {
+
+        var videoLink = "${videoUrl}";
+        videoLink += "&vq=hd720";
+        videoLink = videoLink.replace("http:", window.location.protocol);
+        console.log(videoLink);
+        var iframeString = '<iframe width="640" height="360" style="margin: auto" src="videoUrl" frameborder="0" allowfullscreen></iframe>';
+
+        utils.showLoadingOverlay();
+        utils.checkInternetAccess(
+                function () {
+                    utils.hideLoadingOverlay();
+                    $(document.body).append(iframeString.replace("videoUrl", videoLink));
+
+                }, function () {
+                    utils.hideLoadingOverlay();
+
+                    $(document.body).html('<div class="help_guide_error_msg">&{'msg_internet_required'}<div>');
+                }
+        );
+    });
+
+</script>
+
+

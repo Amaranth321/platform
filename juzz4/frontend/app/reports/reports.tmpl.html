@@ -1,0 +1,94 @@
+<div id="kupSidebar" class="sidebar sidebar-sub sidebar-sub-animation"
+	ui-m-custom-scrollbar style="height: 100%">
+	<div class="kupSubSidebar">
+		<div class="btn-group kupTreeTitle">
+			<a href="" class="btn btn-link"
+				ng-click="reportsCtrl.fn.showMainMenu(!mainCtrl.data.navbar.isIconLeftArrow)"><span
+				ng-class="mainCtrl.data.navbar.isIconLeftArrow ? 'kup-subLeftArrow' : 'kup-subRightArrow'"></span>
+				<i class="navIcons" ng-class="reportsCtrl.menu.class"></i>{{
+				reportsCtrl.menu.title | uppercase | translate }}</a>
+		</div>
+		<div class="searchGroup">
+			<div class="input-group">
+				<input id="reportsSearch" type="text" class="form-control searchbar"
+					placeholder="Search" ng-model="reportsCtrl.search.data.value">
+				<span class="input-group-btn"><button id="reportsSearchBtn"
+						class="btn btn-link kupSearchBtn">
+						<span class="fa fa-search"></span>
+					</button></span>
+			</div>
+		</div>
+		<div id="reportsOptions" class="kupOptionGroup">
+			<button class="btn btn-link kupOptionsBtn"
+				ng-click="reportsCtrl.options.data.isOpen = !reportsCtrl.options.data.isOpen"
+				tooltip-placement="top" uib-tooltip="{{'options' | translate}}">
+				<i class="kup-options"></i> <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="collapse" id="kupOptions"
+				uib-collapse="!reportsCtrl.options.data.isOpen">
+				<div class="condition">
+					<div class="panel panel-default kupPanel">
+						<div class="panel-heading">{{ 'options' | translate }}</div>
+						<div class="panel-body">
+							<form>
+								<div class="kupGroup">
+									<div class="pull-left kupLabel">
+										<label class="pull-left">{{'show-active-analytics-only'
+											| translate}}</label>
+									</div>
+									<div class="pull-left kupSwitch">
+										<input bs-switch type="checkbox"
+											ng-model="reportsCtrl.options.data.isOnlyShowVca"
+											switch-size="mini" switch-animate="true"
+											switch-on-text="{{'yes' | translate}}"
+											switch-off-text="{{'no' | translate}}"
+											switch-on-color="warning">
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="kupNodevice" ng-show="reportsCtrl.fn.isEmptyDevice()">
+			<section>
+				<figure>
+					<img src="static/images/assets/common/themes/reports/NoDevice.png"
+						alt="{{'device-not-available' | translate}}">
+				</figure>
+				<h4>{{'device-not-available' | translate}}</h4>
+				<p>{{'device-not-available-info' | translate}}</p>
+			</section>
+		</div>
+		<div id="reportsTreeview" kendo-tree-view="reportsCtrl.treeview.data"
+			k-options="reportsCtrl.treeview.options"
+			ng-show="!reportsCtrl.fn.isEmptyDevice()"></div>
+	</div>
+</div>
+<section class="container-fluid" id="reportsSection"
+	kendo-droptarget="reportsCtrl.dragTarget.data"
+	k-options="reportsCtrl.dragTarget.options">
+	<h1 id="reportsTitle" class="page-header">{{
+		reportsCtrl.content.title | uppercase | translate }}</h1>
+	<div id="reportsDragArea" class="kupDragArea">
+		<div id="kupDaterange">
+			<i class="fa fa-calendar"></i> <span></span> <b class="caret"></b>
+		</div>
+		<div id="reportsDragTarget" class="kupDragTarget">
+			<span id="reportsDropHere" class="kupDragInfo">{{
+				'drag-to-here' | translate }}</span>
+		</div>
+		<div class="kupGroup">
+			<button id="applyBtn" class="btn btn-warning apply"
+				ng-click="reportsCtrl.fn.saveReportsInfo()">{{ 'apply' |
+				translate }}</button>
+			<button id="cancelBtn" class="btn btn-link cancel"
+				ng-click="reportsCtrl.fn.cancelReportsInfo()">{{ 'cancel' |
+				translate }}</button>
+		</div>
+	</div>
+	<div id="reportsContent">
+		<div class="subContainer" ui-view></div>
+	</div>
+</section>

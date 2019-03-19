@@ -1,0 +1,82 @@
+<style>
+#userGrid table{
+    table-layout: inherit;
+}
+</style>
+
+<div id="userList" class="k-content" style="margin: 5px;">
+    <div id="userGrid"></div>
+</div>
+
+<script>
+    function initUserListGrid(bucketId){
+        var grid = $("#userGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                        getBucketUsersByBucketId(bucketId, onSuccess, null);
+                        function onSuccess(responseData) {
+                            if (responseData.result == "ok" && responseData.bucketUsers != null){
+                                var users =[];
+                                $.each(responseData.bucketUsers, function(index, user){
+                                        users.push(user);
+                                });
+                                options.success(users);
+                            }else{
+                                options.success([]);
+                                utils.throwServerError(responseData);
+                            }
+                        }
+                    }
+                },
+                pageSize: 15
+            },
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: false,
+                refresh: true
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            columns: [
+                { field: "userName", title: "&{'username'}", width: "200px" },
+                { field: "name", title: "&{'full-name'}", width: "200px" },
+                { field: "email", title: "&{'email'}", width: "300px" },
+                { field: "phone", title: "&{'phone'}", width: "200px"},
+                { command: [
+                    { text: "&{'edit'}", click: editDetails }
+                ], title: "&{'actions'}", width: "100px" }
+            ]
+        }).data("kendoGrid");
+    }
+    
+    $("#btnCancel").click(function () {
+        closePopupWindow();
+    });
+
+    function closePopupWindow() {
+        $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+    };
+    
+    function editDetails(e) {
+        e.preventDefault();
+        userDetails = [];
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        userDetails.push(dataItem);
+        var contentPage = "/user/edit/" + dataItem.userId;
+        utils.openPopup("&{'edit-details'}", contentPage, null, null, true, onPopupClosed);
+    }
+    
+    function onPopupClosed() {
+        $("#userGrid").data("kendoGrid").dataSource.read();
+    }
+    
+    $(function() {
+        var bucketId = "${bucketId}";
+        initUserListGrid(bucketId);
+    });
+    
+</script>

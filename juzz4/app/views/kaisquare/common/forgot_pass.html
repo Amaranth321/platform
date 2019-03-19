@@ -1,0 +1,175 @@
+#{extends HtmlPath + '/common/templates/not_logged_in.html'/}
+<script type="text/javascript">
+    $(function(){
+//        $('input[name="companyid"]').click(function(){
+//            $('input[name="email"]').val("&{'email'}");
+//        });
+//        $('input[name="username"]').click(function(){
+//            $('input[name="email"]').val("&{'email'}");
+//        });
+//        $('input[name="email"]').click(function(){
+//            $('input[name="companyid"]').val("&{'company-id'}");
+//            $('input[name="username"]').val("&{'username'}");
+//        });
+         
+        $("#body").css("margin-top","-307px");
+    });
+    function submitForgotPassword() {
+        var companyid = $("input[name=companyid]").val();
+        var username = $("input[name=username]").val();
+        var email = $("input[name=email]").val();
+
+        var emptycomfields = (companyid == "" || companyid == "&{'company-id'}") ? "- &{'company-id'}<br/>" : "";
+        var emptyuserfields = (username == "" || username == "&{'username'}") ? "- &{'username'}<br/>" : "";
+        
+        var emptyemailfields = (email == "" || email == "&{'email'}") ? "- &{'email'}<br/>" : "";
+        
+        if (emptycomfields == "" && emptyuserfields == "" && emptyemailfields != "") {
+            forgotPassword(username,"", companyid, onSubmitForgotPasswordSuccess, null);
+        } else if(emptycomfields != "" && emptyuserfields != "" && emptyemailfields == ""){
+            forgotPassword("",email,"",onSubmitForgotPasswordSuccess, null);
+        } else {
+            var emptyFields ;
+            if(emptycomfields != "" && emptyuserfields != "" && emptyemailfields != "") {
+                emptyFields = "&{'msg-empty-required-fields'} <br/><br/>" + emptycomfields + emptyuserfields + " <br/>&{'or'}<br/><br/>"+ emptyemailfields;
+            } else if(emptycomfields == "" && emptyuserfields == "" && emptyemailfields == ""){
+            	emptyFields = "&{'msg-select-group-fields'}";
+            }else {
+                emptyFields = "&{'msg-empty-required-fields'} <br/><br/>" + emptycomfields + emptyuserfields;
+            } 
+            utils.popupAlert(emptyFields);
+        }
+    }
+
+    function onSubmitForgotPasswordSuccess(responseData) {
+        if (responseData.result == "ok") {
+            window.location.href = "/login/resetsubmitted";
+        }
+        else {
+            document.getElementById("logMessage").innerHTML =
+                    '<span id="login-message" style="color: red">' + responseData.reason +'</span>';
+            document.getElementById("logMessage").setAttribute("class", "logged");
+        }
+    }
+</script>
+<div class="wrapper-holder">
+    <div id="body">				
+        <aside id="sidebar">
+            <div class="box-form">
+                <h2>&{'reset-password'}</h2>
+                <form class="form form-horizontal"  action="javascript:void(0);"
+                      onsubmit="submitForgotPassword();">
+
+                    <fieldset>
+                        <div class="form-box">
+                            <div class="text company">
+                                <div>
+                                    <input type="text" name="companyid" placeholder="&{'company'}"/>
+                                </div>
+                            </div>
+                            <div class="text name">
+                                <div>
+                                    <input type="text" name="username" placeholder="&{'username'}"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="controls" style="width: 100px; margin: 0 auto;" align="center">
+                                <label class="control-label" style="width:100px;">&{'or'}</label>
+                            </div>
+                        </div>
+                        <div class="form-box">
+                            <div class="text email">
+                                <div>
+                                    <input type="email" name="email" placeholder="&{'email'}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="logMessage"></div>
+                        <input class="bttn" type="submit" value="&{'submit'}"/>
+                        <div class="login_block">
+                                    *{<input type="checkbox"/>}*
+                                    *{<label>remember login</label>}*
+                                        <a href="/">&lt; &{'go-to-login'}</a>
+                                    </div>
+                    </fieldset>
+                    <!--        <div class="container-fluid box-body">
+                                <div class="row-fluid">
+                                    <div class="control-group">
+                                        <label class="control-label" for="companyid">&{'company-id'}</label>
+                                        <div class="controls">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="inputEmail">&{'username'}</label>
+                                        <div class="controls">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="controls" style="margin-left: 38%;" align="center">
+                                            <label class="control-label" style="width:100px;"for="inputEmail">&{'or'}</label>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="inputEmail">&{'email'}</label>
+                                        <div class="controls">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="row-fluid">
+                                            <div class="span6"></div>
+                                        <div class="span6 text-right">
+                                            <input class="btn btn-success" name="bnttest" type="button" value="&{'submit'}" onclick="submitForgotPassword()"/>
+                                        </div>
+                                    </div>
+                                </div>
+                    
+                                <div class="login_block">
+                                    *{<input type="checkbox"/>}*
+                                    *{<label>remember login</label>}*
+                                        <a href="/">&lt; &{'go-to-login'}</a>
+                                    </div>
+                    
+                    
+                                <div id="logMessage"></div>
+                            </div>
+                            </fieldset>-->
+                </form>
+            </div>
+        </aside>
+    </div>
+</div>
+<!-- 
+<div class="login_row">
+    <form class="login_form" action="javascript:void(0);" onsubmit="submitForgotPassword();">
+        <fieldset>
+            <div class="login_box">
+                <div class="title_login">&{'reset-password'}</div>
+                <input type="text" name="companyid" value="&{'company-id'}"
+                       onfocus="return onFieldFocused(this.name);"
+                       onblur="return onFieldLostFocus(this.name);"/>
+                <input type="text" name="username" value="&{'username'}"
+                       onfocus="return onFieldFocused(this.name);"
+                       onblur="return onFieldLostFocus(this.name);"/>
+                <input type="text" name="email" value="&{'email'}"
+                       onfocus="return onFieldFocused(this.name);"
+                       onblur="return onFieldLostFocus(this.name);"/>
+
+				<input type="submit" value="&{'submit'}"/>
+				
+                <div id="logMessage" class="logged"><span id="login-message">&{'msg-fill-in-reset-form'}</span></div>
+
+                <div class="login_block">
+                *{<input type="checkbox"/>}*
+                *{<label>remember login</label>}*
+                    <a href="/">&lt; &{'go-to-login'}</a>
+                </div>
+
+            </div>
+        </fieldset>
+    </form>
+</div>
+ -->

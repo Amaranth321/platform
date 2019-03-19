@@ -1,0 +1,228 @@
+<style>
+
+    .usb_exp .info {
+        margin-top: 10px;
+        border: 1px solid #383838;
+        border-radius: 2px;
+        padding: 0px 10px;
+    }
+
+    .usb_exp .selection {
+        margin-top: 10px;
+        border: 1px solid #383838;
+        border-radius: 2px;
+        padding: 0px 10px;
+    }
+
+    .usb_exp label {
+        display: inline-block;
+        line-height: 30px;
+        width: 125px;
+    }
+
+    .usb_exp .drive_list {
+    }
+
+    .usb_exp .info span {
+        overflow: hidden;
+    }
+
+    .usb_exp .info .error {
+        color: #FF4040;
+        font-weight: bold;
+    }
+
+    .usb_exp .btn_group {
+        display: none;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .usb_exp .btn_group .k-button {
+        width: 70px;
+        line-height: 22px;
+    }
+
+</style>
+
+<div class="usb_exp">
+    <input class="drive_list" style="width: 250px; text-align: center"/>
+
+    <div class="info">
+        <label>&{'write-access'}</label><span class="canWrite error"></span><br/>
+        <label>&{'free-space-left'}</label><span class="freeSpace error"></span><br/>
+    </div>
+
+    <div class="selection">
+        <label>&{'estimate-file-size'}</label><span class="requiredSpace"></span><br/>
+    </div>
+
+    <div class="btn_group">
+        <a href="javascript:usbExport.submit()" class="k-button">&{'submit'}</a>
+    </div>
+</div>
+
+<script>
+
+    var usbExport = {
+        driveList: null,
+        searchInfo: nodePlayback.selected,
+        requiredSpace: nodePlayback.estimateDownloadSize()
+    };
+
+    usbExport.init = function ()
+    {
+        $(".usb_exp .requiredSpace").html(utils.bytesToMBString(usbExport.requiredSpace));
+        usbExport._initUsbDriveList();
+        usbExport.reset();
+    };
+
+    usbExport.reset = function ()
+    {
+        usbExport._setInfo(null);
+    };
+
+    usbExport.submit = function ()
+    {
+        utils.popupConfirm(
+                localizeResource('confirmation'),
+                localizeResource('confirm-usb-export-recording'),
+                function (choice)
+                {
+                    if (!choice)
+                    {
+                        return;
+                    }
+
+                    var selectedUsb = usbExport.driveList.dataItem();
+                    exportRecordingsToUSB(
+                            usbExport.searchInfo.camera.id,
+                            "0",
+                            nodePlayback._getAPITimestamp(usbExport.searchInfo.period[0]),
+                            nodePlayback._getAPITimestamp(usbExport.searchInfo.period[1]),
+                            selectedUsb.identifier,
+                            function (responseData)
+                            {
+                                if (responseData.result != "ok")
+                                {
+                                    utils.throwServerError(responseData);
+                                    return;
+                                }
+
+                                utils.slideDownInfo(localizeResource("usb-export-submitted"));
+                            }
+                    );
+                    usbExport._closePopup();
+                });
+    };
+
+    usbExport._initUsbDriveList = function ()
+    {
+        var noSelectionName = localizeResource("select-usb-drive");
+
+        usbExport.driveList = $(".usb_exp .drive_list").kendoDropDownList({
+            optionLabel: noSelectionName,
+            dataTextField: "systemDisplayName",
+            dataSource: {
+                transport: {
+                    read: function (options)
+                    {
+                        getUSBDrives(function (responseData)
+                        {
+                            if (responseData.result != "ok")
+                            {
+                                utils.throwServerError(responseData);
+                                options.success([]);
+                                return;
+                            }
+
+                            if (responseData.drives.length == 0)
+                            {
+                                utils.popupAlert(localizeResource("no-usb-drives-connected"));
+                            }
+
+                            options.success(responseData.drives);
+                        }, null);
+                    }
+                }
+            },
+            change: function ()
+            {
+                var drive = usbExport.driveList.dataItem();
+                if (drive.systemDisplayName == noSelectionName)
+                {
+                    usbExport.reset();
+                    return;
+                }
+
+                usbExport._setInfo(drive);
+            }
+        }).data("kendoDropDownList");
+    };
+
+    usbExport._setInfo = function (drive)
+    {
+        var $info = $(".usb_exp .info");
+        var $writeAccess = $info.find(".canWrite");
+        var $freeSpace = $info.find(".freeSpace");
+
+        if (drive)
+        {
+            $writeAccess.html(drive["canWrite"] ? localizeResource("ok") : localizeResource("not-allowed"));
+            $freeSpace.html(utils.bytesToMBString(drive["freeSpace"]));
+
+            var metRequirements = true;
+            if (drive["canWrite"])
+            {
+                $writeAccess.removeClass("error");
+            }
+            else
+            {
+                $writeAccess.addClass("error");
+                metRequirements = false;
+            }
+
+            if (drive["freeSpace"] > usbExport.requiredSpace)
+            {
+                $freeSpace.removeClass("error");
+            }
+            else
+            {
+                $freeSpace.addClass("error");
+                metRequirements = false;
+            }
+
+            usbExport._setExportVisibility(metRequirements);
+        }
+        else
+        {
+            $writeAccess.html("");
+            $freeSpace.html("");
+            usbExport._setExportVisibility(false);
+        }
+    };
+
+    usbExport._setExportVisibility = function (visible)
+    {
+        var $info = $(".usb_exp .btn_group");
+        if (visible)
+        {
+            $info.slideDown();
+        }
+        else
+        {
+            $info.slideUp();
+        }
+    };
+
+    usbExport._closePopup = function ()
+    {
+        $(".usb_exp").closest(".k-window-content").data("kendoWindow").close();
+    }
+
+    $(function ()
+    {
+        usbExport.init();
+    });
+
+</script>

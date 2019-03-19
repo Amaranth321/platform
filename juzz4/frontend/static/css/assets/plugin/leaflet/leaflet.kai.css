@@ -1,0 +1,15 @@
+/*
+    Custom CSS for KAI Square
+*/
+
+.polygon_label {
+    background: black;
+    text-align: center;
+    opacity: 0.75;
+    font-weight: bold;
+    color: #eaac20;
+    line-height: 20px;
+    font-size: 13px;
+    font-family: "Courier New"; /* need this to calculate label size */
+    /*font-family: "Lucida Console"; *//* need this to calculate label size */
+}

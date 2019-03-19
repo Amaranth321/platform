@@ -1,0 +1,209 @@
+<style>
+    #infoBox ul {
+        list-style: none;
+        /*margin: 5px;*/
+        padding: 0;
+    }
+
+    #infoBox li {
+        height: 40px;
+    }
+
+    #infoBox ul label {
+        margin-top: 4px;
+        /*font-size: 11px;*/
+        display: inline-block;
+        vertical-align: top;
+        width: 80px;
+        padding: 0 8px;
+        text-align: right;
+        /*color: #434343;*/
+    }
+
+    .float_address_box {
+        position: absolute;
+        right: 50px;
+        top: 3px;
+        box-shadow: 0px 0px 5px #888888;
+        background: #a8a8a7;
+    }
+
+    div {
+        color:#000000;
+    }
+    
+    #browserInstruction {
+		color: #ffffff;
+        padding-top: 250px;
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<div id="poiViewSpitter" style="margin-right: 1px; height: 480px; width: 823px;">
+    <div id="poiMapSpitter">
+        <div id="map-view" style="height: 480px">
+        	<div id="browserInstruction">&{'instruction-baidu-map'}</br>		
+				<a id="downloadSample" href="/${bucket}/content/downloadGuide?guideName=enable_baidu_map.pdf">
+		        &{'download-guide'}: 
+		        <img src="${CdnPath}/common/images/download_blue.png" width="16px"></a>
+	        </div>
+        </div>
+        <div class="float_address_box">
+            <input id="searchTextField" type="text" class="k-input k-textbox"
+                   placeholder="Search a location"
+                   style="width:400px;">
+        </div>
+    </div>
+    <div id="infoBox">
+        <ul style="height: 85%; margin-top: 11px;">
+            <li>
+                <label for="name">&{'name'}</label>
+                <input type="text" id="name" class="k-textbox" data-bind="value:name" required maxlength='50'/>
+            </li>
+            <li>
+                <label for="typeList">&{'type'}</label>
+                <input id="typeList"/>
+            </li>
+            <li>
+                <label for="latitude">&{'latitude'}</label>
+                <input type="number" id="latitude" data-bind="value:latitude" required/>
+            </li>
+            <li>
+                <label for="longitude">&{'longitude'}</label>
+                <input type="number" id="longitude" data-bind="value:longitude" required/>
+            </li>
+            <li>
+                <label for="address">&{'address'}</label>
+                <input type="text" id="address" class="k-textbox" data-bind="value:address" maxlength='100'/>
+            </li>
+            <li>
+                <label for="description">&{'description'}</label>
+                <textarea type="text" class="k-textbox" id="description"
+                          style="height: 100px; vertical-align: top; margin-top: 0px"
+                          data-bind="value:description"></textarea>
+            </li>
+        </ul>
+
+        <div align="center">
+            <a id="btnSubmit" href="#" class="k-button">&{'submit'}</a> &nbsp;
+            <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var viewModel = kendo.observable({
+        name: "",
+        type: "",
+        description: "",
+        address: "",
+        latitude: 0,
+        longitude: 0
+    });
+    var map;
+    var currentMarker = null;
+
+    $(function () {
+
+        kendo.bind($("#infoBox"), viewModel);
+        var validator = $("#infoBox").kendoValidator({
+            validateOnBlur: false
+        }).data("kendoValidator");
+
+        $("#poiViewSpitter").kendoSplitter({
+            orientation: "Horizontal",
+            panes: [
+                { collapsible: false, resizable: false},
+                { collapsible: false, resizable: false, size: "260px"}
+            ]
+        }).data("kendoSplitter");
+
+        $("#typeList").kendoDropDownList({
+        	dataTextField: "text",
+            dataValueField: "value",
+            dataSource: poiTypes,
+            change: function (e) {
+                var selectedType = $("#typeList").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+                viewModel.set("type", selectedType.value);
+                if(currentMarker != null){
+                	var myIcon = new BMap.Icon(mapIcons[selectedType.value],new BMap.Size(32,37));
+            		currentMarker.setIcon(myIcon);
+            		baiduMapManager.updateMarker(currentMarker);
+                }
+            }
+        });
+
+        $("#latitude").kendoNumericTextBox({
+            format: "n4",
+            decimals: 4
+        })
+
+        $("#longitude").kendoNumericTextBox({
+            format: "n4",
+            decimals: 4
+        })
+
+        $("#btnSubmit").click(function () {
+            if (validator.validate()) {
+
+                viewModel.latitude = $("#latitude").val();
+                viewModel.longitude = $("#longitude").val();
+                viewModel.description = utils.removeLineBreaks(viewModel.description);
+
+                addPoi("", viewModel, function (responseData) {
+                    if (responseData.result == "ok") {
+                        utils.slideDownInfo("&{'poi-added'}");
+                        closePopupWindow();
+                    }
+                    else {
+                        utils.popupAlert(responseData.reason);
+                    }
+                }, null);
+            }
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+        	$("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+
+        initializeUiData();
+    });
+
+    function initializeUiData() {
+        $("#typeList").data("kendoDropDownList").select(function (dataItem) {
+            return dataItem == "landmark";
+        });
+
+        viewModel.set("type", $("#typeList").data("kendoDropDownList").dataItem(0));
+        if(typeof baiduMapManager != 'undefined'){
+			baiduMapManager.initialize("map-view", MAP_CENTER_LAT, MAP_CENTER_LNG, MAP_ZOOM, true, function () {
+				baiduMapManager.addMapEventListener("click", onMapClicked);
+				baiduMapManager.addAutoCompleteSearchListener("searchTextField");
+				
+            	baiduMapManager.addNewMarker(9999, 0, 0, 0, mapIcons[$("#typeList").data("kendoDropDownList").value()]
+            	,null, function (marker){
+            		currentMarker=marker; 		            	
+            	}); 
+			});
+		}
+    }
+
+    function onMapClicked(event) {
+    	var lat = event.point.lat;
+        var lng = event.point.lng;
+		
+       	$("#latitude").data("kendoNumericTextBox").value(lat);
+        $("#longitude").data("kendoNumericTextBox").value(lng);
+
+        currentMarker.setPosition(event.point);
+        console.log(currentMarker);
+        baiduMapManager.updateMarker(currentMarker);        
+    }
+
+</script>

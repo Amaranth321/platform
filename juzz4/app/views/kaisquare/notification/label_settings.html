@@ -1,0 +1,112 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" href="/public/javascripts/notifications/label_settings.css"/>
+<script src="/public/javascripts/notifications/labelSettingsPage.js"></script>
+
+<link rel="stylesheet" href="/public/javascripts/notifications/occupancy_settings.css"/>
+<script src="/public/javascripts/notifications/occupancy.settings.js"></script>
+
+<script type="text/x-kendo-template" id="labelAssigneesTmpl">
+    <div style="float: left">
+        <span class="title">&{'assigned-cameras'}</span>
+    </div>
+    <ul>
+        # $.each(data, function(i, assignee){ #
+        <li> #= assignee.channelName # (#= assignee.deviceName #)</li>
+        # }); #
+    </ul>
+</script>
+
+<script type="text/x-kendo-template" id="occupancyLimitGroupTmpl">
+    <div id="occGrp#= data.groupId #" class="group">
+        <input id="occLimitVal#= data.groupId #" class="occ_limit_val" style="width: 120px"/>
+
+        <input id="occLimitMsg#= data.groupId #" class="k-input k-textbox occ_limit_msg" value="#= data.msg #"
+               placeholder="&{'notification-message'}"/>
+
+        <a href="javascript:labelSetts.tabs.occSetts.removeLimitInput('#= data.groupId #')"
+           class="k-button close"> <span class="k-icon k-i-close"></span></a>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="occDropDownEntryTmpl">
+    <div>
+        #= data.name #
+        <div style="float: right; text-align: left; width: 150px">
+        &{'notification'} : #= data.occSettings.enabled? "&{'enabled'}" : "&{'disabled'}" #
+        </div>
+    </div>
+</script>
+
+<div class="label_setts">
+    <div class="default_title_bar">
+        <span class="title">&{'label-notification-settings'}</span>
+    </div>
+    <div class="tab_strip">
+        <ul>
+            <li>&{'occupancy-Settings'}</li>
+        </ul>
+        <div class="tab_content">
+            <div class="occ_setts">
+                <div class="error_msg">
+                    <label>&{'error-no-label-assigned'}</label>
+                </div>
+
+                <div class="main_wrapper">
+                    <div class="select_label">
+                        <label>&{'info-select-store-label'}</label>
+
+                        <div class="label_list"></div>
+                        <div class="assignees"></div>
+                    </div>
+
+                    <div style="clear: both;"></div>
+                    <div class="enable_chb">
+                        <label>
+                            <input class="chb_enable_occ" type="checkbox"
+                                   onclick="labelSetts.tabs.occSetts.enableNotifications(this.checked)"/>
+                        &{'enable-occupancy-notifications'}
+                        </label>
+                    </div>
+
+                    <div class="label_setts">
+                        <div class="details">
+                            <div class="individual_box">
+                                <span class="title">&{'info-occupancy-limit-settings'}</span>
+
+                                <div class="limits_holder"></div>
+                                <a href="javascript:labelSetts.tabs.occSetts.addLimitInput()" class="k-button add_more">
+                                    <span class="k-icon k-i-plus"></span> &{'add-occupancy-limit'}</a>
+                            </div>
+                            <div class="individual_box">
+                                <span class="title">&{'info-minimum-notify-interval'}</span>
+
+                                <input class="min_interval" style="width: 130px;"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn_group">
+                        <a href="javascript:labelSetts.tabs.occSetts.cancelChanges()" class="k-button cancel">
+                        &{'cancel-changes'}</a>
+                        <a href="javascript:labelSetts.tabs.occSetts.save()" class="k-button save">
+                        &{'save'} <span class="label_name"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    var labelSetts;
+
+    $(function ()
+    {
+        labelSetts = new LabelSettingsPage();
+        labelSetts.generate();
+    });
+
+</script>

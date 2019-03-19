@@ -1,0 +1,23 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+#{include HtmlPath +'/common/partial/leaflet_scripts.html'/}
+#{include HtmlPath + '/common/partial/vca_shared.html'/}
+
+<div class="feature_main_header">
+    <label>&{'running-analytics-list'}</label>
+</div>
+
+<div id="vcaInstanceGrid"></div>
+
+<script>
+
+    $(function () {
+        vca.initVcaInstanceTable("vcaInstanceGrid", analyticsType.ALL);
+
+        $("#vcaInstanceGrid").data("kendoGrid").dataSource.group([
+            {field: "type", dir: "desc"}
+        ]);
+        $("#btnAddAnalytics").remove();
+    });
+
+</script>

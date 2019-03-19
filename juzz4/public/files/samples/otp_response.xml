@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SingTelSDPResponse xmlns="SingTelSDPResponse.xsd">
+    <Result returncode="2000"
+            returnmessage="Success"
+            requestno="345678tgyuio"
+            moreinfo="">
+
+        <Item fieldname="ISVUSERID" datatype="string" value="ayemaung"/>
+        <Item fieldname="ISVAPPLID" datatype="string" value="app_name"/>
+
+    </Result>
+</SingTelSDPResponse>

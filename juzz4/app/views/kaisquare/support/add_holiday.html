@@ -1,0 +1,251 @@
+<style>
+    #holidayForm {
+        width: 400px;
+        padding: 8px 30px 20px 20px;
+    }
+
+    #holidayForm dt {
+        color: #eaac00;
+        width: 40%;
+        padding-right: 8%;
+        float: left;
+    }
+    #holidayForm dd { margin: 0px; }
+    #holidayForm dd textarea, #holidayForm dd input, .k-multiselect-wrap { width: 100%; }
+    #holidayForm dd textarea { 
+        resize: none;
+        padding: 2px;
+    }
+    .dateArea {
+        width: 50%;
+        float: left;
+        padding-right: 5px
+    }
+    #validationInfo {
+        font-size: 12px;
+        color: #f00;
+        margin-bottom: 7px;
+        text-align: center;
+    }
+    .buttonArea {
+        text-align: center;
+        border-top: 2px #B66035 solid;
+        padding-top: 8px;
+    }
+</style>
+
+<div id="holidayForm">
+
+    <form>
+        <dl>
+            <dt class="k-edit-label">&{'title'}</dt>
+            <dd class="k-edit-field"><input id="title" class="k-input k-textbox" maxlength="200" value="${holiday.title}"></dd>
+            <dt class="k-edit-label">&{'description'}</dt>
+            <dd class="k-edit-field"><textarea id="des" class="k-input k-textbox" rows="3" maxlength="500">${holiday.description}</textarea></dd>
+            <dt class="k-edit-label">&{'is-event'}</dt>
+            <dd class="k-edit-field"><input id="isEvent" type="checkbox" name="my-checkbox"></dd>
+            <dt class="k-edit-label">&{'is-holiday'}</dt>
+            <dd class="k-edit-field"><input id="isHoliday" type="checkbox" name="my-checkbox"></dd>
+            <dt class="k-edit-label">&{'is-significant'}</dt>
+            <dd class="k-edit-field"><input id="isSignificant" type="checkbox" name="my-checkbox"></dd>
+            <dt class="k-edit-label" style="padding-top: 20px;">&{'date'}</dt>
+            <dd class="k-edit-field">
+                <div class="dateArea">
+                    <span style="margin-left: 20px;">&{'from'}</span>
+                    <input id="startDate" autocomplete="off" title="&{'msg-choose-timerange'}" style="width: 100%"> 
+                </div>
+                <div class="dateArea">
+                    <span style="margin-left: 20px;">&{'to'}</span>
+                    <input id="endDate" autocomplete="off" title="&{'msg-choose-timerange'}" style="width: 100%">
+                </div>
+            </dd>
+            <dt class="k-edit-label">&{'country'}</dt>
+            <dd class="k-edit-field"><select id="countryList"></select></dd>
+        </dl>
+
+        <div id="validationInfo"></div>
+
+        <div class="buttonArea">
+            <button id="submitBtn" type="button" class="k-button" style="margin-right: 10px">&{'submit'}</button>
+            <button id="clearBtn" type="button" class="k-button" >&{'clear'}</button>
+        </div>
+    </form>
+
+</div>
+
+<script>
+
+var today = new Date();
+var fromDatePicker = {};
+var toDatePicker = {};
+var countryMultiSelect = {};
+var holidayId = "${holiday._id}";
+
+$(document).ready(function() {
+    init();
+    $("#submitBtn").on("click", submitFn);
+    $("#clearBtn").on("click", clearFn);
+})
+
+function init() {
+    $.fn.bootstrapSwitch.defaults.size = 'mini';
+    $.fn.bootstrapSwitch.defaults.onText = "True";
+    $.fn.bootstrapSwitch.defaults.offText = "False";
+    $("[name='my-checkbox']").bootstrapSwitch();
+
+    fromDatePicker = $("#startDate").kendoDatePicker({
+        format: "dd/MM/yyyy",
+        change: function (e) {
+            var startDate = fromDatePicker.value();
+            toDatePicker.min(startDate);
+            toDatePicker.value(startDate);
+        }
+    }).data("kendoDatePicker");
+
+    toDatePicker = $("#endDate").kendoDatePicker({
+        format: "dd/MM/yyyy",
+        change: function (e) {
+            var endDate = toDatePicker.value();
+            fromDatePicker.max(endDate);
+        }
+    }).data("kendoDatePicker");
+
+    $("#startDate").attr("readonly", "readonly");
+    $("#endDate").attr("readonly", "readonly");
+
+    //Stuff the value to TextField.
+    #{if holiday.isEvent}
+        $("#isEvent").bootstrapSwitch('state', true);
+    #{/if}
+    #{if holiday.isHoliday}
+        $("#isHoliday").bootstrapSwitch('state', true);
+    #{/if}
+    #{if holiday.isSignificant}
+        $("#isSignificant").bootstrapSwitch('state', true);
+    #{/if}
+    var form = ${holiday.from} == 0 ? today : new Date(${holiday.from});
+    var to = ${holiday.to} == 0 ? today : new Date(${holiday.to});
+    fromDatePicker.value(form);
+    toDatePicker.value(to);
+   
+    // Fill out the multiple select of countries.
+    getCountryList("", function(responseData) {
+        if (responseData.result == "ok") 
+        {   
+            responseData.countryList.unshift({code : "worldwide", name : localizeResource('worldwide')});
+            countryMultiSelect = $("#countryList").kendoMultiSelect({
+                dataSource      : responseData.countryList,
+                placeholder     : "Please select country..",
+                dataValueField  : "code",
+                dataTextField   : "name",
+                autoBind        : false,
+                enable          : true,
+                open: function(e) {
+                    var oldItems = this._savedOld;
+                    if (oldItems) {
+                        if (oldItems.indexOf("worldwide") != -1) 
+                            e.preventDefault();
+                    }
+                },
+                select: function(e) {  //item is selected, event function.
+                    if (e.item.text() == localizeResource('worldwide')) {
+                        this.value([]);
+                    }
+                },
+                change: function(e) {
+                    var previous = this._savedOld;
+                    var current = this.value();
+                    var diff = [];
+                    if (previous) {
+                        diff = $(previous).not(current).get();
+                    }
+                    this._savedOld = current.slice(0);
+                }
+            }).data("kendoMultiSelect");
+
+            countryMultiSelect.value(${holiday.countries.raw()});
+            countryMultiSelect._savedOld = countryMultiSelect.value();
+
+        } else {
+            utils.throwServerError(responseData);
+        }
+    }, null);
+}
+
+function submitFn() {
+    var title = $("#title").val(),
+        des = $("#des").val(),
+        isEvent = $("#isEvent").bootstrapSwitch('state'),
+        isHoliday = $("#isHoliday").bootstrapSwitch('state'),
+        isSignificant = $("#isSignificant").bootstrapSwitch('state');
+        from = fromDatePicker.value(),
+        to = toDatePicker.value(),
+        countries = countryMultiSelect.value().toString();
+
+    from.setHours(00, 00, 00, 000);
+    to.setHours(23, 59, 59, 999);
+    var fromDate = kendo.toString(utils.convertToUTC(from), "ddMMyyyyHHmmss");
+    var toDate = kendo.toString(utils.convertToUTC(to), "ddMMyyyyHHmmss");
+
+    //Validation all fields.
+    var result = validateFn(title, des, isEvent, isHoliday, isSignificant, from, to, countries);
+    if (!result) {
+        return;
+    }
+
+    if (holidayId) {
+        editHoliday(holidayId, title, des, isEvent, isHoliday, isSignificant, fromDate, toDate, countries, function(responseData) {
+            if (responseData.result == "ok") {
+                utils.slideDownInfo("Holiday edited");
+                $("#clearBtn").closest(".k-window-content").data("kendoWindow").close();
+            } else {
+                utils.throwServerError(responseData);
+            }
+        }, null);
+    } else {
+        addholiday(title, des, isEvent, isHoliday, isSignificant, fromDate, toDate, countries, function(responseData) {
+            if (responseData.result == "ok") {
+                utils.slideDownInfo("Holiday added");
+                $("#clearBtn").closest(".k-window-content").data("kendoWindow").close();
+            } else {
+                utils.throwServerError(responseData);
+            }
+        }, null)
+    }
+}
+
+function clearFn() {
+    $("#title").val("");
+    $("#des").val("");
+    $("[name='my-checkbox']").bootstrapSwitch('state', false);
+    fromDatePicker.value(today);
+    toDatePicker.value(today);
+    countryMultiSelect.value([]); 
+}
+
+function validateFn(title, des, isEvent, isHoliday, isSignificant, from, to, countries) {
+    if (!title) {
+        $("#validationInfo").text("＊ Title field cannot be empty");
+        return false;
+    }
+    if (!des) {
+        $("#validationInfo").text("＊ Description field cannot be empty");
+        return false;
+    }
+    if (!isEvent && !isHoliday && !isSignificant) {
+        $("#validationInfo").text("＊ At least one of 'Is Event' 'Is Holiday' or 'Is Significant Day' must be set to 'True'");
+        return false;
+    }
+    if (to.getTime() < from.getTime()) {
+        $("#validationInfo").text("＊ Invalid Date 'From' and 'To'");
+        return false;
+    }
+    if (!countries) {
+       $("#validationInfo").text("＊ Country field cannot be empty");
+        return false;
+    }
+
+    return true;
+}
+
+</script>

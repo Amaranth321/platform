@@ -1,0 +1,66 @@
+/* kendo customizations */
+
+.scheduleTsk_listing .tab_strip {
+    display: none;
+    background: #333;
+    border: 0px;
+    margin-top: 5px;
+}
+
+.scheduleTsk_listing .tab_strip .k-state-active {
+    background: #F6AE40;
+    border: 0px;
+}
+
+.scheduleTsk_listing .tab_strip ul {
+}
+
+.scheduleTsk_listing .tab_strip li {
+    text-align: center;
+}
+
+.scheduleTsk_listing .tab_strip li .k-link {
+    padding: 8px 20px;
+}
+
+.scheduleTsk_listing .tab_strip .tab_content {
+    padding: 1px 0px 0px 0px;
+    margin: 0px;
+}
+
+/* page styling */
+
+.scheduleTsk_listing .header_box {
+    background: #282828;
+}
+
+.scheduleTsk_listing .header_box .filters {
+    padding: 10px 15px;
+    border-bottom: 1px solid #000000;
+}
+
+.scheduleTsk_listing .filters .right_align {
+    text-align: right;
+}
+
+.scheduleTsk_listing .filters .left_margin {
+    margin-left: 30px;
+}
+
+.scheduleTsk_listing .filters label {
+    display: inline-block;
+    width: 90px;
+}
+
+.scheduleTsk_listing .scheduleTsk_toolbox {
+    padding: 5px 10px;
+}
+
+.scheduleTsk_listing .scheduleTsk_toolbox .k-button {
+    padding: 3px 10px;
+    margin-right: 7px;
+}
+
+.scheduleTsk_listing .filters .btn_clear {
+    margin-left: 30px;
+}

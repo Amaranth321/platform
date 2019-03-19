@@ -1,0 +1,49 @@
+<div class="bucket_model_container">
+
+    <div class="bucket_model_form">
+
+        <label for="name">&{'company-id'}</label>
+        <input type="text" class="k-input k-textbox" name="name" disabled style="background-color: #aaa"
+               required validationMessage="&{'required'}"
+               data-bind="value:name">
+        <br/>
+
+        <label for="parentList">&{'parent-bucket'}</label>
+        <input name="parent" type="text" class="k-input k-textbox" value="&{'no-parent-bucket'}" disabled>
+
+        <a href="javascript:bucketModel.chooseParent()" class="k-button" title="&{'edit'}">
+            <span class="edit"></span>
+        </a>
+    *{<a href="javascript:bucketModel.setParentBucket(null)" class="k-button" title="&{'remove'}">}*
+    *{<span class="k-icon k-i-close"></span>}*
+    *{</a>}*
+        <br/>
+
+        <label for="path">&{'path'}</label>
+        <input type="text" class="k-input k-textbox" name="path"
+               required validationMessage="&{'required'}"
+               data-bind="value:path">
+        <br/>
+
+        <label for="description">&{'description'}</label>
+        <textarea type="text" class="k-textbox" name="description"
+                  data-bind="value:description"></textarea>
+        <br/>
+
+    </div>
+
+    <div class="button_group">
+        <a href="javascript:bucketModel.update()" class="k-button">&{'update'}</a> &nbsp;
+        <a href="javascript:bucketModel.close()" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var targetBucketId = "${targetBucketId}";
+
+    $(function () {
+        bucketModel.init(targetBucketId);
+    });
+
+</script>

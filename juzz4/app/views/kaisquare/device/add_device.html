@@ -1,0 +1,246 @@
+<style>
+    #separator {
+        border-bottom: 2px solid #F07230;
+        margin-bottom: -6px;
+        margin-top: 10px;
+        margin-left: -39px;
+    }
+
+    .k-edit-label {
+        width: 18%;
+        padding-right: 28px;
+    }
+
+    #labels_tag {
+        margin-top: -5px;
+    }
+
+    .kup-form-box {
+        margin: 7px 52px 6px;
+    }
+
+    .k-edit-field {
+        width: 73%;
+    }
+
+    ul.tagit {
+        max-height: 31px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        width: 65%;
+    }
+
+    .ui-corner-all {
+        border-radius: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    ul.tagit input[type="text"] {
+        width: 146%;
+    }
+
+    .cloudRecording {
+        margin-left: -56px;
+        width: 32% !important;
+    }
+</style>
+
+<div style="width: 518px;">
+    <div id="addDeviceForm2" class="kup-form-box">
+
+        <div id="separator" style="width: 85px">&{'device-details'}</div>
+        <br>
+
+        <div class="k-edit-label"><label for="model">&{'model'}</label></div>
+        <div class="k-edit-field" data-container-for="model">
+            <input id=modelList2 name="model" style="width: 210px">
+        </div>
+
+        <div class="k-edit-label"><label for="name">&{'name'}</label></div>
+        <div class="k-edit-field" data-container-for="name">
+            <input type="text" class="k-input k-textbox" name="name" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:name" maxlength='100'>
+        </div>
+
+        <div class="k-edit-label"><label for="address">&{'address'}</label></div>
+        <div class="k-edit-field" data-container-for="address">
+            <input id="address2" type="text" class="k-input k-textbox" name="address" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:address" maxlength='100'>
+        </div>
+
+        <div>
+            <label class="k-edit-label">
+                <a id="btnGetLatlng2" href="javascript:void(0)" class="k-button"
+                   style="margin-top: -10px;">&{'search'}</a>
+            </label>
+            <input class="k-edit-field progress" id="latitude2" name="latitude" style="width:105px;" required
+                   validationMessage="&{'invalid-value'}" data-bind="value:latitude">
+            <input class="k-edit-field progress" id="longitude2" name="longitude" style="width:105px;" required
+                   validationMessage="&{'invalid-value'}" data-bind="value:longitude">
+        </div>
+
+
+        <div id="separator" style="width: 141px;">&{'authentication-settings'}</div>
+        <br>
+
+        <div class="k-edit-label"><label for="host">&{'host'}</label></div>
+        <div class="k-edit-field" data-container-for="host">
+            <input type="text" class="k-input k-textbox" name="host" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:host">
+        </div>
+
+        <div class="k-edit-label"><label for="port">&{'port'}</label></div>
+        <div class="k-edit-field" data-container-for="port">
+            <input type="number" class="k-input k-textbox" name="port" min="1" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:port">
+        </div>
+
+
+        <div class="k-edit-label"><label for="login">&{'login'}</label></div>
+        <div class="k-edit-field" data-container-for="login">
+            <input type="text" class="k-input k-textbox" name="login" style="width: 210px"
+                   data-bind="value:login">
+        </div>
+
+        <div class="k-edit-label"><label for="password">&{'password'}</label></div>
+        <div class="k-edit-field" data-container-for="password">
+            <input type="password" class="k-input k-textbox" name="password" style="width: 210px"
+                   data-bind="value:password">
+        </div>
+
+        <div class="k-edit-label"><label for="deviceKey">&{'device-key'}</label></div>
+        <div class="k-edit-field" data-container-for="deviceKey">
+            <input type="text" class="k-input k-textbox" name="deviceKey" style="width: 210px"
+                   data-bind="value:deviceKey">
+        </div>
+
+        <div class="k-edit-label cloudRecording"><label for="cloudRecording">&{'cloud-recording-enabled'}</label></div>
+        <div class="k-edit-field" data-container-for="cloudRecording">
+            <input name="cloudRecording" type="checkbox" data-bind="checked:cloudRecordingEnabled">
+        </div>
+
+        <div style="color: #ff0000; margin-left: 20px;">
+            <div id=geocode-error-box2 style="font-size: 10px;">* &{'msg-address-not-found'}</div>
+        </div>
+
+    </div>
+
+    <div align="center">
+        <a id="btnSubmit2" href="#" class="k-button" style="margin-right: 10px">&{'submit'}</a>
+        <a id="btnCancel2" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+<script id="cameraSegment" type="text/x-kendo-template">
+    <tr>
+        <td style='width: 30px;'><label> #= name # </label></td>
+    </tr>
+</script>
+
+<script>
+    $(function () {
+        var userId = '${userId}';
+        $("#geocode-error-box2").hide();
+
+        var viewModel2 = kendo.observable({
+            name: "",
+            model: "",
+            deviceKey: "",
+            host: "",
+            port: "",
+            login: "",
+            password: "",
+            address: "",
+            latitude: 0,
+            longitude: 0,
+            cloudRecordingEnabled: false
+        });
+
+        kendo.bind($("#addDeviceForm2"), viewModel2);
+        var validator2 = $("#addDeviceForm2").kendoValidator().data("kendoValidator");
+
+        $("#modelList2").kendoDropDownList({
+            dataTextField: "name",
+            dataValueField: "modelId",
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                        getDeviceModels("", onSuccessGetDeviceModels, null);
+                        function onSuccessGetDeviceModels(responseData) {
+                            if (responseData.result == "ok" && responseData["model-list"] != null) {
+                                var modelList = responseData["model-list"];
+                                options.success(modelList);
+
+                                if (modelList.length > 0)
+                                    viewModel2.set("model", modelList[0].modelId);
+                            }
+                        }
+                    }
+                }
+            },
+            change: function (e) {
+                var selectedModel = $("#modelList2").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+                viewModel2.set("model", selectedModel.modelId);
+            }
+        });
+
+        $("#latitude2").kendoNumericTextBox({
+            format: "n3",
+            decimals: 3
+        })
+
+        $("#longitude2").kendoNumericTextBox({
+            format: "n3",
+            decimals: 3
+        })
+
+        $('#btnGetLatlng2').click(function () {
+            deviceManager.devicePageGeocode({'address': $('#address2').val()},
+                    {'lat': $('#latitude2'), 'lng': $('#longitude2'), 'errorBox': $('#geocode-error-box2')});
+        });
+
+        $("#btnSubmit2").click(function () {
+            $("#geocode-error-box2").hide();
+
+            if (!validator2.validate()) {
+                return;
+            }
+
+            viewModel2.latitude = $("#latitude2").val();
+            viewModel2.longitude = $("#longitude2").val();
+            viewModel2.label = $("#labels").val();
+
+            utils.showLoadingOverlay();
+            addDeviceToBucket("", viewModel2, function (responseData) {
+                if (responseData.result == "ok") {
+                    addDeviceUser("", responseData.id, userId, function (responseData) {
+                        if (responseData.result != "ok") {
+                            utils.throwServerError(responseData);
+                        }
+
+                        utils.slideDownInfo("&{'device-added'}");
+                        closePopupWindow();
+                    }, null);
+
+                } else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+
+        });
+
+        $("#btnCancel2").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            utils.hideLoadingOverlay();
+            $("#btnCancel2").closest(".k-window-content").data("kendoWindow").close();
+        }
+    });
+</script>

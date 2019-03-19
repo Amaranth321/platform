@@ -1,0 +1,131 @@
+.occ_setts {
+    background: #282828 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    overflow-y: auto;
+}
+
+.occ_setts input[type=checkbox] {
+    margin-top: -2px;
+    margin-right: 2px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.occ_setts .error_msg {
+    display: none;
+    margin: 20px;
+}
+
+.occ_setts .main_wrapper {
+    display: none;
+    width: 540px;
+    padding: 20px 30px;
+    border-radius: 3px;
+}
+
+.occ_setts .main_wrapper span {
+    color: #ddd;
+}
+
+.occ_setts .select_label {
+}
+
+.occ_setts .select_label label {
+    line-height: 26px;
+}
+
+.occ_setts .select_label .assignees {
+    color: #ddd;
+}
+
+.occ_setts .select_label .assignees .title {
+    color: #F6AE40;
+}
+
+.occ_setts .select_label .assignees ul {
+    float: left;
+    margin: 0px 0px 0px 30px;
+    padding: 0px;
+}
+
+.occ_setts .select_label .assignees li {
+    list-style-type: square;
+    line-height: 18px;
+    text-align: left;
+}
+
+.occ_setts .main_wrapper .label_list {
+    width: 100%;
+    margin: 0px -2px 10px -2px;
+}
+
+.occ_setts .main_wrapper .label_list .k-input {
+    padding-left: 5px;
+}
+
+.occ_setts .main_wrapper .enable_chb {
+    margin-top: 30px;
+}
+
+.occ_setts .main_wrapper .label_setts {
+    display: none;
+}
+
+.occ_setts .label_setts label {
+    line-height: 30px;
+}
+
+.occ_setts .label_setts .details {
+    margin: 0px;
+}
+
+.occ_setts .details .individual_box {
+    border-top: 1px solid #444;
+    border-left: 1px solid transparent;
+    margin-top: 15px;
+    padding: 7px 0px;
+}
+
+.occ_setts .details .individual_box .title {
+    line-height: 26px;
+    display: block;
+    margin-bottom: 7px;
+}
+
+.occ_setts .individual_box input.k-input {
+    padding-left: 3px;
+}
+
+.occ_setts .details .add_more {
+    padding: 4px 10px 4px 5px;
+}
+
+.occ_setts .details .close {
+    padding: 3px 5px;
+}
+
+.occ_setts .details .limits_holder {
+    margin-bottom: 5px;
+}
+
+.occ_setts .details .limits_holder .group {
+    padding: 3px;
+}
+
+.occ_setts .individual_box .limits_holder .occ_limit_msg {
+    width: 300px;
+    margin: 0px 5px;
+    padding-left: 7px;
+}
+
+.occ_setts .btn_group {
+    border-top: 1px solid #444;
+    margin-top: 7px;
+    padding-top: 7px;
+    text-align: right;
+}
+
+.occ_setts .btn_group .k-button {
+    padding: 4px 10px;
+    margin-left: 5px;
+    min-width: 90px;
+}

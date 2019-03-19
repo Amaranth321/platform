@@ -1,0 +1,113 @@
+<style scoped>
+    .audit-section {
+        width: 100%;
+        background-color: #212A33;
+    }
+    .audit-view
+    {
+        position: relative;
+        margin: -1px -1px 0 0;
+        background-color: #212A33;
+    }
+    .audit-view dl
+    {
+        margin: 10px;
+        padding: 0;
+        min-width: 0;
+        overflow: hidden;
+    }
+    .audit-view dt, dd
+    {
+        float: left;
+        margin: 0;
+        padding: 3px;
+        line-height: 26px;
+        overflow: hidden;
+        height: 30px;
+    }
+    .audit-view dt
+    {
+        clear: left;
+        width: 115px;
+        padding: 3px 5px 3px 0;
+        text-align: right;
+        color: #eaac00;
+    }
+    .audit-view dt h4
+    {
+        clear: left;
+        width: 115px;
+        padding: 3px 5px 3px 0;
+        text-align: right;
+        opacity: 0.6;
+        color: #EAAC00;
+    }
+    .k-listview
+    {
+        padding: 0;
+        overflow: hidden;
+        background-color: #212A33;
+    }
+
+    span.k-invalid-msg
+    {
+        position: absolute;
+        margin-left: 6px;
+    }
+    #separator {
+        border-bottom: 2px solid #F07230;
+        margin-bottom: -6px;
+        margin-top: 10px;
+        width: 190px;
+    }
+</style>
+<div class="audit-section" style="width: 770px;">
+    <div id="auditdetailsWin" style="overflow:hidden;"></div>
+    <div id="paramsGrid" style="overflow:hidden;"></div> 
+</div>
+
+<script type="text/x-kendo-tmpl" id="template">
+    <div class="audit-view k-widget">
+    <dl>
+    <dt>&{'company'} :</dt>
+    <dd>#:bucketName#</dd>
+    <dt>&{'username'} :</dt>
+    <dd>#:userName#</dd>
+    <dt>&{'activity-type'} :</dt>
+    <dd>#:serviceName#</dd>
+    <dt>&{'date'} :</dt>
+    <dd>#:timeobject#</dd>
+    <dt>&{'ip'} :</dt>
+    <dd>#:remoteIp#</dd>
+    <dt>&{'host'} :</dt>
+    <dd>#:host#</dd>
+    <dt>&{'referer'} :</dt>
+    <dd>#:referer#</dd>
+    </dl>
+    </div>
+</script>
+
+<script type="text/javascript">
+            $("#paramsGrid").kendoGrid({
+                dataSource: {
+                    data: audit.parmasdata,
+                    pageSize: 5
+                },
+                scrollable: false,
+                pageable: {
+                    input: true,
+                    numeric: false,
+                    pageSizes: [5, 10, 15],
+                    refresh: false
+                },
+                columns: [
+                    {field: "name", title: localizeResource('params-name')},
+                    {field: "value", title: localizeResource('params-value')}
+                ]
+            }).data("kendoGrid");
+
+        var auditGrid = $("#auditdetailsWin").kendoListView({
+            dataSource: audit.auditDetails,
+            template: kendo.template($("#template").html())
+        }).data("kendoListView");
+</script>

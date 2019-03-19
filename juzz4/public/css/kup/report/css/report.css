@@ -1,0 +1,144 @@
+.daterangepicker td.active,
+.daterangepicker td.active:hover,
+.daterangepicker td.in-range {
+  color: #000000;
+  background-color: #f6ae40;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+}
+#main-header {
+  /* #main-header */
+}
+#main-header .header-title {
+  position: relative;
+  min-height: 90px;
+  /* .header-title */
+}
+#main-header .header-title .header-calendar #calendar-reservation:hover {
+  background: #5b5b5b;
+}
+#main-header .header-title .drag-area {
+  width: 85%;
+  height: auto;
+}
+#main-header .header-title .drag-area::after {
+  clear: both;
+  content: " ";
+  display: block;
+}
+#main-header .header-title .drag-area .drop-place span.drop-here {
+  color: #f6ae40;
+  height: 20px;
+  padding: 0 10px;
+  display: none;
+  line-height: 20px;
+  border: 1px solid #f6ae40;
+  float: left;
+}
+#main-header .header-title .drag-area .drop-place span.drop-item {
+  cursor: default;
+  border: none;
+  color: #d9d9d9;
+  background: #808080;
+  border: 1px solid #808080;
+  margin: 0 4px 4px 0;
+  padding: 0 15px 0 7px;
+}
+#main-header .header-title .drag-area .drop-place span.drop-item a {
+  cursor: pointer;
+}
+#main-header .header-title .drag-area .drop-place span.stickerItem:hover {
+  border: 1px solid #9d9d9d;
+}
+#main-header .header-title .drag-area .drop-place span.stickerItem.isActive a.btn-remove {
+  cursor: pointer;
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  background: url(../img/btn-remove.png) 0 0 no-repeat;
+}
+#main-header .header-title .modifyConfirm {
+  display: none;
+  position: absolute;
+  right: 20px;
+  top: 47px;
+}
+#main-header .header-title .modifyConfirm button {
+  font-size: 12px;
+  width: 76px !important;
+  height: 22px !important;
+  line-height: 22px;
+  padding: 0;
+  color: #ffffff;
+  text-shadow: none;
+  border: none;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+}
+#main-header .header-title .modifyConfirm button.applyBtn {
+  background: #f6ae40;
+  margin-right: 5px;
+}
+#main-header .header-title .modifyConfirm button.applyBtn:hover {
+  background: #f29f1f;
+}
+#main-header .header-title .modifyConfirm button.cancelBtn {
+  background: #4d4d4d;
+}
+#main-header .header-title .modifyConfirm button.cancelBtn:hover {
+  background: #454545;
+}
+#main-header .header-body {
+  /* .header-body */
+}
+#main-header .header-body .email-export #exportOutput {
+  position: relative;
+}
+#main-charts {
+  /* Main Container */
+  padding-bottom: 100px;
+}
+#main-charts #lineChartContainer {
+  /* Vistors vs Time */
+}
+#main-charts #lineChartContainer.vca_report_line_chart {
+  height: auto !important;
+}
+#main-charts .plpcount_buttom_wrapper {
+  margin: 0 auto;
+  min-height: auto !important;
+  width: 90% !important;
+  padding-top: 3em;
+  text-align: center;
+}
+#main-charts .plpcount_buttom_wrapper .plpcount_buttom_left {
+  /* Total Visits & Average Visits & Most Visits & Least Visits & Top5*2 */
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+}
+#main-charts .plpcount_buttom_wrapper .plpcount_buttom_right {
+  display: inline-block;
+  margin-right: 0 !important;
+  float: none;
+}
+#main-charts .plpcount_buttom_wrapper .plpcount_buttom_right .plpcount_contain {
+  /* Total Visits */
+}
+#crosssite_report_container,
+.report_buttom_wrapper {
+  display: none;
+}
+.kupTimeCsv {display: block !important;}
+.kupGroupList {}
+.kupGroupList button {color: #ccc; padding-left:38px; background:none; width:100%; display:block; line-height:30px; text-align: left; border:none; box-shadow: none; -webkit-box-shadow:none;}
+.kupGroupList button:hover {background:#333;}
+
+/* kupActionGroup */
+.kupActionGroup {padding-right: 16px; text-align: right;}
+.kupCheckbox {display: inline-block; margin-left:15px;}

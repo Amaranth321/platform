@@ -1,0 +1,37 @@
+.rec_viewer .grid_background {
+    fill: #333;
+}
+
+.rec_viewer .axis text {
+    font-size: 11px;
+    fill: #ccc;
+}
+
+.rec_viewer .axis path {
+    display: none;
+}
+
+.rec_viewer .axis line {
+    fill: none;
+    stroke: #666;
+    shape-rendering: crispEdges;
+}
+
+.rec_viewer .grid line,
+.rec_viewer .grid path {
+    fill: none;
+    stroke: #666;
+    shape-rendering: crispEdges;
+}
+
+.rec_viewer .grid .minor.tick line {
+    stroke-opacity: 0.35;
+}
+
+.rec_viewer .brush .extent {
+    stroke: #ccc;
+    stroke-width: 1;
+    fill-opacity: .25;
+    stroke-opacity: .8;
+    shape-rendering: crispEdges;
+}

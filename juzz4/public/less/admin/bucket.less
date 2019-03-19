@@ -1,0 +1,661 @@
+@white: rgb(255,255,255);
+@black: rgb(0,0,0);
+@yellow:#f6ae40;
+@yellowHover:#f29f1f;
+@gray4d:#4d4d4d;
+@grayHover:#454545;
+@slotHover:#7b7b7b;
+@btnRadius:2px;
+@imgsrc: "../../../images";
+@font10:10px;
+@font10_rem:0.625rem;
+/*
+    Bucket Model styles
+*/
+.bucket_model_container {
+    width: 390px;
+    margin: -6px;
+}
+
+.bucket_details {
+    hieght:auto !important;
+    
+    .details_tab  {
+        position:relative; 
+        height:auto !important;
+    }
+}
+
+
+.bucket_model_form {
+    padding: 10px 5px 15px 5px;
+    background: #252525 url("../../common/kendo/textures/brushed-metal.png") 0 0 repeat;
+    border-bottom: 1px solid #444;
+}
+
+.bucket_model_form label {
+    display: inline-block;
+    width: 90px;
+    line-height: 30px;
+    margin-left: 20px;
+}
+
+.bucket_model_form input {
+    display: inline-block;
+    width: 170px;
+    margin-right: 5px;
+}
+
+.bucket_model_form textarea {
+    width: 170px;
+    height: 70px;
+    padding: 5px;
+    margin-top: 2px;
+    vertical-align: top;
+}
+
+.bucket_model_form {
+    .k-button {
+        border-radius:@btnRadius;
+        -moz-border-radius:@btnRadius;
+        -webkit-border-radius:@btnRadius;
+        padding:0;
+    &:hover {background-color:@slotHover;}
+        .edit {
+            display: block;
+            width: 22px;
+            height: 22px;
+            background: url("@{imgsrc}/vca/action_icons.png") -177px -24px no-repeat;
+            vertical-align: middle;
+            border:none;
+            cursor:pointer;
+        }
+    }
+    
+}
+
+
+.bucket_model_container {
+    .button_group {
+        margin: 5px auto;
+        text-align: center;
+
+        .k-button {
+            display: inline-block;
+            width: 70px;
+        }
+    }
+} 
+
+
+
+
+/*
+    Bucket Selector Tool
+*/
+.bucket_selector {
+    margin: -6px;
+}
+
+.bucket_selector .no_bucket_msg {
+    display: none;
+    color: #eaac00;
+    font-size: 14px;
+    text-align: center;
+    padding-top: 20px;
+    margin-bottom: -20px;
+
+}
+
+.bucket_selector .bucket_tree {
+    background: #252525 url("../../common/kendo/textures/brushed-metal.png") 0 0 repeat;
+    padding: 5px 5px 0px 4px;
+}
+
+.bucket_selector #bucketSelectorTree {
+    width: 350px;
+    height: 350px;
+    border-bottom: 1px solid #444;
+}
+
+.bucket_selector .button_group {
+    margin: 5px auto;
+    text-align: center;
+}
+
+.bucket_selector .button_group .k-button {
+    display: inline-block;
+    width: 60px;
+}
+
+/*
+    Bucket Tree Search box
+*/
+.bucket_tree .search_bar {
+    margin-bottom: 5px;
+}
+
+.bucket_tree .search_bar .input {
+    display: none;
+    margin: 0px;
+}
+
+.bucket_tree .search_bar .k-autocomplete.k-header {
+    height: 24px;
+    width: 100%;
+    margin: 0px;
+}
+
+.bucket_tree .collapse {
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    margin-left: 8px;
+    background: url("../../common/images/collapse_all.png") 50% 50% no-repeat;
+    background-size: 20px 20px;
+    border: 1px solid #444;
+}
+
+.bucket_tree .collapse:hover {
+    background-color: #F6AE40;
+}
+
+/*
+    Bucket Tree Styling
+*/
+.bucket_tree .k-image {
+    height: 20px;
+    width: 18px;
+    vertical-align: middle;
+    margin-left: 0px;
+}
+
+.bucket_tree .k-item {
+    padding-left: 19px;
+    border-left: 1px solid #444;
+}
+
+.bucket_tree .suspended {
+    color: #FF2E12;
+}
+
+.bucket_tree .k-plus {
+    background: url("../../common/images/plus_square_brown.png") 50% 50% no-repeat !important;
+    margin: 0px 0px 0px -12px;
+    padding: 0px;
+    height: 29px;
+    width: 20px;
+}
+
+.bucket_tree .k-minus {
+    background: url("../../common/images/minus_square_brown.png") 50% 50% no-repeat !important;
+    margin: 0px 0px 0px -12px;
+    padding: 0px;
+    height: 29px;
+    width: 20px;
+}
+
+.bucket_tree .k-state-selected {
+    background: #F6AE40;
+    border-radius: 2px;
+}
+
+.bucket_tree .tree_item {
+    height: 20px;
+    margin: 5px 0px;
+}
+
+.bucket_tree .tree_item .name {
+    color: #f5f5f5;
+}
+
+.bucket_tree .child_item {
+}
+
+.bucket_tree .root_item {
+}
+
+.bucket_tree .lineage_line {
+    border-left: 1px solid #444;
+    border-bottom: 1px solid #444;
+    width: 21px;
+    margin: 0px;
+    padding: 2px 0px 2px 1px;
+}
+
+.bucket_tree .separate_root {
+    /*margin-top: 10px;*/
+}
+
+.bucket_tree .tree_item span {
+    display: inline-block;
+    min-width: 70px;
+    height: 24px;
+    line-height: 24px;
+    padding-right: 5px;
+    margin-left: -5px;
+}
+
+/*
+    Bucket Manager
+*/
+.bucket_manager {
+    width: 100%;
+    margin: 10px auto;
+}
+
+.bucket_manager a {
+    outline: none;
+}
+
+.bucket_manager .title_bar {
+    height: 55px;
+    background-color: #212121;
+    padding: 10px 0px 0px 15px;
+}
+
+.bucket_manager .title_bar .title {
+    font-size: 18px;
+    color: #aaa;
+}
+
+.bucket_manager .toolbar {
+    margin-top: 1px;
+    background-color: #212121;
+    padding: 4px;
+}
+
+.bucket_manager .toolbar .add_btn {
+    margin-bottom: 1px;
+}
+
+.bucket_manager .left_panel {
+    display: none;
+    float: left;
+    width: 280px;
+    height: 100%;
+    padding-left: 5px;
+    margin-top: 5px;
+    background-color: #212121;
+}
+
+.bucket_manager .left_panel .btn_group {
+    height: 24px;
+    overflow-y: hidden;
+}
+
+.bucket_manager .left_panel .btn_group .refresh {
+    float: right;
+    margin-top: -1px;
+    margin-right: 1px;
+}
+
+.bucket_manager .left_panel #bucketMgrTree {
+    height: 500px;
+}
+
+.bucket_manager {
+    
+    .ui {
+             &.popup {
+        	    color:@white;
+        	    font-size:@font10; 
+        	    font-size:@font10_rem;
+        	    &:before {background:rgba(0,0,0,1);}
+        	    padding: 0.25em 0.45em !important;
+        		background:rgba(0,0,0,1);
+        		border:1px solid @white;
+        		opacity:.8;
+    			&.inverted {
+    				&.bottom {
+    				    margin: 0.2em 0.2em;
+    					&:before {box-shadow: -1px -1px 0 0 @white !important;}
+    					&.center {
+    						&.transition {
+    						    .content {
+    						        font-size:@font10; font-size:@font10_rem;
+        		                   }
+    						 }
+    					}
+    				}
+    			}
+    		}
+        }
+    
+    .bucket_details {
+        padding-left: 280px;
+        width: 100%;
+        
+        
+        .tab_strip {
+            display: none;
+            background: #333;
+            height: 100%;
+            border: 0px;
+            
+            .k-content {
+                background: #333;
+                border: 1px solid #151515;
+                overflow:hidden;
+                
+                .logoSetting {
+                    position:relative;
+                    
+                    .k-button {
+                    &.upload {
+                        display:block;
+                        position:absolute;
+                        z-index:1;
+                        left:185px;
+                        bottom:4px;
+                        width:25px;
+                        height:25px;
+                        margin:-15px 0 0 15px;
+                        opacity:1;
+                        background:@black url("@{imgsrc}/vca/action_icons.png") -201px -21px no-repeat;
+                        border-radius:@btnRadius;
+                        -moz-border-radius:@btnRadius;
+                        -webkit-border-radius:@btnRadius;
+                        border:none;
+                        -webkit-box-shadow: 4px 4px 5px 0px rgba(50, 50, 50, 0.27);
+                        -moz-box-shadow:    4px 4px 5px 0px rgba(50, 50, 50, 0.27);
+                        box-shadow:         4px 4px 5px 0px rgba(50, 50, 50, 0.27);
+                    } 
+                    }
+                       
+                }
+                
+            }
+            
+            .tab_title {
+                width: 90px;
+                padding: 10px;
+                text-align: center;
+            }
+            
+            .overview {
+                background: url("../../common/images/features/bucket-management.png") 10px 50% no-repeat;
+                background-size: 20px 20px;
+                padding-left: 35px;
+                width: 110px;
+            }
+
+            .users {
+                background: url("../../common/images/features/user-management.png") 10px 50% no-repeat;
+                background-size: 20px 20px;
+                padding-left: 40px;
+                width: 90px;
+            }
+            
+            .analytics {
+                background: url("../../common/images/analytics_graph.png") 10px 50% no-repeat;
+                background-size: 16px 16px;
+                padding-left: 35px;
+                width: 150px;
+            }
+
+            .change_history {
+                background: url(../../common/images/features/log_files.png) 10px 50% no-repeat;
+                background-size: 20px 20px;
+                padding-left: 35px;
+                width: 200px;
+            }
+
+            .log_changes {
+                padding: 5px 10px;
+                border-left: 1px solid #333;
+            }
+            
+        }
+        
+        .logo {
+            display: inline-block;
+            width: 221px;
+            height: 34px;
+            margin-top: 10px;
+            margin-left: 5px;
+            background-size:contain !important;
+        }
+    
+        a {
+        &.k-button {
+            background:@gray4d;
+            &:hover {background:@grayHover;}
+        &.modify {
+            border:none;
+            padding:0;
+            background:@black;
+        }
+            
+        &.suspend, &.activate {
+            display: none;
+            margin-left: 10px;
+            padding:5px 7px;
+        }
+        }
+        }
+    
+        .delete {
+            border-radius:@btnRadius;
+           -moz-border-radius:@btnRadius;
+           -webkit-border-radius:@btnRadius;
+           padding: 4px 7px !important;
+           background:@gray4d;
+           float:right;
+           &:hover {background:@grayHover;}
+        }
+        
+        .button_group {
+            text-align:right;
+            display: none;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            .k-button {
+                display: inline-block;
+                width:auto !important;
+                border-radius:@btnRadius;
+                -moz-border-radius:@btnRadius;
+                -webkit-border-radius:@btnRadius;
+                &.update {
+                    margin-right:5px; 
+                    background:@yellow;
+                    &:hover {background:@yellowHover}
+                }
+                &.cancel {
+                    background:@gray4d;
+                    &:hover {background:@grayHover;}
+                }
+            }
+        }
+        
+        
+    }       
+}
+
+
+
+
+.bucket_manager .bucket_details .info {
+    margin-top: 20px;
+    border-top: 1px solid #565656;
+    border-bottom: none !important;
+    height:auto !important;
+    overflow:hidden;
+}
+
+.bucket_manager .bucket_details .info .left_box {
+    float: left;
+    width: 50%;
+    height: 100%;
+    padding: 10px 10px;
+}
+
+.bucket_manager .bucket_details .info .left_box label {
+    display: inline-block;
+    width: 130px;
+    text-align:right;
+    padding-right:15px;
+    line-height: 24px;
+}
+
+.bucket_manager .bucket_details .info .left_box span {
+    display: inline-block;
+    line-height: 24px;
+    vertical-align: top;
+}
+
+.bucket_manager .bucket_details .info .left_box .active {
+    color: #91D100;
+}
+
+.bucket_manager .bucket_details .info .left_box .suspended {
+    color: #FF2E12;
+}
+.bucket_manager .bucket_details .info .k-button {
+    border:none;
+    border-radius:@btnRadius;
+    -moz-border-radius:@btnRadius;
+    -webkit-border-radius:@btnRadius;
+}
+.bucket_manager .bucket_details .info .k-button .edit {
+    display:block;
+    width: 22px;
+    height: 22px;
+    cursor:pointer;
+    background: url("@{imgsrc}/vca/action_icons.png") -177px 0 no-repeat;
+    background-size: inherit;
+}
+
+.bucket_manager .bucket_details .info .title {
+    margin-bottom: 15px;
+}
+
+.bucket_manager .bucket_details .info .title span {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 25px;
+    vertical-align: middle;
+}
+
+.bucket_manager .bucket_details .info .title .k-button {
+    padding:0;
+    &:hover {background:@grayHover;}
+}
+
+/*
+    Feature Tree Styling
+*/
+.bucket_manager {
+    
+    .features {
+        float: left;
+        width: 50%;
+        height: 100%;
+        border-left: 1px solid #565656;
+        padding: 10px;
+        
+        .tree {
+            margin-top: 5px;
+            height: 415px;
+            overflow: auto;
+        }
+        
+        .tree_item {
+            height: 20px;
+            
+            span {
+                display: inline-block;
+                height: 20px;
+                line-height: 20px;
+                padding-right: 10px;
+                color: #f5f5f5;    
+            }
+        }
+        
+        .k-image {
+            height: 20px;
+            width: 20px;
+            vertical-align: middle;
+            margin-right: 0px;
+        }
+        
+        ul {
+        &.k-group {}
+        &.k-treeview-lines {
+            li {
+                &.k-item {
+                    
+                    div {
+                        span {
+                            &.k-icon {}
+                            &.k-in {
+                                img {
+                                &.k-image {display:none;}
+                                }
+                                span {
+                                &.tree_item {
+                                    span {}
+                                }
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+                
+                ul {
+                    li {
+                        &.k-item {
+                            div {
+                            span {
+                            &.k-in {
+                                img {
+                                &.k-image {display:inline-block;}
+                                }
+                            }
+                            }
+                        }
+                    }
+                        }
+                }
+            }
+        }
+        }
+    
+    }
+    
+} 
+.left_box {
+/*
+    Default Status
+*/
+
+&.defaultStatus {
+    input[type="text"], textarea[type="text"], input[name="userLimit"], input[name="mapsource"], .k-button.update, .k-button.cancel {
+    display:none !important;
+    }
+}
+
+/*
+    Modify Status
+*/
+
+
+&.modifyStatus {
+    .title .edit, .delete, .path, .description, .userLimit, .mapSource {display:none !important;}
+    input[type="text"], textarea[type="text"], input[name="userLimit"], input[name="mapsource"] {
+    display:inline-block !important;
+    }
+}
+}
+
+/*
+    Analytics Tab
+*/
+.analytics_tab {
+    width: 100%;
+}
+
+.analytics_tab .title {
+
+}

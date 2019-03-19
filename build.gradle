@@ -1,0 +1,289 @@
+import org.gradle.internal.os.OperatingSystem;
+
+plugins {
+    id 'java'
+    //id 'com.github.ben-manes.versions' version '0.17.0'
+}
+
+group = 'com.kaisquare'
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.github.mlaccetti:javapns:2.3.2'
+    compile 'com.google.code.geocoder-java:geocoder-java:0.16'
+    compile 'com.google.gcm:gcm-server:1.0.0'
+    compile 'com.google.guava:guava:24.0-android'  // use 'android' identifier for java 7 support
+    compile 'com.googlecode.htmlcompressor:htmlcompressor:1.5.2'
+    runtime 'com.jcraft:jsch:0.1.54'  // commons-vfs2 SFTP support
+    compile 'com.opencsv:opencsv:4.1'
+    compile 'com.rabbitmq:amqp-client:4.2.2'  // java 8+ required for newer versions
+    compile 'com.itextpdf:itextpdf:5.5.12'
+    runtime 'commons-net:commons-net:3.6'  // commons-vfs2 FTP support
+    compile 'net.lingala.zip4j:zip4j:1.3.2'
+    compile 'org.apache.commons:commons-compress:1.16.1'
+    compile 'org.apache.commons:commons-lang3:3.7'
+    compile 'org.apache.commons:commons-vfs2:2.2'
+    compile 'org.apache.poi:poi-ooxml:3.17'
+    compile 'org.apache.thrift:libthrift:0.8.0'
+    compile 'org.apache.xmlgraphics:batik-codec:1.9.1'
+    runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.2'
+}
+
+//global variables
+ext {
+    juzz4Dir = "juzz4" as File
+    confDir = "$juzz4Dir/conf" as File
+    appDir = "$juzz4Dir/app" as File
+    backupDir = "$juzz4Dir/backup" as File
+    packageDir = "$rootDir/build-ks" as File
+
+    appConfFile = "$confDir/application.conf" as File
+    configJsonFile = "$appDir/config.json" as File
+    log4jFile = "$confDir/log4j.xml" as File
+
+    cloudHostPlaceholder = "public-ip-to-node"
+}
+
+def readSystemProperty(String propertyName, boolean required) {
+    def value = System.getProperty(propertyName)
+    if (required && (value == null || value.empty)) {
+        throw new InvalidUserDataException("missing '$propertyName'")
+    }
+    return value;
+}
+
+def initializePlay() {
+    def playExec = OperatingSystem.current().isWindows() ? 'play.bat' : 'play'
+    def pathEnvName = ['PATH', 'Path'].find { System.getenv()[it] != null }
+    for (path in System.getenv()[pathEnvName].split(File.pathSeparator)) {
+        if (new File(path, playExec).exists()) {
+            project.ext.playHome = path
+            project.ext.playExec = new File(path, playExec)
+            return
+        }
+    }
+
+    throw new RuntimeException("'play' command was not found in PATH")
+}
+
+def replaceAppConf() {
+    def defaultAppConf = "application.conf.default"
+    copy {
+        from confDir
+        into confDir
+        include defaultAppConf
+        rename(defaultAppConf, "application.conf")
+    }
+    println("Replaced '$appConfFile.name' with '$defaultAppConf'")
+}
+
+def replaceConfigJson(targetPlatform) {
+    def defaultConfigJson = (targetPlatform == "node") ? "node.config.json" : "default.config.json"
+    copy {
+        from appDir
+        into appDir
+        include defaultConfigJson
+        rename(defaultConfigJson, "config.json")
+    }
+    println("Replaced '$configJsonFile.name' with '$defaultConfigJson'")
+}
+
+def replaceLog4jXml() {
+    def defaultLog4jXml = "log4j.default.xml"
+    copy {
+        from confDir
+        into confDir
+        include defaultLog4jXml
+        rename(defaultLog4jXml, "log4j.xml")
+    }
+    println("Replaced '$log4jFile.name' with '$defaultLog4jXml'")
+}
+
+def replaceTextInFile(file, oldText, newText) {
+    String contents = file.getText('UTF-8')
+    contents = contents.replaceAll(oldText, newText)
+    file.write(contents, 'UTF-8')
+    println("Updated $file.name")
+}
+
+def validateVersion(String version) {
+    def splitVer = version.split("\\.")
+    if (splitVer.length != 4) {
+        throw new RuntimeException("version must have 4 parts")
+    }
+
+    splitVer.each { String digit ->
+        if (!digit.isInteger()) {
+            throw new RuntimeException("version can only contain digits")
+        }
+    }
+}
+
+def createJuzz4Tar(targetPlatform, packageName) {
+    def packageContents = [
+        "juzz4/app/config.json",
+        "juzz4/app/views",
+        "juzz4/database",
+        "juzz4/conf",
+        "juzz4/lib",
+        "juzz4/modules",
+        "juzz4/precompiled",
+        "juzz4/public",
+        "juzz4/scripts",
+        "juzz4/resources"
+    ]
+
+    if (targetPlatform == "node") {
+        copy {
+            from "juzz4/keystore/node.jks"
+            into "juzz4/conf"
+        }
+    } else {
+        packageContents.add("juzz4/keystore")
+        packageContents.add("juzz4/frontend")
+    }
+
+    // tar doesn't auto-create directories
+    packageDir.mkdirs()
+
+    // tar doesn't recognize windows drive letters (e.g. e:/)
+    // Hence, build-ks relative path is hard-coded here
+    List<String> tarArgs = ["czf", "build-ks/$packageName"] + packageContents
+    println("tar ${tarArgs.join(' ')}")
+    exec {
+        executable "tar"
+        args tarArgs
+    }
+}
+
+task packJuzz4() {
+    doFirst {
+		println("step1")
+        delete "$packageDir"
+        delete "$juzz4Dir/lib"
+
+        if (!appConfFile.exists()) {
+            println("No application.conf. Using default.")
+            replaceAppConf()
+        }
+
+        if (!log4jFile.exists()) {
+            println("No log4j.xml. Using default.")
+            replaceLog4jXml()
+        }
+
+		println("initializePlay")
+        initializePlay()
+		println("initializePlay...finished")
+        exec {
+            workingDir juzz4Dir
+            commandLine playExec, "clean"
+        }
+    }
+    doLast {
+        /**
+         *
+         *  Input Validations
+         *
+         */
+        String prefix = readSystemProperty("prefix", true)
+        String targetPlatform = readSystemProperty("type", true)
+        String version = readSystemProperty("version", true)
+        String cloudHost = readSystemProperty("cloud_host", true)
+
+        println("Package-prefix : $prefix")
+        println("Type           : $targetPlatform")
+        println("Version        : $version")
+        println("Cloud host     : $cloudHost")
+
+        String packageName = "${prefix}-${targetPlatform}-${version}.tgz"
+
+        /**
+         * download dependencies
+         */
+        exec {
+            workingDir juzz4Dir
+            commandLine playExec, "deps", "--sync"
+        }
+
+        /**
+         *
+         * Create version files
+         *
+         */
+        def versionFile = new File("$confDir/platformversion.txt")
+        versionFile.text = version
+        println("Created '$versionFile.name' with '$version'")
+
+        def codeHashFile = new File("$confDir/platformcodeversion.txt")
+        def shortHash = 'git rev-parse --short HEAD'.execute().text.trim()
+        codeHashFile.text = shortHash
+        println("Created '$codeHashFile.name' with '$shortHash'")
+
+        /**
+         *
+         * Back up local configs
+         *
+         */
+        def localConfigFiles = [configJsonFile, appConfFile, log4jFile]
+        localConfigFiles.each { File file ->
+            if (file.exists()) {
+                println("backup '$file.name'")
+                copy {
+                    from file
+                    into backupDir
+                }
+            }
+        }
+
+        /**
+         *
+         * Update configuration files
+         *
+         */
+        replaceAppConf()
+        replaceConfigJson(targetPlatform)
+        replaceLog4jXml()
+
+        println("Updating '$cloudHostPlaceholder' to $cloudHost")
+        replaceTextInFile(configJsonFile, cloudHostPlaceholder, cloudHost)
+
+        /**
+         *
+         * Precompile and create tgz
+         *
+         */
+		 println('begin precompile tar!!!!')
+         exec {
+           workingDir juzz4Dir
+           commandLine playExec, "precompile", "-Xmx2G"
+        }
+		println('commandLine error!!!!')
+        createJuzz4Tar(targetPlatform, packageName)
+
+        /**
+         *
+         * Restore local configs
+         *
+         */
+        localConfigFiles.each { File fileToReplace ->
+            def backupCopy = "$backupDir/$fileToReplace.name" as File
+            if (backupCopy.exists()) {
+                println("Restoring '$fileToReplace.name'")
+                copy {
+                    from backupCopy.absolutePath
+                    into fileToReplace.parentFile.absolutePath
+                    include fileToReplace.name
+                }
+            }
+        }
+        delete backupDir
+
+        //done
+        println("Package: $packageDir/$packageName")
+    }
+}

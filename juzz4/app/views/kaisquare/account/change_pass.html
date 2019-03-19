@@ -1,0 +1,85 @@
+<div id="passChangeWin" style="width: 264px">
+    <div id="editFormPcw" class="account_shadow_box" style="padding: 3%">
+        <div class="k-edit-label" style="width:100%;text-align: left;"><label for="currentPassword">&{'current-password'}</label></div>
+        <div class="k-edit-field" style="width: 100%" data-container-for="currentPassword">
+            <input type="password" class="k-input k-textbox" name="currentPassword"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:currentPassword">
+        </div>
+		<div class="k-edit-label" style="width:100%;text-align: left;"><label for="currentPassword">&{'new-password'}</label></div>
+        <div class="k-edit-field" style="width: 100%" data-container-for="password1">
+            <input type="password" class="k-input k-textbox" name="password1"
+                   required validationMessage="&{'required'}"
+                   placeholder="&{'new-password'}"
+                   data-bind="value:password1">
+        </div>
+
+        <div class="k-edit-field" style="width: 100%" data-container-for="password2">
+            <input type="password" class="k-input k-textbox" name="password2"
+                   placeholder="&{'confirm-password'}"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:password2">
+        </div>
+    </div>
+
+    <div align="center">
+        <a id="submitPcw" href="#" class="k-button"><span class="k-icon k-update"></span>&{'update'}</a> &nbsp;
+        <a id="cancelPcw" href="#" class="k-button"><span class="k-icon k-cancel"></span>&{'clear'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var vmPassChange = kendo.observable({
+        "currentPassword": "",
+        "password1": "",
+        "password2": "",
+        "trim": function () {
+            this.currentPassword = this.currentPassword.trim();
+            this.password1 = this.password1.trim();
+            this.password2 = this.password2.trim();
+            this.refresh();
+        },
+        refresh: function () {
+            kendo.bind($("#editFormPcw"), this);
+        }
+    });
+
+    vmPassChange.refresh();
+    var passwordValidator = $("#editFormPcw").kendoValidator().data("kendoValidator");
+
+    $("#submitPcw").click(function () {
+        vmPassChange.trim();
+
+        if (passwordValidator.validate()) {
+        	
+            if (vmPassChange.password1 != vmPassChange.password2) {
+                utils.popupAlert(localizeResource("pass-dont-match"));
+                vmPassChange.set("password1", "");
+                vmPassChange.set("password2", "");
+                return;
+            }
+
+            utils.showLoadingOverlay();
+            changePassword("", vmPassChange.currentPassword, vmPassChange.password1, function (responseData) {
+
+                utils.hideLoadingOverlay();
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'update-successful'}!");
+                    vmPassChange.set("currentPassword", "");
+                    vmPassChange.set("password1", "");
+                    vmPassChange.set("password2", "");
+                }
+                else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        }
+    });
+
+    $("#cancelPcw").click(function () {
+        vmPassChange.set("currentPassword", "");
+        vmPassChange.set("password1", "");
+        vmPassChange.set("password2", "");
+    });
+</script>

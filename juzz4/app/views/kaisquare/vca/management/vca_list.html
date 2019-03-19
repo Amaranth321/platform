@@ -1,0 +1,94 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+#{include HtmlPath +'/common/partial/leaflet_scripts.html'/}
+
+#{include HtmlPath +'/vca/management/vca_mgmt_templates.html'/}
+
+<link rel="stylesheet" type="text/css" href="/public/css/common/vca.css"/>
+<script src="/public/javascripts/vca.js"></script>
+
+<script src="/public/javascripts/vca/scheduler.js"></script>
+<script src="/public/javascripts/vca/gmaskTool.js"></script>
+<script src="/public/javascripts/vca/polygonTool.js"></script>
+<script src="/public/javascripts/device/cameraSelector.js"></script>
+
+<link rel="stylesheet" href="/public/javascripts/periodvisualizer/vis_prd.css"/>
+<script src="/public/javascripts/periodvisualizer/visPrd.js"></script>
+
+<link rel="stylesheet" href="/public/javascripts/vca/vca_list.css"/>
+<script src="/public/javascripts/vca/vcaList.js"></script>
+<script src="/public/javascripts/vca/vcaConfigWins.js"></script>
+
+
+<div class="vca-list">
+    <div class="header">
+        <span class="title"></span>
+    </div>
+    <div class="body">
+        <div class="tab_strip">
+            <ul>
+                <li class="k-state-active">
+                    <span>&{'analytics'}</span>
+                </li>
+                <li>
+                    <span>&{'data-log'}</span>
+                </li>
+            </ul>
+            <div class="tab_content">
+                <div class="header_box">
+                    <div class="actions">
+                        <a class="k-button" href="javascript:vcaList.addVca()">
+                            <span class="btn_add">&{'add-analytics'}</span>
+                        </a>
+                    </div>
+
+                    <div class="filter_box">
+                        <div class="filter_entry">
+                            <label>&{'device-name'}</label>
+                            <input id="inputDvcSearch" type="text" class="k-input k-textbox"/>
+                        </div>
+                        <div class="filter_entry">
+                            <label>&{'channel'}</label>
+                            <input id="inputChnSearch" type="text" class="k-input k-textbox"/>
+                        </div>
+                        <div class="filter_entry">
+                            <label>&{'location'}</label>
+                            <input id="inputLocSearch" type="text" class="k-input k-textbox"/>
+                        </div>
+
+                        <a class="k-button" href="javascript:vcaList.clearVcaSearch()">&{'clear-filters'}</a>
+                    </div>
+                </div>
+
+                <div class="vca_grid"></div>
+            </div>
+            <div class="tab_content">
+                <div class="event_grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    //page info
+    var vcaTypeName = "${vcaTypeName}";
+    var $vcaList = $(".vca-list");
+    var vcaList = new VcaList($vcaList, vcaTypeName);
+
+    $(function ()
+    {
+        registerOnAuthorizedEvent(function ()
+        {
+            DvcMgr.ready(function ()
+            {
+                LabelMgr.ready(function ()
+                {
+                    $vcaList.show();
+                    vcaList.generate();
+                })
+            });
+        });
+    });
+
+</script>

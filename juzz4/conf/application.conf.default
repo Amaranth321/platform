@@ -1,0 +1,240 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Server Configurations
+# Refer to application.conf.original for descriptions of each property
+# Usage: play run --%id -Duser.timezone=GMT
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#general
+application.name=KAI Platform
+application.secret=ipUQTM2smd9hrW1nWlyaZDq012Ooi3h7qAtqcGEoxDfOiIc0Yxk58IM7z0K876Bk
+application.langs=en,en-node,zh,zh-cn,zh-cn-node,zh-tw,zh-tw-node
+application.log.system.out=off
+application.session.cookie=PLAY
+application.session.maxAge=30d
+application.session.httpOnly=true
+exposePlayServer=false
+
+#memcached
+memcached=disabled
+memcached.host=localhost:11211
+
+#play
+play.jobs.pool=10
+mimetype.mp3=audio/mpeg
+
+#http(s)
+#https.port=443
+http.cacheControl=360
+certificate.key.file=conf/kupssl.key
+certificate.file=conf/kupssl.cert
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#   Scheduled jobs with cron expressions.
+#   -   Use http://www.cronmaker.com to view/generate expressions
+#   -   Cloud server time is in UTC
+#   -   To disable it, set the job to "off" for the target server
+#       i.e. %[play-id].application.[full-class-name-of-job]=off
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cron.PeriodicReports.hourly = 0 15 0/1 1/1 * ? *
+cron.PeriodicReports.daily = 0 30 1 1/1 * ? *
+cron.PeriodicReports.weekly = 0 30 2 ? * MON *
+cron.PeriodicReports.monthly = 0 30 3 1 1/1 ? *
+cron.POS.FTPImportJob = 0 20 0/1 1/1 * ? *
+cron.Cleanup.db = 0 0 19 1/1 * ? *
+cron.Cleanup.files = 0 0 19 1/1 * ? *
+cron.ReportSummary.weekly = 0 30 2 ? * MON *
+cron.HourlyStats.vca = 0 25 0/1 1/1 * ? *
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#    Plugins for SQL support
+#    - comment these lines for version older than 4.6
+#    - uncomment these lines for new 4.6 deployment or after migration
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#plugins.disable.0=play.db.DBPlugin
+#plugins.disable.1=play.db.jpa.JPAPlugin
+
+# disable evolutions for 4.6+
+evolutions.enabled=false
+
+#default database settings
+db=mysql://platform:platform@localhost/platform?autoReconnect=true
+db.pool.maxSize=30
+db.pool.timeout=15000
+db.pool.maxIdleTimeExcessConnections=3000
+morphia.db.host=127.0.0.1
+morphia.db.port=27017
+morphia.db.name=platform
+morphia.db.username=platform
+morphia.db.password=platform
+morphia.id.type=String
+morphia.driver.connectionsPerHost=10
+morphia.defaultWriteConcern=JOURNAL_SAFE
+
+#smtp settings
+mail.smtp.host=smtp.kaisquare.org
+mail.smtp.port=25
+mail.smtp.from=tester@kaisquare.org
+mail.smtp.fromText=VAaaS
+mail.smtp.user=tester
+mail.smtp.pass=t3st3r!@#
+mail.smtp.channel=clear
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# NOTE: The sections below represent commonly used modes of operation for Platform.
+#       Jobs and Services are enabled by default, unless set to "off" in this file.
+#       Therefore, in the sections below, we only set them to "off" as required, enabled
+#       jobs and service are not written here.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#           NODE: Run Platform on KAI Node
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%node.application.baseUrl=http://localhost
+%node.application.mode=prod
+%node.morphia.db.username=
+%node.morphia.db.password=
+%node.http.port=80
+%node.https.port=443
+%node.jvm.memory=-Xms64M -Xmx2048M
+%node.memcached=disabled
+%node.db.pool.maxIdleTimeExcessConnections=3000
+%node.db.pool.minSize=5
+%node.db.pool.maxSize=15
+
+# Unnecessary jobs
+%node.application.jobs.cloud.independent.delivery.EmailDeliveryJob=off
+%node.application.jobs.cloud.independent.delivery.FTPDeliveryJob=off
+%node.application.jobs.cloud.independent.delivery.MobilePushDeliveryJob=off
+%node.application.jobs.cloud.independent.delivery.SMSDeliveryJob=off
+%node.application.jobs.cloud.independent.reports.SummaryEmailJob=off
+%node.application.jobs.cloud.independent.BroadcastBucketChangesJob=off
+%node.application.jobs.cloud.independent.MonitorOldEventVideoJob=off
+%node.application.jobs.cloud.independent.CloudCommandQueuesJob=off
+%node.application.jobs.cloud.independent.CloudNotificationsJob=off
+%node.application.jobs.cloud.independent.POSFTPImportJob=off
+%node.application.jobs.cloud.independent.CommandCheckJob=off
+%node.application.jobs.cloud.independent.ProcessUploadedVideoJob=off
+%node.application.jobs.cloud.independent.PrecompileNodeInfoJob=off
+%node.application.jobs.cloud.independent.ScheduledCommandJob=off
+
+# Unnecessary services
+
+#smtp settings; invalid settings to prevent node from sending out emails, we don't want that
+%node.mail.smtp.host=localhost
+%node.mail.smtp.port=1111
+%node.mail.smtp.from=no-reply@localhost
+%node.mail.smtp.fromText=VAaaS Node
+%node.mail.smtp.user=demo
+%node.mail.smtp.pass=demo
+%node.mail.smtp.channel=ssl
+
+%node.service.platform.services.CloudSyncService=on
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#           Web: Run Platform as purely a web server.
+#                1. Multiple instances of this type can be run in load balanced fashion.
+#                2. This type of instance also bootstraps with full data migration in
+#                   case of version update, therefore start 1 instance of this type and
+#                   let it finish migration before starting other instances of any type.
+#                3. This type may be packaged into an AMI for use with auto-scaling.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%web.application.baseUrl=http://cloud.server.domain.com
+%web.application.mode=prod
+%web.http.port=80
+%web.jvm.memory=-Xms64M -Xmx2048M
+
+%web.https.port=443
+%web.certificate.key.file=conf/kaisquare.com.key
+%web.certificate.file=conf/kaisquare.com.cert
+
+# Unnecessary jobs
+%web.application.jobs.cloud.independent.delivery.EmailDeliveryJob=off
+%web.application.jobs.cloud.independent.delivery.FTPDeliveryJob=off
+%web.application.jobs.cloud.independent.delivery.MobilePushDeliveryJob=off
+%web.application.jobs.cloud.independent.delivery.SMSDeliveryJob=off
+%web.application.jobs.cloud.independent.reports.SummaryEmailJob=off
+%web.application.jobs.cloud.independent.BroadcastBucketChangesJob=off
+%web.application.jobs.cloud.independent.MonitorOldEventVideoJob=off
+%web.application.jobs.cloud.independent.CloudCommandQueuesJob=off
+%web.application.jobs.cloud.independent.CloudNotificationsJob=off
+%web.application.jobs.cloud.independent.POSFTPImportJob=off
+%web.application.jobs.cloud.independent.CommandCheckJob=off
+%web.application.jobs.cloud.independent.ProcessUploadedVideoJob=off
+%web.application.jobs.cloud.independent.PrecompileNodeInfoJob=off
+%web.application.jobs.cloud.independent.ScheduledCommandJob=off
+%web.application.jobs.DbCleanupJob=off
+%web.application.jobs.EventProcessJob=off
+%web.application.jobs.RefreshDeviceStatusJob=off
+
+# Unnecessary services
+%web.service.platform.services.CommandService=off
+%web.service.platform.services.EventService=off
+%web.service.platform.services.CloudSyncService=off
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#           Service: Run Platform as a Worker Service.
+#                    1. Bootstraps without data migration.
+#                    2. Optimised for running EventService and CommandService.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%svc.application.baseUrl=http://localhost
+%svc.application.mode=prod
+%svc.http.port=80
+%svc.jvm.memory=-Xms64M -Xmx2048M
+
+# Unnecessary jobs
+%svc.application.jobs.DbCleanupJob=off
+%svc.application.jobs.cloud.independent.delivery.EmailDeliveryJob=off
+%svc.application.jobs.cloud.independent.delivery.FTPDeliveryJob=off
+%svc.application.jobs.cloud.independent.delivery.MobilePushDeliveryJob=off
+%svc.application.jobs.cloud.independent.delivery.SMSDeliveryJob=off
+%svc.application.jobs.cloud.independent.reports.SummaryEmailJob=off
+%svc.application.jobs.cloud.independent.BroadcastBucketChangesJob=off
+%svc.application.jobs.cloud.independent.MonitorOldEventVideoJob=off
+%svc.application.jobs.cloud.independent.CloudCommandQueuesJob=off
+%svc.application.jobs.cloud.independent.CloudNotificationsJob=off
+%svc.application.jobs.cloud.independent.POSFTPImportJob=off
+%svc.application.jobs.cloud.independent.CommandCheckJob=off
+%svc.application.jobs.cloud.independent.ProcessUploadedVideoJob=off
+%svc.application.jobs.cloud.independent.PrecompileNodeInfoJob=off
+%svc.application.jobs.cloud.independent.ScheduledCommandJob=off
+%svc.application.jobs.EventProcessJob=off
+%svc.application.jobs.RefreshDeviceStatusJob=off
+
+
+# Unnecessary services
+%svc.service.platform.services.CloudSyncService=off
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#           Cron (Periodic Jobs): Run Platform solely for doing periodic jobs &
+#                                 batch operations.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%cron.application.baseUrl=http://localhost
+%cron.application.mode=prod
+%cron.http.port=80
+%cron.jvm.memory=-Xms64M -Xmx2048M
+
+# Unnecessary services
+%cron.service.platform.services.CommandService=off
+%cron.service.platform.services.EventService=off
+%cron.service.platform.services.CloudSyncService=off
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# All In One (web + cron + svc)
+# A single cloud server deployment, for projects or for CI
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%allinone.application.baseUrl=http://localhost
+%allinone.application.mode=prod
+%allinone.http.port=80
+%allinone.jvm.memory=-Xms64M -Xmx2048M
+
+# Unnecessary services
+%allinone.service.platform.services.CloudSyncService=off

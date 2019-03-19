@@ -1,0 +1,41 @@
+<style>
+
+    .choose_program {
+        padding: 3px;
+    }
+
+    .choose_program .k-button {
+        width: 120px;
+        padding: 10px;
+    }
+
+    .choose_program .separator {
+        display: inline-block;
+        width: 10px;
+    }
+
+</style>
+
+<div class="choose_program">
+    <div class="choices">
+        <a href="javascript:prgChr.set(VcaMgr.Program.KAI_X1);" class="k-button">&{'KAI_X1'}</a>
+        <span class="separator"></span>
+        <a href="javascript:prgChr.set(VcaMgr.Program.KAI_X2);" class="k-button">&{'KAI_X2'}</a>
+    </div>
+</div>
+
+<script>
+
+    var prgChr = {
+        set: function (choice)
+        {
+            VcaConfigWins.programChoice.setChoice(choice);
+            this.close();
+        },
+        close: function ()
+        {
+            $(".choose_program").closest(".k-window-content").data("kendoWindow").close();
+        }
+    };
+
+</script>

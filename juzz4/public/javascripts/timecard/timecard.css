@@ -1,0 +1,138 @@
+.time-card {
+    width: 90%;
+    height: 770px;
+    margin: 20px auto;
+}
+
+.time-card .card_period_selector {
+    height: 22px;
+    margin-right: 30px;
+}
+
+.time-card .card_period_selector ul {
+    float: right;
+}
+
+.time-card .card_period_selector li {
+    background: #595959;
+    list-style-type: none;
+    float: left;
+    margin-left: 3px;
+}
+
+.time-card .card_period_selector li:first-child {
+    border-radius: 4px 0px 0px 4px;
+}
+
+.time-card .card_period_selector li:last-child {
+    border-radius: 0px 4px 4px 0px;
+}
+
+.time-card .card_period_selector input[type=radio] {
+    display: none;
+}
+
+.time-card .card_period_selector li label {
+    display: inline-block;
+    width: 65px;
+    text-align: center;
+    line-height: 22px;
+    vertical-align: middle;
+    color: #c6c6c6;
+}
+
+.time-card .card_period_selector li.selected label {
+    color: #ECAA24;
+    font-weight: 600;
+}
+
+.time-card .card_type_selector {
+    width: 210px;
+    height: 20px;
+    margin: 10px auto 0px auto;
+}
+
+.time-card .card_type_selector input[type=radio] {
+    line-height: 20px;
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.time-card .card_type_selector label {
+    display: inline-block;
+    margin: 0px 10px 0px 0px;
+    line-height: 20px;
+    vertical-align: middle;
+}
+
+.time-card #timeCardBox {
+    width: 920px;
+    height: 705px;
+    margin: 10px auto 0px auto;
+    overflow: auto;
+}
+
+.time-card .detailed-stat-box {
+    display: none;
+    position: absolute;
+    background: #f5f5f5;
+    padding: 5px 10px 5px 8px;
+    opacity: 0.95;
+    text-align: left;
+    border-radius: 3px;
+}
+
+.time-card .detailed-stat-box label {
+    display: inline-block;
+    width: 100px;
+    color: #000;
+    line-height: 18px;
+}
+
+.time-card .theme-sunshine {
+    border: 2px solid #F3AF1B;
+}
+
+.time-card .theme-indigo {
+    border: 2px solid #6079BB;
+}
+
+.time-card .detailed-stat-box .people-in {
+    color: #F3AF1B;
+}
+
+.time-card .detailed-stat-box .conversion-rate {
+    color: #4665AF;
+}
+
+.time-card .detailed-stat-box .receipt {
+    color: #F67214;
+}
+
+.time-card .detailed-stat-box .sales-amount {
+    color: #D75170;
+}
+
+.time-card svg .label_legend {
+    fill: #ffffff;
+}
+
+.time-card svg .column_header {
+    fill: #d9d9d9;
+}
+
+.time-card svg .label_period {
+    fill: #d9d9d9;
+}
+
+.time-card svg .hourly_rect {
+}
+
+.time-card svg .label_cell {
+    font-size: 11px;
+}
+
+.time-card svg .month_year_indicator {
+    fill: #d9d9d9;
+}

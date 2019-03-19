@@ -1,0 +1,156 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/x-kendo-template" id="shellToolbarTmpl">
+    <div style="float: left; margin:5px 0px 5px 5px;">
+    	<label for="bucketList">&{'bucket-name'}</label>
+        <input id="bucketList" style="width:150px" autocomplete="off" />
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="nodeDeviceActionsTmpl">
+
+	<span id="pullbutton#= data.nodeId #">
+	# if (data.pullingStatus.toLowerCase() == "standby" || data.pullingStatus.toLowerCase() == "pulling") { #
+		<a href="javascript:pullLog('#= data.nodeId #');" class="k-button" title="&{'pull-now'}"
+	       style="min-width: 0px; min-height: 0px;">
+	       # if (data.pullingStatus.toLowerCase() == "pulling") { #
+	       	<span><img src="/public/css/common/kendo/moonlight/images/loading.gif" /></span>
+	       # } #
+	        <span>&{'pull-now'}</span>
+	    </a>
+    # } #
+    </span>
+
+    # if (typeof data.filename == "undefined" || data.filename == "") { #
+    # } else { #
+    <a href="javascript:downloadLog('#= data.filename #');" class="k-button" title="&{'download'}"
+       style="min-width: 0px; min-height: 0px;">
+        <span>&{'download'}</span>
+    </a>
+   	# } #
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'node-log-management'}</span>
+</div>
+<div id="shellGrid"></div>
+
+<script type="text/javascript">
+
+    var bucketMap = {};
+    var _interval = null;
+
+    var dsNodes = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+            	var bucket = $("#bucketList").data("kendoComboBox");
+            	if (bucket != null)
+            	{
+	                var bucketId = bucket.value();
+	                if (bucketId != null || bucketId == "")
+	                {
+		                getNodeLogList("", bucketId, function (responseData) {
+		                    if (responseData.result == "ok" && responseData.devices != null) {
+		                        var deviceList = responseData.devices;
+		                        options.success(deviceList);
+		                    }
+		                    else {
+		                        utils.throwServerError(responseData.reason);
+		                        options.success([]);
+		                    }
+		                }, null);
+
+		                if (_interval == null)
+		                {
+			                _interval = window.setInterval(function() { 
+					        	$("#shellGrid").data("kendoGrid").dataSource.read();
+					        }, 10000);
+			            }
+		                return;
+		            }
+		        }
+
+		        if (_interval != null)
+		        	window.clearInterval(_interval);
+		        _interval = null;
+		        options.success([]);
+            }
+        },
+        pageSize: 15
+    });
+
+    function pullLog(nodeId)
+    {
+    	var pullButton = $("#pullbutton" + nodeId);
+    	pullLogFromNode("", nodeId, function(response) {
+    		if (response.result == "ok")
+    			pullButton.html('<span><img src="/public/css/common/kendo/moonlight/images/loading.gif" /></span>');
+    		else
+    			utils.popupAlert(response.reason, null);
+    	});
+    }
+
+    function downloadLog(filename)
+    {
+    	if (filename != "")
+    		downloadNodeLogFile("", filename);
+    	else
+    		utils.popupAlert("&{'no-specific-file-name'}");
+    }
+
+    function initGrid() {
+
+        $("#shellGrid").kendoGrid({
+            dataSource: dsNodes,
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+                refresh: true
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            toolbar: kendo.template($("#shellToolbarTmpl").html()),
+            columns: [
+                { field: "status", title: "&{'status'}", width: "45px",
+                    template: kendo.template($("#deviceStatusTemplate").html())},
+                { field: "name", title: "&{'name'}" },
+                { field: "address", title: "&{'address'}"},
+                { field: "availableLog", title: "&{'available-log'}", width: "100px" },
+                { field: "", title: "&{'actions'}", width: "170px",
+                  template: kendo.template($("#nodeDeviceActionsTmpl").html())
+                }
+            ]
+        }).data("kendoGrid");
+
+        $("#bucketList").kendoComboBox({
+			dataTextField: "name",     //the field name of successResult bukets array
+			dataValueField: "id",
+	        suggest: true,
+	        dataSource: {
+	        	transport: {
+	        		read: function (options){	//options is datasource data which form invoke api callBack recive data
+	        			getBuckets(null, function (successResult){
+	        				if(successResult.result == "ok"){
+	            				options.success(successResult.buckets);            				
+	        				}else{
+	        					options.success([]);
+	        				}
+	        			}, null);
+	        		}
+	        	}
+	        },
+	        change: function (){
+	        	$("#shellGrid").data("kendoGrid").dataSource.read();
+	        }
+		});
+
+    }
+
+    $(function () {
+        initGrid();
+    });
+
+</script>

@@ -1,0 +1,27 @@
+<script type="text/javascript" src="/public/javascripts/pos.js"></script>
+
+<div id="manualTab">
+    <div id=filterOptions class="event_filter_box" style="display: block;">
+        <a id="btnFilter" href="javascript:pos.applyFilter()" class="k-button" style="float:right">
+            <span class="k-icon k-i-search"></span>&nbsp; &{'filter'}
+        </a>
+
+        <div>
+            <label for="labelList" class="event_filter_label">&{'label'}</label>
+            <input id="labelList" style="width:180px" autocomplete="off"/>
+        </div>
+        <div style="margin-top: 15px">
+            <label class="event_filter_label" style="margin:0px"></label>
+            <span class="event_filter_time_range_title">&{'start'} &{'date-time'}</span>
+            <span class="event_filter_time_range_title">&{'end'} &{'date-time'}</span>
+        </div>
+        <div>
+            <label class="event_filter_label">&{'period'}</label>
+            <input id="startDateTime" class="event_filter_datetime" autocomplete="off"
+                   title="&{'msg-choose-startdate'}"/>
+            <input id="endDateTime" class="event_filter_datetime" autocomplete="off" title="&{'msg-choose-startdate'}"/>
+        </div>
+    </div>
+
+    <div id="manualGrid" style="display: none;"></div>
+</div>

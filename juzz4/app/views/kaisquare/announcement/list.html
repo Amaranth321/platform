@@ -1,0 +1,88 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/x-kendo-template" id="toolbarTemplate">
+    <div class="toolbar">
+        <a class="k-button" id="addNewAnnouncement"><span class="k-icon k-i-plus"></span> &{'add-announcement'}</a>
+    </div>
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'announcement-management'}</span>
+</div>
+
+<div id="announcementList" class="k-content" style="margin: 5px 10px 5px 5px">
+    <div id="announcementGrid"></div>
+</div>
+
+<script type="text/javascript">
+    var editAnnouncement = function (e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var contentPage = "/announcement/edit/" + dataItem._id;
+        utils.openPopup("&{'edit-announcement'}", contentPage, null, null, true, onPopupClosed);
+    }
+
+    var deleteAnnouncement = function (e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function (choice) {
+            if (choice) {
+            	removeAnnouncement("", dataItem._id, function (responseData) {
+                    if (responseData.result == "ok") {
+                        utils.slideDownInfo("&{'announcement-deleted'}")
+                    }
+                    $("#announcementGrid").data("kendoGrid").dataSource.read();
+                }, null);
+            }
+        });
+    }
+
+    function onPopupClosed() {
+        $("#announcementGrid").data("kendoGrid").dataSource.read();
+    }
+
+        var grid = $("#announcementGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                    	getAnnouncementList("", function (responseData) {
+                            if (responseData.result == "ok" && responseData.announcements != null) {
+                                options.success(responseData.announcements);
+                            }
+                            else {
+                                utils.throwServerError(responseData.reason);
+                                options.success([]);
+                            }
+                        }, null);
+                    }
+                },
+                pageSize: 15
+            },
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+                refresh: true
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            toolbar: kendo.template($("#toolbarTemplate").html()),
+            columns: [
+                { field: "type", title: "&{'announcement-type'}" },
+                { field: "domain", title: "&{'domain'}" },
+                { field: "description", title: "&{'description'}" },
+                { command: [
+                    { text: "&{'edit'}", click: editAnnouncement },
+                    { text: "&{'delete'}", click: deleteAnnouncement }
+                ], title: "&{'actions'}", width: "160px" }
+            ]
+        }).data("kendoGrid");
+
+        $("#addNewAnnouncement").click(function (e) {
+            var contentPage = "/announcement/add";
+            utils.openPopup("&{'add-announcement'}", contentPage, null, null, true, onPopupClosed);
+        });
+</script>

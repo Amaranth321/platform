@@ -1,0 +1,407 @@
+<style>
+
+    .node_info {
+    }
+
+    .node_info .info {
+        background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        padding: 7px 15px;
+        border: 1px solid #353535;
+        margin-bottom: 7px;
+    }
+
+    .node_info .info label {
+        display: inline-block;
+        line-height: 26px;
+        color: #F6AE40;
+    }
+
+    .node_info .info .net_settings {
+        display: inline-block;
+        width: 30%;
+        vertical-align: top;
+    }
+
+    .node_info .info .net_settings label {
+        width: 110px;
+    }
+
+    .node_info .info .others {
+        display: inline-block;
+        width: 40%;
+        vertical-align: top;
+    }
+
+    .node_info .info .others label {
+        width: 140px;
+    }
+
+    .node_info .info .others .software_status {
+        margin-left: 10px;
+    }
+
+    .node_info .info .others .status_text {
+        display: inline-block;
+    }
+
+    .node_info .info .others .update_btn {
+        margin-left: 5px;
+        vertical-align: top;
+    }
+
+    .node_info .info .license {
+        display: inline-block;
+        width: 30%;
+        vertical-align: top;
+    }
+
+    .node_info .info .license label {
+        width: 170px;
+    }
+
+    .node_info .cameras {
+        width: 1000px;
+    }
+
+</style>
+
+<script type="text/x-kendo-template" id="nodeCameraActionsTmpl">
+    <span class="device_options_wrapper">
+        <a href="javascript:nodeInfo.viewCamera(#= data.nodeCoreDeviceId #)"
+           class="k-button" title="&{'view-snapshot'}" style="min-width: 0px; min-height: 0px;">
+            <span class="snapshot"></span>
+        </a>
+
+        <a href="javascript:nodeInfo.editCamera(#= data.nodePlatformDeviceId #)"
+           class="k-button" title="&{'edit'}" style="min-width: 0px; min-height: 0px;">
+            <span class="edit"></span>
+        </a>
+    </span>
+</script>
+
+<div class="node_info">
+    <div class="info">
+        <div class="net_settings">
+            <div>
+                <label for="timezone">&{'timezone'}</label><span data-bind="text:timezone"></span>
+            </div>
+            <div>
+                <label for="ipAddress">&{'ip'}</label><span data-bind="text:ipAddress"></span>
+            </div>
+            <div>
+                <label for="netmask">&{'netmask'}</label><span data-bind="text:netmask"></span>
+            </div>
+            <div>
+                <label for="gateway">&{'gateway'}</label><span data-bind="text:gateway"></span>
+            </div>
+            <div>
+                <label for="nameServers">&{'name-server'} 1</label><span data-bind="text:nameServer1"></span>
+            </div>
+            <div>
+                <label for="nameServers">&{'name-server'} 2</label><span data-bind="text:nameServer2"></span>
+            </div>
+        </div>
+
+        <div class="others">
+            <div>
+                <label for="timezone">&{'node-version'}</label>
+                <span data-bind="text:nodeVersion"></span>
+                <span class="software_status">
+                    <span class="status_text"></span>
+                    <a href="javascript:nodeInfo.updateSoftware()" class="k-button update_btn"></a>
+                </span>
+            </div>
+            <div>
+                <label>&{'analytics-added'}</label>
+                <span data-bind="text:vcaCount"></span>
+            </div>
+            <div>
+                <label>&{'supported-vcas'}</label>
+                <a href="javascript:VcaMgr.viewVcaPrograms(nodeInfo.platformDeviceId)"
+                   class="k-button">&{'view'}</a><br/>
+            </div>
+            <div>
+                <label>&{'Scheduled-vca-load'}</label>
+                <a href="javascript:nodeInfo.viewVcaLoadChart()"
+                   class="k-button">&{'view'}</a>
+            </div>
+        </div>
+
+        <div class="license">
+            <div>
+                <label>&{'license-status'}</label>
+                <span data-bind="text:licenseStatus"></span>
+            </div>
+            <div>
+                <label>&{'expiry-date'}</label>
+                <span data-bind="text:expiry"></span>
+            </div>
+            <div>
+                <label>&{'cloud-storage-limit'}</label>
+                <span data-bind="text:cloudStorageGb"></span>
+            </div>
+            <div>
+                <label>&{'maximum-concurrent-vca'}</label>
+                <span data-bind="text:maxVcaConcurrency"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cameras">
+        <div class="grid"></div>
+    </div>
+</div>
+
+<script>
+
+    var nodeInfo = {
+        readOnly: JSON.parse("${readonly}"),
+        platformDeviceId: "${platformDeviceId}",
+        dataObj: null,
+        latestVersion: "x.x.x.x",
+        cameraGrid: null
+    };
+
+    nodeInfo.init = function (ready)
+    {
+        nodeInfo.loading(true);
+        getNodeInfoOnCloud(nodeInfo.platformDeviceId, function (responseData)
+        {
+            nodeInfo.loading(false);
+            nodeInfo.dataObj = responseData.info;
+            ready();
+        });
+    };
+
+    nodeInfo.loadInfo = function ()
+    {
+        //network settings
+        var networkSettings = nodeInfo.dataObj.settings.networkSettings;
+        var networkInfo = {
+            timezone: utils.coalesce(function ()
+            {
+                return nodeInfo.dataObj.settings.timezone;
+            }),
+            ipAddress: utils.coalesce(function ()
+            {
+                return networkSettings.ipAddress;
+            }),
+            netmask: utils.coalesce(function ()
+            {
+                return utils.CIDRToNetmask(networkSettings.netmask);
+            }),
+            gateway: utils.coalesce(function ()
+            {
+                return networkSettings.gateway;
+            }),
+            nameServer1: utils.coalesce(function ()
+            {
+                return networkSettings.nameservers[0];
+            }),
+            nameServer2: utils.coalesce(function ()
+            {
+                return networkSettings.nameservers[1];
+            })
+        };
+        kendo.bind($(".node_info .net_settings"), networkInfo);
+
+        //other info
+        var otherInfo = {
+            nodeVersion: nodeInfo.dataObj.version,
+            vcaCount: nodeInfo.dataObj.analytics ? nodeInfo.dataObj.analytics.length : 0,
+            maxCameraCount: nodeInfo.dataObj.maxCameraCount //not implemented
+        };
+
+        var licenseInfo = {
+            maxVcaConcurrency: nodeInfo.dataObj.maxVcaConcurrency,
+            cloudStorageGb: nodeInfo.dataObj.cloudStorageGb + " GB",
+            licenseStatus: localizeResource(nodeInfo.dataObj.licenseStatus),
+            expiry: kendo.toString(new Date(nodeInfo.dataObj.licenseExpiry), "dd/MM/yyyy")
+        };
+
+        kendo.bind($(".node_info .others"), otherInfo);
+        kendo.bind($(".node_info .license"), licenseInfo);
+    };
+
+    nodeInfo.loadUpdateStatus = function ()
+    {
+        var softwareStatus = nodeInfo.dataObj.softwareStatus;
+        var downloadedVersion = nodeInfo.dataObj.downloadedVersion;
+
+        var $statusTxt = $(".software_status .status_text");
+        $statusTxt.text("(" + localizeResource("software-status-" + softwareStatus) + ")");
+        $statusTxt.hide();
+
+        var $updateBtn = $(".software_status .update_btn");
+        $updateBtn.text(utils.isNullOrEmpty(downloadedVersion) ? localizeResource("update") : downloadedVersion);
+        $updateBtn.hide();
+
+        switch (softwareStatus)
+        {
+            case "UPDATE_AVAILABLE":
+                $statusTxt.show();
+                $updateBtn.show();
+                break;
+
+            case "UPDATING":
+                $statusTxt.show();
+                break;
+
+            case "NOT_DOWNLOADED":
+            case "LATEST":
+                //show nothing
+                break;
+        }
+    };
+
+    nodeInfo.loadCameras = function ()
+    {
+        var columnList = [
+            {field: "name", title: localizeResource("name")},
+            {field: "host", title: localizeResource("host"), width: "100px"},
+            {field: "port", title: localizeResource("port"), width: "50px"},
+            {field: "address", title: localizeResource("address")}
+        ];
+
+        if (nodeInfo.dataObj.releaseNumber >= 4.4)
+        {
+            columnList.unshift({
+                field: "status",
+                title: localizeResource("status"),
+                width: "50px",
+                template: kendo.template($("#deviceStatusTemplate").html())
+            });
+        }
+
+        if (nodeInfo.readOnly)
+        {
+            columnList.push({
+                field: "login",
+                title: localizeResource("device-login"),
+                width: "100px"
+            });
+
+            columnList.push({
+                field: "cloudRecordingEnabled",
+                title: localizeResource("cloud-recording"),
+                width: "50px"
+            });
+        }
+        else
+        {
+            columnList.push({
+                field: "name",
+                title: localizeResource("actions"),
+                width: "90px",
+                template: $("#nodeCameraActionsTmpl").html()
+            });
+        }
+
+        nodeInfo.cameraGrid = $(".cameras .grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function (options)
+                    {
+                        getNodeCameraList("", nodeInfo.platformDeviceId, function (responseData)
+                        {
+                            options.success(responseData.cameras);
+                            nodeInfo.centerWin();
+                        });
+                    }
+                },
+                pageSize: 4
+            },
+            pageable: {
+                input: false,
+                numeric: false,
+                pageSizes: false,
+                refresh: true
+            },
+            scrollable: false,
+            columns: columnList
+        }).data("kendoGrid");
+    };
+
+    nodeInfo.editCamera = function (cameraPlatformId)
+    {
+        var contentPage = "/device/editnodedevice?"
+                          + "nodeId=" + nodeInfo.platformDeviceId
+                          + "&nodeCameraId=" + cameraPlatformId;
+
+        utils.openPopup(localizeResource("edit"), contentPage, null, null, true, function ()
+        {
+            nodeInfo.cameraGrid.dataSource.read();
+        });
+    };
+
+    nodeInfo.viewCamera = function (cameraCoreId)
+    {
+        utils.viewSnapshot(nodeInfo.dataObj.cloudCoreDeviceId, cameraCoreId);
+    };
+
+    nodeInfo.updateSoftware = function ()
+    {
+        utils.popupConfirm(
+                localizeResource("confirmation"),
+                localizeResource("msg-confirm-software-update"),
+                function (choice)
+                {
+                    if (!choice)
+                    {
+                        return;
+                    }
+
+                    updateNodeSoftware(nodeInfo.platformDeviceId, function (responseData)
+                    {
+                        if (responseData.result != "ok")
+                        {
+                            utils.throwServerError(responseData);
+                            return
+                        }
+
+                        utils.popupAlert(localizeResource("msg-node-update-requested"));
+
+                        //change status manually
+                        nodeInfo.dataObj.softwareStatus = "UPDATING";
+                        nodeInfo.loadUpdateStatus();
+                    });
+                }
+        );
+    };
+
+    nodeInfo.viewVcaLoadChart = function ()
+    {
+        if (nodeInfo.dataObj.releaseNumber < 4.5)
+        {
+            utils.popupAlert(localizeResource("node-update-required"));
+            return;
+        }
+
+        VcaMgr.viewNodeVcaConcurrency(
+                nodeInfo.platformDeviceId,
+                nodeInfo.dataObj.name,
+                nodeInfo.dataObj.maxVcaConcurrency
+        );
+    };
+
+    nodeInfo.centerWin = function ()
+    {
+        utils.centerKendoWin($(".node_info"));
+    };
+
+    nodeInfo.loading = function (loading)
+    {
+        kendo.ui.progress($(".node_info"), loading);
+    };
+
+    $(function ()
+    {
+        nodeInfo.init(function ()
+        {
+            nodeInfo.loadInfo();
+            nodeInfo.loadUpdateStatus();
+            nodeInfo.loadCameras();
+        });
+    });
+
+</script>

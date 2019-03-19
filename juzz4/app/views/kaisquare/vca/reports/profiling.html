@@ -1,0 +1,100 @@
+<div>
+    <div id="donutChartContainer" class="vca_report_bubble_chart"></div>
+    <div style="clear:both;"></div>
+    <div id="crosssite_report_container">
+        <div id="profilingCrossSiteTabstrip">
+            <ul>
+                <li class="k-state-active">
+                    <div class="tabstrip_title_container">
+                        <img id="imgAge" src="${CdnPath}/common/images/age_color.png" class="tabstrip_title_img">
+
+                        <div name="age" class="tabstrip_title_profiling">&{'age'}</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="tabstrip_title_container">
+                        <img id="imgGender" src="${CdnPath}/common/images/gender.png" class="tabstrip_title_img">
+                        <div name=gender class="tabstrip_title_profiling">&{'gender'}</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="tabstrip_title_container">
+                        <img id="imgEmotion" src="${CdnPath}/common/images/emotion.png" class="tabstrip_title_img">
+
+                        <div name="emotion" class="tabstrip_title_profiling">&{'emotion'}</div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="stack_chart_display_tab">
+                <div id="ageAreaCharts"></div>
+            </div>
+            <div class="stack_chart_display_tab">
+                <div id="genderAreaCharts"></div>
+            </div>
+            <div class="stack_chart_display_tab">
+                <div id="emotionAreaCharts"></div>
+            </div>
+        </div>
+    </div>
+    <div class="report_buttom_wrapper">
+        <div id="top3Happy" class="profile_event_details_container profiling_visits">
+            <div class="plpcount_contain">
+                <div class="profiling_contain_title">
+                    <span>&{'top-happy-store'}</span>
+                </div>
+                <span id="topHappyBox" class="top_least_list"></span>
+            </div>
+        </div>
+        <div id="top3UnHappy" class="profile_event_details_container profiling_visits">
+            <div class="plpcount_contain">
+                <div class="profiling_contain_title">
+                    <span>&{'top-unhappy-store'}</span>
+                </div>
+                <span id="topUnHappyBox" class="top_least_list"></span>
+            </div>
+        </div>
+        
+        
+        
+        <div id="top3HighestMale" class="profile_event_details_container profiling_visits" >
+            <div class="plpcount_contain">
+                <div class="profiling_contain_title">
+                    <span>&{'store-with'}</span>
+                    <span class="profiling_contain_title2">&{'top-male-store'}</span>
+                </div>
+                <span id="topMaleBox" class="top_least_list"></span>
+            </div>
+        </div>
+        <div id="top3HighestFemale" class="profile_event_details_container profiling_visits">
+            <div class="plpcount_contain">
+                <div class="profiling_contain_title">
+                    <span>&{'store-with'}</span>
+                    <span class="profiling_contain_title2">&{'top-female-store'}</span>
+                </div>
+                <span id="topFemaleBox" class="top_least_list"></span>
+            </div>
+        </div>
+        
+        <div id="top3Youngest" class="profile_event_details_container profiling_visits">
+            <div class="plpcount_contain">
+                <div class="profiling_contain_title">
+                    <span>&{'store-with'}</span>
+                    <span class="profiling_contain_title2">&{'top-young-store'}</span>
+                </div>
+                <span id="topYoungBox" class="top_least_list"></span>
+            </div>
+        </div>
+        <div id="top3OldCrowd" class="profile_event_details_container profiling_visits">
+            <div class="plpcount_contain">
+                <div class="profiling_contain_title">
+                    <span>&{'store-with'}</span>
+                    <span class="profiling_contain_title2">&{'top-oldCrowd-store'}</span>
+                </div>
+                <span id="topMatureBox" class="top_least_list"></span>
+            </div>
+        </div>
+        
+    </div>
+    <div style="clear:both;"></div>
+</div>

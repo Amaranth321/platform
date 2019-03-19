@@ -1,0 +1,84 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style>
+    .pos_mgr {
+    }
+
+    .pos_mgr .title_bar {
+        height: 65px;
+        background-color: #212121;
+        padding: 10px 0px 0px 15px;
+    }
+
+    .pos_mgr .title_bar .title {
+        font-size: 18px;
+        color: #bbb;
+    }
+
+    .pos_mgr #tabstrip {
+        background: #333;
+        border: 0px;
+    }
+
+    .pos_mgr #tabstrip ul {
+    }
+
+    .pos_mgr #tabstrip li {
+        width: 120px;
+        text-align: center;
+    }
+
+    .pos_mgr .tab_content {
+        background: #333;
+        border-top: 5px solid #171E28;
+        padding: 0px;
+    }
+</style>
+
+<div class="pos_mgr">
+    <div class="title_bar">
+        <span class="title">&{'pos-settings'}</span>
+    </div>
+
+    <div id="tabstrip">
+        <ul>
+            <li class="k-state-active">
+                <span class="tabstrip_title">&{'automated'}</span>
+            </li>
+            <li>
+                <span class="tabstrip_title">&{'manual'}</span>
+            </li>
+        </ul>
+
+        <div class="tab_content">
+        #{include 'kaisquare/reports/pos_ftp_import.html'/}
+        </div>
+
+        <div class="tab_content">
+        #{include 'kaisquare/reports/pos_manual_import.html'/}
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(function ()
+    {
+        $("#tabstrip").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            },
+            select: function (e)
+            {
+                if ($(e.item).text() == "&{'manual'}" && $("#manualGrid").html() == "")
+                {
+                    pos.initManual();
+                }
+            }
+        });
+    });
+
+</script>

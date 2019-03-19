@@ -1,0 +1,202 @@
+<script src="/public/javascripts/peopleCounting.js"></script>
+
+<div class="popup_wrapper">
+    <div class="top_box">
+        <div class="enable_drawing">
+            <input id="chbEnable" type="checkbox" onclick="enableEditing(this.checked)">
+            <label for="chbEnable">&{'edit-configuration'}</label>
+        </div>
+    </div>
+
+    <div class="vca_content">
+        <div class="left_box">
+            <div class="leaflet_canvas_wrapper">
+                <div class="title">&{'please-draw-polygon-region'}</div>
+                <div class="leaflet_canvas_box">
+                    <div id="leafletRegionCanvas" class="mask_canvas"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right_box">
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'direction'} <span id="directionInfo" class="help_icon"></span>
+                </div>
+
+                <input id="areaList" style="width: 50px" autocomplete="off"/>
+                <img src="${CdnPath}/common/images/right_arrow.png" style="width:21px; height: 14px;">
+                <span id="destArea" style="font-weight: bold; margin-left: 3px">R2</span>
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="param_selection_box config_gmask">
+                <div class="param_title ">
+                &{'configure-gmask'}
+                    <span id="gmaskInfo" class="help_icon"></span>
+                    <a href="javascript:configureGmask()" class="btn_gmask"></a>
+                </div>
+                <div>
+                    <span class="regions">&{'none'}</span>
+                </div>
+            </div>
+
+            <div class="submit_btn_box">
+                <a id="btnRestart" href="javascript:restartVca()" class="k-button">&{'restart'}</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var targetInstance = null;
+    var gmaskRegions = [];
+    var kendoElementList = [];
+
+    function initUiElements()
+    {
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: '&{'additional-params'}',
+            isExpanded: true
+        });
+
+        var areaList = $("#areaList").kendoDropDownList({
+            dataSource: ["R1", "R2"],
+            change: function (e)
+            {
+                var areaName = this.value();
+                if (areaName == "R1")
+                {
+                    $("#destArea").text("R2");
+                }
+                else
+                {
+                    $("#destArea").text("R1");
+                }
+            }
+        }).data("kendoDropDownList");
+
+        kendoElementList.push(areaList);
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("directionInfo", "top", "&{'direction-info-tooltip'}");
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+        utils.createTooltip("gmaskInfo", "bottom", localizeResource('msg-gmask-info'));
+    }
+
+    function applyCurrentSettings()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+
+        //direction
+        if (settings.direction == "r1r2")
+        {
+            $("#areaList").data("kendoDropDownList").value("R1");
+        }
+        else
+        {
+            $("#areaList").data("kendoDropDownList").value("R2");
+            $("#destArea").text("R1");
+        }
+
+        $("#moreParams").val(vca.convertParamsToString(settings["additional-params"]));
+        scheduler.init("scheduleInfo", targetInstance.recurrenceRule);
+        gmaskRegions = settings["gmask-regions"];
+        VcaMgr.updateGmaskStatus(gmaskRegions);
+
+        peopleCounting.initDrawingCanvas("leafletRegionCanvas", false);
+        peopleCounting.addExistingRegions(settings.regions);
+        mapManager.setLiveSnapshotBackground(targetInstance.coreDeviceId, targetInstance.channelId);
+    }
+
+    function enableEditing(canEdit)
+    {
+        vca.enableConfigPage(kendoElementList, canEdit);
+        mapManager.enableDrawingTools(canEdit);
+    }
+
+    function configureGmask()
+    {
+        VcaMgr.openGmaskTool(gmaskRegions, targetInstance.coreDeviceId, targetInstance.channelId,
+                function (saved, regionsDrawn)
+                {
+                    if (saved)
+                    {
+                        gmaskRegions = regionsDrawn;
+                        VcaMgr.updateGmaskStatus(gmaskRegions);
+                    }
+                })
+    }
+
+    function restartVca()
+    {
+        var dropdown = $("#areaList").data("kendoDropDownList");
+        if (peopleCounting.areaCount < 2)
+        {
+            utils.popupAlert("&{'msg-draw-two-regions'}");
+            return;
+        }
+
+        var regions = peopleCounting.getRegionsDrawn();
+        var direction = dropdown.value() == "R1" ? "r1r2" : "r2r1";
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "regions": regions,
+            "direction": direction,
+            "gmask-regions": gmaskRegions,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.updateVca(
+                targetInstance.instanceId,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                vca.onUpdateAnalyticsSuccess
+        );
+    }
+
+    $(function ()
+    {
+        utils.showLoadingOverlay();
+        initUiElements();
+        initTooltips();
+
+        vca.getInstanceById("${instanceId}", function (instance)
+        {
+            targetInstance = instance;
+            applyCurrentSettings();
+            enableEditing(false);
+            utils.hideLoadingOverlay();
+        });
+    });
+
+</script>

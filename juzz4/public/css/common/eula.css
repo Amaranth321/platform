@@ -1,0 +1,170 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 11, 2014, 10:10:00 AM
+    Author     : nischal.regmi
+*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hr, button {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border: 0 none;
+    font-size: 100%;
+    margin: 0;
+    outline: 0 none;
+    padding: 0;
+    vertical-align: baseline;
+}
+h1, h2, h3, h4, h5, h6, li {
+    line-height: 100%;
+}
+#loginlayout {
+    margin: 55px auto;
+    text-align: justify;
+    width: 50%;
+}
+
+#kaifooter {
+    background: none repeat scroll 0 0 #535353;
+    margin-top: 26px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#poweredby {
+    color: #A0A0A0;
+    font-size: 13px;
+    padding: 5px 0 0 55px;
+    float: left;
+}
+
+#footer-message {
+    color: #777777;
+    float: left;
+    font-size: 13px;
+    margin: 2px 0 0 55px;
+    width: 71%;
+}
+
+#terms {
+    float: right;
+    font-size: 13px;
+    margin-right: 55px;
+    margin-top: 5px;
+}
+
+#eula {
+    color: #A0A0A0;
+}
+
+#eula:hover {
+    color: #FFFFFF;
+}
+
+#content_black {
+    position: relative;
+}
+
+p {
+    font-size: 15px;
+}
+
+#foot {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background: none repeat scroll 0 0 #535353;
+}
+h1 {
+    font-size: 40px;
+    margin-bottom: 24px;
+    font-weight: normal;
+}
+
+h2 {
+    font-size: 26px;
+    color: #0da9ee;
+    font-weight: bold;
+    border-bottom: 2px #B66035 solid;
+    padding-bottom: 8px;
+    margin-bottom: 40px;
+}
+
+h3 {
+    font-size: 17px;
+    color: #0c4a94;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+body {
+    background: url("images/maincontent_bg.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    color: #fff;
+    font-family: Muli,sans-serif;
+    font-size: 12px;
+    margin: 0;
+    min-width: 890px;
+    padding: 0;
+}
+@font-face {
+    font-family: Muli;
+    font-style: normal;
+    font-weight: 400;
+    src: url(/public/files/fonts/Muli.ttf);
+}
+
+
+#footer {
+    background: none repeat scroll 0 0 #333;
+    font: 12px Muli,sans-serif;
+    color: #666;
+    width: 100%;
+    height: 61px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+* {
+    box-sizing: border-box;
+}
+.hr {
+    height: 2px;
+    overflow: hidden;
+    background: #000;
+    border-bottom: 1px solid #333;
+}
+#footer .hr {
+    border-color: #4d4d4d;
+}
+#footer .tiles-content {
+    padding: 20px 20px 0;
+}
+#footer .tiles.tal-left {
+    width: 295px;
+}
+#footer .tiles.tal-right {
+    width: 94px;
+}
+#footer a {
+    color: #ccc;
+    text-decoration: none;
+}
+#footer a:hover {
+    text-decoration: underline;
+}
+.tiles-content {
+    display: table;
+}
+.w100 {
+    width: 100%;
+}
+.tiles-content .tiles {
+    display: table-cell;
+}
+.tal-center {
+    text-align: center;
+}
+
+

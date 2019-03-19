@@ -1,0 +1,62 @@
+.noti_setts {
+    width: 480px;
+    margin: 15px;
+    background: #282828 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    border-radius: 4px;
+}
+
+.noti_setts input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.noti_setts .grid .header {
+    font-size: 13px;
+}
+
+.noti_setts .grid .row {
+    line-height: 40px;
+    border-bottom: 1px solid #353535;
+}
+
+.noti_setts .grid .event_type {
+    display: inline-block;
+    width: 200px;
+    margin-left: 15px;
+}
+
+.noti_setts .grid .notification {
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+}
+
+.noti_setts .grid .video {
+    display: inline-block;
+    width: 150px;
+    text-align: center;
+}
+
+.noti_setts .grid .alert_level {
+    display: inline-block;
+    width: 140px;
+    text-align: center;
+}
+
+.noti_setts .btn_group {
+    padding: 10px 15px;
+    border-bottom: 1px solid #353535;
+}
+
+.noti_setts .btn_group .k-button {
+    min-width: 80px;
+}
+
+.noti_setts .btn_group .restore {
+
+}
+
+.noti_setts .btn_group .save {
+    float: right;
+}

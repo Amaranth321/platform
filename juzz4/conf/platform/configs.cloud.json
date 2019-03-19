@@ -1,0 +1,30 @@
+{
+    "misc": {
+        "allow-add-device": false,
+        "vca-event-compile-buffer-seconds": 10,
+        "future-event-allow-minutes": 5,
+        "allow-vca-on-cloud": false
+    },
+    "providers": {
+        "piwik-server-url": "https://webanalyticsssl.kaisquare.com"
+    },
+    "branding": {
+        "m2mva.singtel.com": "promo-singtel.png"
+    },
+    "realtime-feed": {
+        "events": {
+            "event-vca-traffic": false,
+            "event-vca-people-counting": false,
+            "event-vca-passerby": false,
+            "event-vca-crowd": false,
+            "event-vca-audienceprofiling": false,
+            "event-feed-profiling": false,
+            "event-vca-intrusion": false,
+            "event-vca-perimeter": false,
+            "event-vca-loitering": false,
+            "event-vca-object-counting": false,
+            "event-vca-video-blur": false,
+            "event-vca-face": false
+        }
+    }
+}

@@ -1,0 +1,296 @@
+<div class="license_popup_bg">
+    <div class="license_details_wrapper">
+        <div class="license_details_left_box">
+            <label>&{'customer-id'}</label><span data-bind="text:bucketName"></span><br/>
+            <label>&{'license-number'}</label>
+            <span class="unambiguous-font" data-bind="text:formattedLicenseNumber"></span><br/>
+            <label>&{'created-on'}</label><span data-bind="text:created"></span><br/>
+            <label>&{'device-name'}</label><span data-bind="text:deviceName"></span><br/>
+            <label>&{'registration-number'}</label><span data-bind="text:registrationNumber"></span>
+        </div>
+
+        <div class="license_details_right_box">
+            <label>&{'cloud-storage'}</label><span data-bind="text:cloudStorageGb"></span> GB<br/>
+            <label>&{'validity-period'}</label><span data-bind="text:durationMonths"></span><br/>
+            <label>&{'maximum-camera-limit'}</label><span data-bind="text:maxCameraLimit"></span><br/>
+            <label>&{'maximum-concurrent-vca'}</label><span data-bind="text:maxVcaCount"></span><br/>
+            <label>&{'status'}</label><span data-bind="text:status"></span><br/>
+            <label>&{'activated-on'}</label><span data-bind="text:activated"></span><br/>
+            <label>&{'expires-on'}</label><span data-bind="text:expiryDate"></span>
+        </div>
+    </div>
+
+    <div class="license_feature_wrapper">
+        <div class="left_pane">
+            <label for="featureTree">&{'features-currently-enabled'}</label>
+
+            <div id="featureTree" class="tree_box"></div>
+        </div>
+        <div class="right_pane">
+            <label for="logTree">&{'transaction-log'}</label>
+
+            <div id="logTree" class="tree_box"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a id="btnEdit" href="javascript:targetLicense.edit()" class="k-button"
+           style="width: 80px; margin-right: 10px; display: none">&{'edit'}</a>
+        <a id="btnClose" href="javascript:targetLicense.close()" class="k-button"
+           style="width: 80px; margin-right: 10px">&{'close'}</a>
+        <a id="btnSuspend" href="javascript:targetLicense.suspend()" class="k-button"
+           style="width: 80px; margin-right: 10px; display: none">&{'suspend'}</a>
+        <a id="btnUnsuspend" href="javascript:targetLicense.unsuspend()" class="k-button"
+           style="width: 80px; margin-right: 10px; display: none">&{'unsuspend'}</a>
+        <a id="btnDelete" href="javascript:targetLicense.delete()" class="k-button"
+           style="width: 80px; display: none">&{'delete'}</a>
+    </div>
+</div>
+
+<script>
+
+var treeItems = [];
+
+var targetLicense = kendo.observable({
+    bucketId: "",
+    bucketName: "",
+    licenseNumber: "",
+    formattedLicenseNumber: "",
+    registrationNumber: "",
+    deviceName: "",
+    cloudStorageGb: 0,
+    durationMonths: null,
+    maxVcaCount: 0,
+    status: "",
+    created: 0,
+    activated: null,
+    expiryDate: null,
+    featureNameList: [],
+
+    init: function (licenseDetails) {
+        this.set("bucketId", licenseDetails.cloudBucketId);
+        this.set("bucketName", licenseDetails.bucketName);
+        this.set("licenseNumber", licenseDetails.licenseNumber);
+        this.set("formattedLicenseNumber", utils.formatSerialNumber(licenseDetails.licenseNumber));
+        this.set("registrationNumber", licenseDetails.registrationNumber);
+        this.set("deviceName", licenseDetails.deviceName);
+        this.set("cloudStorageGb", licenseDetails.cloudStorageGb);
+        this.set("maxCameraLimit", licenseDetails.maxCameraLimit);
+        this.set("durationMonths", licenseDetails.durationMonths == -1 ?
+                localizeResource("perpetual") : (licenseDetails.durationMonths + " " + localizeResource("months")));
+        this.set("maxVcaCount", licenseDetails.maxVcaCount);
+        this.set("status", localizeResource(licenseDetails.status));
+        this.set("created", getTimeString(licenseDetails.created));
+        this.set("activated", licenseDetails.activated == 0 ? "N/A" : getTimeString(licenseDetails.activated));
+        this.set("expiryDate", (licenseDetails.expiryDate == 0 || licenseDetails.durationMonths == -1) ? "N/A" :
+                getTimeString(licenseDetails.expiryDate));
+        this.set("featureNameList", licenseDetails.featureNameList);
+
+        setButtonVisibilities(licenseDetails.status);
+    },
+    edit: function () {
+        this.close();
+        var contentPage = "/license/editlicense/" + targetLicense.licenseNumber;
+        utils.openPopup(localizeResource("edit-license"), contentPage, null, null, true, function () {
+
+        });
+    },
+    suspend: function () {
+        utils.popupConfirm(
+                localizeResource("confirmation"),
+                localizeResource("msg-confirm-license-suspend"),
+                function (choice) {
+                    if (choice) {
+                        utils.showLoadingOverlay();
+                        suspendNodeLicense("", targetLicense.get("licenseNumber"), function (responseData) {
+                            utils.hideLoadingOverlay();
+
+                            if (responseData == null || responseData.result != "ok") {
+                                utils.throwServerError(responseData);
+                                return;
+                            }
+
+                            utils.slideDownInfo(localizeResource("action-successful"));
+                            targetLicense.close();
+                        }, null);
+                    }
+                });
+    },
+    unsuspend: function () {
+        utils.popupConfirm(
+                localizeResource("confirmation"),
+                localizeResource("msg-confirm-license-unsuspend"),
+                function (choice) {
+                    if (choice) {
+                        utils.showLoadingOverlay();
+                        unsuspendNodeLicense("", targetLicense.get("licenseNumber"), function (responseData) {
+                            utils.hideLoadingOverlay();
+
+                            if (responseData == null || responseData.result != "ok") {
+                                utils.throwServerError(responseData);
+                                return;
+                            }
+
+                            utils.slideDownInfo(localizeResource("action-successful"));
+                            targetLicense.close();
+                        }, null);
+                    }
+                });
+    },
+    delete: function () {
+        utils.popupConfirm(
+                localizeResource("confirmation"),
+                localizeResource("msg-license-delete-confirmation"),
+                function (choice) {
+                    if (choice) {
+                        utils.showLoadingOverlay();
+                        deleteNodeLicense("", targetLicense.licenseNumber, function (responseData) {
+                            utils.hideLoadingOverlay();
+
+                            if (responseData == null || responseData.result != "ok") {
+                                utils.throwServerError(responseData);
+                                return;
+                            }
+
+                            utils.slideDownInfo(localizeResource("delete-successful"));
+                            targetLicense.close();
+                        }, null);
+                    }
+                });
+    },
+    close: function () {
+        $("#btnClose").closest(".k-window-content").data("kendoWindow").close();
+    }
+});
+
+function setButtonVisibilities(licenseStatus) {
+    var readonly = (location.href.indexOf("localnodelicenses") != -1);
+    if (!readonly) {
+        $("#btnDelete").show();
+
+        switch (licenseStatus) {
+            case "ACTIVE":
+                $("#btnEdit").show();
+                $("#btnSuspend").show();
+                break;
+
+            case "UNUSED":
+                $("#btnEdit").show();
+                break;
+
+            case "SUSPENDED":
+                $("#btnUnsuspend").show();
+                break;
+
+            case "EXPIRED":
+                $("#btnEdit").show();
+                break;
+
+            default :
+                break;
+        }
+    }
+}
+
+function generateTreeItems(callback) {
+    treeItems = [];
+
+    getAssignableNodeFeatures(targetLicense.bucketId, function (responseData) {
+        if (responseData.result == "ok" && responseData.features != null) {
+            var featureGroups = {};
+
+            $.each(targetLicense.get("featureNameList"), function (idx, fName) {
+                $.each(responseData.features, function (idx2, fItem) {
+                    if (fItem.name != fName) {
+                        return true;
+                    }
+
+                    if (featureGroups[fItem.type] == null) {
+                        featureGroups[fItem.type] = [];
+                    }
+
+                    featureGroups[fItem.type].push({
+                        id: fItem.name,
+                        text: localizeResource(fItem.name),
+                        services: fItem.services,
+                        imageUrl: "${CdnPath}/common/images/arr_right_blue.png"
+                    });
+                });
+            });
+
+            $.each(featureGroups, function (index, fgroup) {
+                treeItems.push({
+                    id: index,
+                    text: localizeResource(index),
+                    imageUrl: "${CdnPath}/common/images/featuregroup.png",
+                    items: fgroup
+                });
+            });
+
+            callback();
+        }
+        else {
+            callback();
+            utils.throwServerError(responseData.reason);
+        }
+    }, null);
+}
+
+function getTransactionLogs() {
+    getNodeLicenseLogs("", targetLicense.get("licenseNumber"), function (responseData) {
+        if (responseData == null || responseData.result != "ok" || responseData.logs == null) {
+            utils.throwServerError(responseData);
+            return;
+        }
+
+        var logTreeView = [];
+        $.each(responseData.logs, function (idx, log) {
+
+            var changeList = []
+            $.each(log.changes, function (idx2, changeLine) {
+                changeList.push({
+                    id: log._id + idx2,
+                    text: "- " + changeLine
+                });
+            });
+
+            logTreeView.push({
+                id: log._id,
+                text: getTimeString(log.time) + " -- " + log.username + " [" + log.remoteIp + "]",
+                items: changeList
+            });
+        });
+
+        $("#logTree").kendoTreeView({
+            dataSource: logTreeView,
+            select: function (e) {
+                e.preventDefault();
+            }
+        });
+    }, null);
+}
+
+function getTimeString(millis) {
+    var localTime = new Date(millis);
+    return kendo.toString(localTime, kupapi.TIME_FORMAT);
+}
+
+$(function () {
+
+    var licenseDetails = utils.getJSonObject("${jsonLicenseDetails}");
+    targetLicense.init(licenseDetails);
+    kendo.bind($(".license_details_wrapper"), targetLicense);
+
+    generateTreeItems(function () {
+        $("#featureTree").kendoTreeView({
+            dataSource: treeItems,
+            select: function (e) {
+                e.preventDefault();
+            }
+        });
+    })
+
+    getTransactionLogs();
+});
+
+</script>

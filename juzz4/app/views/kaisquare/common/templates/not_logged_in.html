@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--[if lte IE 8]> <html class="oldie" lang="en"> <![endif]-->
+<!--[if IE 9]> <html class="ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>&{'company-product-title'}</title>
+    <meta name="description" content="&{'company-product-title'}"/>
+    <meta name="keywords" content="KAI square,KUP,Platform"/>
+    <link rel="icon" type="image/png" href="/favicon.ico">
+
+#{include HtmlPath + '/common/partial/kup_headers.html'/}
+
+    <!--reset_pass_with_key.html page need kendo observable-->
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/kendo.all.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/kendo/kendo.common.min.css"/>
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/kendo/moonlight/kendo.ml.custom.css"/>
+
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/default/theme_diff.css"/>
+    <link rel="stylesheet" href="${CdnPath}/common/login/uniform.css"/>
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/login/new_login_style.css"/>
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--     http link here is required for kendo. Reason unknown -->
+    <!--     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script> -->
+
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/bjqs-1.3.js"></script>
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/login/jquery.bxslider.min.js"></script>
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/login/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/login/jquery.uniform.min.js"></script>
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/login/main.js"></script>
+
+    <script type="text/javascript">
+        var companyId = "";
+
+        $(function () {
+            kupInit('${bucket}', utils.throwServerError);
+        })
+    </script>
+</head>
+
+<body>
+
+<style type="text/css">
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    .no_js_msg {
+        width: 600px;
+        line-height: 60px;
+        background: #333;
+        color: #eaac20;
+        text-align: center;
+        font-size: 18px;
+        margin: 10px auto;
+    }
+
+</style>
+
+<div class="slider">
+    <ul class="slides">
+        <li style="background: url('${CdnPath}/common/login/images/promo-01.jpg') no-repeat 50% 50%;"></li>
+        <li style="background: url('${CdnPath}/common/login/images/promo-02.png') no-repeat 50% 50%;"></li>
+        <li style="background: url('${CdnPath}/common/login/images/promo-03.png') no-repeat 50% 50%;"></li>
+        <li style="background: url('${CdnPath}/common/login/images/${promoPic}') no-repeat 50% 50%;"></li>
+    </ul>
+</div>
+
+<div id="wrapper">
+
+    <noscript>
+        <div class="no_js_msg">&{'msg-enable-javascript'}</div>
+    </noscript>
+
+#{doLayout /}
+</div>
+<!-- / wrapper -->
+
+#{include HtmlPath + '/common/partial/piwik_tracker.html'/}
+
+</body>
+</html>

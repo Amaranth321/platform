@@ -1,0 +1,177 @@
+<style>
+
+    .rqt_bwr {
+        margin: -5px;
+    }
+
+    .rqt_bwr .calendar {
+        display: inline-block;
+        width: 250px;
+        vertical-align: top;
+        margin: 0px 1px;
+    }
+
+    .rqt_bwr .calendar .with_requests {
+        border-bottom: 2px solid #428bca;
+    }
+
+    .rqt_bwr .grid {
+        display: inline-block;
+        width: 600px;
+    }
+
+</style>
+
+
+<script type="text/x-kendo-template" id="pickerMonthEntryTmpl">
+    # var requests = rqtVwr.findRequests(data.date); #
+
+    # if(requests.length > 0) { #
+    <div class="with_requests" title="#= requests.length # request(s)">
+        #= data.value #
+    </div>
+    # } else { #
+    <div>#= data.value #</div>
+    # } #
+</script>
+
+<div class="rqt_bwr">
+    <div class="calendar"></div>
+    <div class="grid"></div>
+</div>
+
+<script>
+
+    function RqtVwr(deviceId, channelId)
+    {
+        var specifierFormat = "DD-MM-YYYY";
+        var requestHistoryMap = {};
+        var $pageMain = $(".rqt_bwr");
+
+        var generate = function ()
+        {
+            loadData(function ()
+            {
+                initCalendar();
+                utils.centerKendoWin($pageMain);
+            });
+        };
+
+        var loadData = function (onDone)
+        {
+            loading(true);
+            getRecordingUploadRequests(deviceId, channelId,
+                    function (responseData)
+                    {
+                        loading(false);
+                        var historyMap = {};
+                        $.each(responseData.requests, function (i, request)
+                        {
+                            var fromTime = moment(request.period.from);
+                            var daySpecifier = fromTime.format(specifierFormat);
+
+                            var requestsOfDay = historyMap[daySpecifier];
+                            if (requestsOfDay == null)
+                            {
+                                requestsOfDay = [];
+                            }
+                            requestsOfDay.push(request);
+                            historyMap[daySpecifier] = requestsOfDay;
+                        });
+
+                        requestHistoryMap = historyMap;
+                        onDone();
+                    });
+        };
+
+        var initCalendar = function ()
+        {
+            var now = moment();
+            $pageMain.find(".calendar").kendoCalendar({
+                max: now.toDate(),
+                value: now.toDate(),
+                footer: false,
+                month: {
+                    content: $("#pickerMonthEntryTmpl").html()
+                },
+                change: function ()
+                {
+                    dateSelected(moment(this.value()));
+                }
+            });
+
+            dateSelected(now);
+        };
+
+        var dateSelected = function (date)
+        {
+            var dateSpecifier = date.format(specifierFormat);
+            var requests = requestHistoryMap[dateSpecifier];
+            initGrid(requests);
+        };
+
+        var initGrid = function (requests)
+        {
+            $pageMain.find(".grid").kendoGrid({
+                dataSource: requests ? requests : [],
+                pageable: false,
+                sortable: false,
+                selectable: true,
+                resizable: false,
+                height: "420px",
+                columns: [
+                    {
+                        field: "period.from",
+                        title: localizeResource("from"),
+                        width: "100px",
+                        template: "#= moment(period.from).format('h:mm:ss a') #"
+                    },
+                    {
+                        field: "period.to",
+                        title: localizeResource("to"),
+                        width: "100px",
+                        template: "#= moment(period.to).format('h:mm:ss a') #"
+                    },
+                    {
+                        field: "requesterName",
+                        title: localizeResource("requester")
+                    }
+//                {
+//                    field: "requesterName",
+//                    title: localizeResource("actions"),
+//                    width: "120px",
+//                    template: ""
+//                }
+                ]
+            }).data("kendoGrid");
+        };
+
+        var findRequests = function (date)
+        {
+            var daySpecifier = moment(date).format(specifierFormat);
+            var requests = requestHistoryMap[daySpecifier];
+            return requests ? requests : [];
+        };
+
+        var loading = function (loading)
+        {
+            kendo.ui.progress($pageMain, loading);
+        };
+
+        return {
+            generate: generate,
+            findRequests: findRequests
+        }
+    }
+
+</script>
+
+<script>
+
+    var rqtVwr = new RqtVwr("${deviceId}", "${channelId}");
+    $(function ()
+    {
+        rqtVwr.generate();
+    });
+
+</script>

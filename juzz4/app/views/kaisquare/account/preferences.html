@@ -1,0 +1,29 @@
+<link rel="stylesheet" type="text/css" href="/public/javascripts/user/user_noti_settings.css"/>
+<script type="text/javascript" src="/public/javascripts/user/userNotiSettings.js"></script>
+
+<script type="text/x-kendo-template" id="notiSettingsRowTmpl">
+    <div class="row">
+        <label class="event_type">#= localizeResource(eventType) #</label>
+
+        <span name="#= eventType #" class="check_list">
+            <label name="ON_SCREEN"><input type="checkbox" name="ON_SCREEN">&{'on-screen'}</label>
+            <label name="EMAIL"><input type="checkbox" name="EMAIL">&{'email'}</label>
+            <label name="SMS"><input type="checkbox" name="SMS">&{'sms'}</label>
+            <label name="MOBILE_PUSH"><input type="checkbox" name="MOBILE_PUSH">&{'mobile-app'}</label>
+        </span>
+    </div>
+</script>
+
+<div class="noti-setts">
+    <div class="body"></div>
+    <div class="btn_group">
+        <a href="javascript:UserNotiSetts.saveChanges()" class="k-button">&{'save'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function ()
+    {
+        UserNotiSetts.generate();
+    });
+</script>

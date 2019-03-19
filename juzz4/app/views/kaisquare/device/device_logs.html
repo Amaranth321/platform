@@ -1,0 +1,90 @@
+<style>
+    .log_win {
+        width: 650px;
+    }
+
+    #logGrid {
+        overflow: hidden;
+        margin: -7px;
+    }
+
+</style>
+
+<div class="log_win">
+    <div id="logGrid"></div>
+</div>
+
+<script type="text/javascript">
+
+    var dvcLogs = {
+        platformDeviceId: "${platformDeviceId}",
+        totalCount: 0
+    };
+
+    dvcLogs.initUI = function () {
+
+        $("#logGrid").kendoGrid({
+            dataSource: {
+                pageSize: 25,
+                serverPaging: true,
+                serverSorting: false,
+                transport: {
+                    read: function (options) {
+                        getDeviceLogs(
+                                dvcLogs.platformDeviceId,
+                                options.data.skip,
+                                options.data.take,
+                                function (responseData) {
+                                    if (responseData.result != "ok") {
+                                        options.success([]);
+                                        utils.throwServerError(responseData);
+                                        return;
+                                    }
+
+                                    dvcLogs.totalCount = responseData["total-count"];
+                                    options.success(dvcLogs.processLogs(responseData.logs));
+                                }, null);
+                    }
+                },
+                schema: {
+                    total: function () {
+                        return dvcLogs.totalCount;
+                    }
+                }
+            },
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: false,
+                refresh: true
+            },
+            sortable: false,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            height: 640,
+            columns: [
+                {field: "time", title: localizeResource('time'), width: "160px"},
+                {field: "status", title: localizeResource('status')}
+            ]
+        });
+
+    }
+
+    dvcLogs.processLogs = function (logList) {
+        var results = [];
+        $.each(logList, function (idx, log) {
+            results.push({
+                time: kendo.toString(new Date(log.time), kupapi.TIME_FORMAT),
+                status: log.message
+            });
+        });
+
+        return results;
+    }
+
+    $(function () {
+        dvcLogs.initUI();
+    });
+
+</script>

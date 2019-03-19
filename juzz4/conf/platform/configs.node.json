@@ -1,0 +1,35 @@
+{
+    "misc": {
+        "offline-duration-allowed": 14,
+        "incorrect-login-lock-mins": 15,
+        "default-session-timeout-mins": 1440
+    },
+    "realtime-feed": {
+        "events": {
+            "event-vca-traffic": true,
+            "event-vca-people-counting": true,
+            "event-vca-passerby": true,
+            "event-vca-crowd": true,
+            "event-vca-audienceprofiling": true,
+            "event-feed-profiling": true,
+            "event-vca-intrusion": true,
+            "event-vca-perimeter": true,
+            "event-vca-loitering": true,
+            "event-vca-object-counting": true,
+            "event-vca-video-blur": true,
+            "event-vca-face": true
+        }
+    },
+    "recording-retention-days": {
+        "default": 30,
+        "models": {
+            "100": 7
+        }
+    },
+    "debugging": {
+        "mock-hourly-vca-data": false
+    },
+    "system": {
+        "network-interface": "eth0"
+    }
+}

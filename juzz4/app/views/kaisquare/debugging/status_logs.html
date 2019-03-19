@@ -1,0 +1,496 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style>
+    .sys {
+    }
+
+    .sys input[type=checkbox] {
+        margin: 0px 2px 0px 0px;
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
+
+    .sys .toolbar {
+        padding: 10px;
+        border-bottom: 2px solid #222;
+    }
+
+    .sys .toolbar label {
+        line-height: 25px;
+        display: inline-block;
+        margin-right: 30px;
+    }
+
+    .sys .status_wrapper {
+        display: none;
+        float: left;
+        margin: 20px 0px 10px 10px;
+    }
+
+    .sys .status_wrapper .log_box {
+        margin-top: 5px;
+    }
+
+    .sys .status_wrapper pre {
+        margin: 0px;
+        padding: 5px 10px;
+        border: 1px solid #565656;
+        min-height: 30px;
+        line-height: 17px;
+    }
+
+    .sys .status_wrapper .btn_group {
+        float: right;
+        display: inline;
+    }
+
+    .sys .status_wrapper .btn_group .k-button {
+        min-width: 50px;
+        margin-left: 5px;
+        line-height: 14px;
+    }
+
+    .sys .play_status .log_box {
+        width: 800px;
+    }
+
+    .sys .server_status .log_box {
+    }
+
+    .sys .cmd_logs .log_box {
+        width: 100%;
+    }
+
+    .sys .cmd_queues .log_box {
+        width: 800px;
+    }
+
+    .sys .sync_tasks .log_box {
+        width: 680px;
+    }
+
+    .sys .delivery .log_box {
+        width: 500px;
+    }
+
+</style>
+
+<div class="sys">
+
+    <div class="toolbar">
+
+        <label>
+            <input type="checkbox" class="server_status"
+                   onclick="javascript:sysStatus.setVisibility(sysStatus.Type.SERVER_STATUS, this.checked)">
+            Server Status
+        </label>
+
+        <label>
+            <input type="checkbox" class="play_status"
+                   onclick="javascript:sysStatus.setVisibility(sysStatus.Type.PLAY_STATUS, this.checked)">
+            Play! Status
+        </label>
+
+        <label>
+            <input type="checkbox" class="cmd_queues"
+                   onclick="javascript:sysStatus.setVisibility(sysStatus.Type.CMD_QUEUES, this.checked)">
+            Command Queues
+        </label>
+
+        <label>
+            <input type="checkbox" class="cmd_logs"
+                   onclick="javascript:sysStatus.setVisibility(sysStatus.Type.CMD_LOGS, this.checked)">
+            Command Logs
+        </label>
+
+        <label>
+            <input type="checkbox" class="sync_tasks"
+                   onclick="javascript:sysStatus.setVisibility(sysStatus.Type.SYNC_TASKS,this.checked)">
+            Stats
+        </label>
+
+        <label>
+            <input type="checkbox" class="delivery"
+                   onclick="javascript:sysStatus.setVisibility(sysStatus.Type.DELIVERY,this.checked)">
+            Delivery Jobs
+        </label>
+
+
+        <a href="javascript:sysStatus.openPagedTables()" class="k-button" style="float: right">Paged Tables</a>
+    </div>
+
+    <div class="regions">
+
+        <div class="status_wrapper server_status">
+            <div>
+                <label>Server Status</label>
+
+                <div class="btn_group">
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.SERVER_STATUS, true)"
+                       class="k-button">Start</a>
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.SERVER_STATUS, false)"
+                       class="k-button">Stop</a>
+                    <a href="javascript:sysStatus.clearLogs(sysStatus.Type.SERVER_STATUS)"
+                       class="k-button">Clear</a>
+                </div>
+            </div>
+            <pre class="log_box"></pre>
+        </div>
+
+        <div class="status_wrapper play_status">
+            <div>
+                <label>Play! Status</label>
+
+                <div class="btn_group">
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.PLAY_STATUS, true)"
+                       class="k-button">Start</a>
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.PLAY_STATUS, false)"
+                       class="k-button">Stop</a>
+                    <a href="javascript:sysStatus.clearLogs(sysStatus.Type.PLAY_STATUS)"
+                       class="k-button">Clear</a>
+                </div>
+            </div>
+            <pre class="log_box"></pre>
+        </div>
+
+        <div class="status_wrapper cmd_queues">
+            <div>
+                <label>Commands Queues</label>
+
+                <div class="btn_group">
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.CMD_QUEUES, true)"
+                       class="k-button">Start</a>
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.CMD_QUEUES, false)"
+                       class="k-button">Stop</a>
+                    <a href="javascript:sysStatus.clearLogs(sysStatus.Type.CMD_QUEUES)"
+                       class="k-button">Clear</a>
+                </div>
+            </div>
+            <pre class="log_box"></pre>
+        </div>
+
+        <div class="status_wrapper cmd_logs">
+            <div>
+                <label>Command Logs</label>
+
+                <div class="btn_group">
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.CMD_LOGS, true)"
+                       class="k-button">Start</a>
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.CMD_LOGS, false)"
+                       class="k-button">Stop</a>
+                    <a href="javascript:sysStatus.clearLogs(sysStatus.Type.CMD_LOGS)"
+                       class="k-button">Clear</a>
+                </div>
+            </div>
+            <pre class="log_box"></pre>
+        </div>
+
+        <div class="status_wrapper sync_tasks">
+            <div>
+                <label>Stats</label>
+
+                <div class="btn_group">
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.SYNC_TASKS, true)"
+                       class="k-button">Start</a>
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.SYNC_TASKS, false)"
+                       class="k-button">Stop</a>
+                    <a href="javascript:sysStatus.clearLogs(sysStatus.Type.SYNC_TASKS)"
+                       class="k-button">Clear</a>
+                </div>
+            </div>
+            <pre class="log_box"></pre>
+        </div>
+
+        <div class="status_wrapper delivery">
+            <div>
+                <label>Delivery Jobs</label>
+
+                <div class="btn_group">
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.DELIVERY, true)"
+                       class="k-button">Start</a>
+                    <a href="javascript:sysStatus.setAutoRefresh(sysStatus.Type.DELIVERY, false)"
+                       class="k-button">Stop</a>
+                    <a href="javascript:sysStatus.clearLogs(sysStatus.Type.DELIVERY)"
+                       class="k-button">Clear</a>
+                </div>
+            </div>
+            <pre class="log_box"></pre>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+var sysStatus = {
+    deviceNameMap: {},
+    channelNameMap: {},
+    userNameMap: {},
+
+    "cmd_queues": {
+        api: "getcommandqueues",
+        timer: null,
+        refreshFreq: 2000
+    },
+    "cmd_logs": {
+        api: "getcommandlogs",
+        timer: null,
+        refreshFreq: 2000
+    },
+    "play_status": {
+        api: "getplaystatus",
+        timer: null,
+        refreshFreq: 2000
+    },
+    "server_status": {
+        api: "getserverstatus",
+        timer: null,
+        refreshFreq: 2000
+    },
+    "sync_tasks": {
+        api: "getsynctasksstatus",
+        timer: null,
+        refreshFreq: 5000
+    },
+    "delivery": {
+        api: "getdeliveryjobsstatus",
+        timer: null,
+        refreshFreq: 5000
+    }
+};
+
+sysStatus.Type = Object.freeze({
+    PLAY_STATUS: "play_status",
+    SERVER_STATUS: "server_status",
+    CMD_QUEUES: "cmd_queues",
+    CMD_LOGS: "cmd_logs",
+    SYNC_TASKS: "sync_tasks",
+    DELIVERY: "delivery"
+});
+
+sysStatus.init = function ()
+{
+    $("#footer").hide();
+    sysStatus.initNameMaps();
+
+    //resume previous selections
+    $.each(Object.keys(sysStatus.Type), function (idx, type)
+    {
+        var typeVal = sysStatus.Type[type];
+        var $checkbox = sysStatus.getCheckbox(typeVal);
+        var checked = $checkbox.prop('checked');
+
+        sysStatus.setVisibility(typeVal, checked);
+    });
+};
+
+sysStatus.setVisibility = function (type, visible)
+{
+    var $region = sysStatus.getRegion(type);
+    var $checkbox = sysStatus.getCheckbox(type);
+
+    if (visible)
+    {
+        $region.show();
+        $checkbox.prop('checked', true);
+
+    }
+    else
+    {
+        $region.hide();
+        $checkbox.prop('checked', false);
+    }
+
+    sysStatus.setAutoRefresh(type, visible);
+}
+
+sysStatus.getRegion = function (type)
+{
+    return $(".sys .regions ." + type);
+};
+
+sysStatus.getLoggerBox = function (type)
+{
+    return sysStatus.getRegion(type).find(".log_box");
+}
+
+sysStatus.getCheckbox = function (type)
+{
+    return $(".sys .toolbar ." + type);
+}
+
+sysStatus.getAPI = function (type)
+{
+    return "/api/" + kupBucket + "/" + sysStatus[type].api;
+}
+
+sysStatus.getRefreshFreq = function (type)
+{
+    return sysStatus[type].refreshFreq;
+}
+
+sysStatus.setAutoRefresh = function (type, autoRefresh)
+{
+    var timer = sysStatus[type].timer;
+    if (autoRefresh)
+    {
+        if (timer == null)
+        {
+            timer = setInterval(function ()
+            {
+                sysStatus.retrieveLog(type);
+            }, sysStatus.getRefreshFreq(type));
+        }
+    }
+    else
+    {
+        if (timer != null)
+        {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    sysStatus[type].timer = timer;
+}
+
+sysStatus.retrieveLog = function (type)
+{
+    var api = sysStatus.getAPI(type);
+    var $logBox = sysStatus.getLoggerBox(type);
+
+    $.ajax({
+        type: "POST",
+        url: api,
+        data: {},
+        cache: false,
+        success: function (responseData)
+        {
+            if (responseData.result != "ok")
+            {
+                console.log(responseData);
+                sysStatus.setAutoRefresh(type, false);
+                return;
+            }
+
+            $logBox.html(responseData["status"]);
+        },
+        error: function (jqXHR, status)
+        {
+            console.error(api + " call failed: " + status);
+            sysStatus.setAutoRefresh(type, false);
+        }
+    });
+}
+
+sysStatus.clearLogs = function (type)
+{
+    var $logBox = sysStatus.getLoggerBox(type);
+    $logBox.empty();
+}
+
+sysStatus.openPagedTables = function ()
+{
+    var contentPage = "/debugging/pagedtables";
+    utils.openPopup("Paged tables", contentPage, window.innerWidth - 20, window.innerHeight - 80, true,
+            function ()
+            {
+            });
+}
+
+sysStatus.initNameMaps = function ()
+{
+    if (kupapi.applicationType == "node")
+    {
+        getUserDevices("", function (responseData)
+        {
+            if (responseData.result == "ok" && responseData.devices != null)
+            {
+                $.each(responseData.devices, function (i, dvc)
+                {
+                    sysStatus.deviceNameMap[dvc.deviceId] = dvc.name;
+                });
+            }
+        }, null);
+    }
+    else
+    {
+        //on cloud, info must be collected from all buckets
+        //if you are thinking about copy-pasting this code, DON'T
+        getBuckets("", function (res1)
+        {
+            if (res1.result != "ok" || res1.buckets == null)
+            {
+                utils.throwServerError(res1);
+                return;
+            }
+
+            $.each(res1.buckets, function (i, bkt)
+            {
+                //compile devices
+                getBucketDevicesByBucketId(bkt.id, function (res2)
+                {
+                    if (res2.result != "ok" || res2.devices == null)
+                    {
+                        return;
+                    }
+                    $.each(res2.devices, function (i, dvc)
+                    {
+                        sysStatus.deviceNameMap[dvc.deviceId] = dvc.name;
+
+                        if (dvc.node && dvc.node.cameras)
+                        {
+                            $.each(dvc.node.cameras, function (i, cam)
+                            {
+                                var identifier = dvc.deviceId + "_" + cam.nodeCoreDeviceId;
+                                sysStatus.channelNameMap[identifier] = cam.name;
+                            });
+                        }
+                    });
+                }, null);
+
+                //compile users
+                getBucketUsersByBucketId(bkt.id, function (res3)
+                {
+                    if (res3.result != "ok" || res3.bucketUsers == null)
+                    {
+                        return;
+                    }
+                    $.each(res3.bucketUsers, function (i, usr)
+                    {
+                        sysStatus.userNameMap[usr.userId] = usr.name;
+                    });
+                });
+            });
+
+        }, null);
+    }
+};
+
+sysStatus.getDeviceName = function (coreDeviceId)
+{
+    var name = sysStatus.deviceNameMap[coreDeviceId];
+    return !utils.isNullOrEmpty(name) ? name : coreDeviceId;
+};
+
+sysStatus.getChannelName = function (coreDeviceId, channelId)
+{
+    var name = sysStatus.channelNameMap[coreDeviceId + "_" + channelId];
+    return !utils.isNullOrEmpty(name) ? name : channelId;
+};
+
+sysStatus.getUserName = function (userId)
+{
+    var name = sysStatus.userNameMap[userId];
+    return !utils.isNullOrEmpty(name) ? name : userId;
+};
+
+$(function ()
+{
+    mainJS.toggleLeftBar();
+    sysStatus.init();
+})
+
+</script>

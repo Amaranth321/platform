@@ -1,0 +1,151 @@
+.rec_mgr {
+    width: 100%;
+}
+
+.rec_mgr a {
+    outline: none;
+}
+
+.rec_mgr input[type=checkbox] {
+    margin: 0px 2px 0px 0px;
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+    width: 14px;
+    height: 14px;
+}
+
+.rec_mgr .button {
+    display: inline-block;
+    width: 100%;
+    line-height: 16px;
+    padding: 5px;
+    background-color: #212121;
+    border: 1px solid transparent;
+    color: #F6AE40;
+}
+
+.rec_mgr .button:hover {
+    background: #444;
+    border: 1px solid #F6AE40;
+}
+
+.rec_mgr .title_bar {
+    height: 55px;
+    background-color: #212121;
+    padding: 10px 0px 0px 15px;
+}
+
+.rec_mgr .title_bar .title {
+    font-size: 18px;
+    color: #bbb;
+}
+
+.rec_mgr .main-wrap {
+    background: url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+}
+
+.rec_mgr .main-wrap .filter-sidebar {
+    float: left;
+    width: 220px;
+    padding: 10px;
+}
+
+.rec_mgr .filter-sidebar .item {
+    float: left;
+    width: 100%;
+    min-height: 44px;
+    margin-bottom: 10px;
+}
+
+.rec_mgr .filter-sidebar .calendar {
+    width: 100%;
+}
+
+.rec_mgr .display-area {
+    padding: 5px 0px 5px 220px;
+}
+
+.rec_mgr .display-area .rec_viewer {
+    width: 100%;
+    height: 140px;
+    text-align: center;
+    margin-bottom: 55px;
+}
+
+.rec_mgr #movingToolBox {
+    display: none;
+    width: 180px;
+    padding: 2px 2px 4px 5px;
+    background: #212121;
+    text-align: left;
+}
+
+.rec_mgr #movingToolBox .period_status {
+    line-height: 22px;
+    color: #F6AE40;
+    font-size: 13px;
+    margin-left: 3px;
+}
+
+.rec_mgr #movingToolBox .clear {
+    float: right;
+    width: 22px;
+    height: 22px;
+    background: url(/public/css/common/images/close_simple.png) 50% 50% no-repeat;
+    background-size: 22px 22px;
+}
+
+.rec_mgr #movingToolBox .options {
+    height: 25px;
+}
+
+.rec_mgr .bottom_container {
+    height: 400px;
+}
+
+.rec_mgr .player_area {
+    display: none;
+    width: 100%;
+    margin-top: 15px;
+    padding-right: 10px;
+}
+
+.rec_mgr .player_area .player_box {
+    background: #212121;
+    height: 400px;
+}
+
+.rec_mgr .player_area .player {
+    height: 100%;
+}
+
+.rec_mgr .player_area .select_file_msg {
+    height: 100%;
+    width: 300px;
+    margin: auto;
+    padding-top: 170px;
+    font-size: 14px;
+    color: #F6AE40;
+}
+
+.rec_mgr #jwClPlyr:focus {
+    outline: 0;
+}
+
+/*
+    style kendo elements
+*/
+.rec_mgr .k-calendar {
+    border: 1px solid #212121;
+    /*border: 1px solid #151515;*/
+    margin-bottom: -3px;
+}
+
+.rec_mgr .k-calendar .k-header {
+    background: #212121;
+}
+
+.jw-icon-rewind {
+    display: none !important;
+}

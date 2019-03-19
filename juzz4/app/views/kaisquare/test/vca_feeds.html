@@ -1,0 +1,82 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/vca/vcaFeedSubscriber.js"></script>
+
+<style>
+    .vca_feeds {
+        margin: 60px 10px 10px 10px;
+    }
+
+    .vca_feeds .types {
+        border: 1px solid #555;
+        padding: 5px;
+    }
+
+    .vca_feeds .types .k-button {
+        margin: 5px;
+    }
+
+    .vca_feeds .display {
+        margin-top: 10px;
+        border: 1px solid #555;
+        padding: 10px;
+    }
+
+    .vca_feeds .actions {
+        margin-bottom: 10px;
+    }
+
+    .vca_feeds .logs {
+        line-height: 16px;
+    }
+</style>
+
+<div class="vca_feeds">
+    <div class="types">
+        <a href="javascript:setVCAFeedType('trafficflowfeed')" class="k-button">traffic flow</a>
+        <a href="javascript:setVCAFeedType('peoplecountingfeed')" class="k-button">people counting</a>
+        <a href="javascript:setVCAFeedType('passerbyfeed')" class="k-button">passerby</a>
+        <a href="javascript:setVCAFeedType('crowddensityfeed')" class="k-button">crowd density</a>
+        <a href="javascript:setVCAFeedType('profilingfeed')" class="k-button">profiling</a>
+        <br/>
+        <a href="javascript:setVCAFeedType('intrusionfeed')" class="k-button">intrusion</a>
+        <a href="javascript:setVCAFeedType('perimeterdefensefeed')" class="k-button">perimeter</a>
+        <a href="javascript:setVCAFeedType('loiteringfeed')" class="k-button">loitering</a>
+        <a href="javascript:setVCAFeedType('objectcountingfeed')" class="k-button">trip wire</a>
+        <a href="javascript:setVCAFeedType('videoblurfeed')" class="k-button">camera tampering</a>
+        <a href="javascript:setVCAFeedType('faceindexingfeed')" class="k-button">face indexing</a>
+    </div>
+
+    <div class="display">
+        <div class="actions">
+            <a href="javascript:vcaSubscriber.open()" class="k-button">Open</a>
+            <a href="javascript:vcaSubscriber.close()" class="k-button">Close</a>
+            <a href="javascript:vcaSubscriber.clearLogs()" class="k-button">Clear</a>
+        </div>
+        <pre class="logs"></pre>
+    </div>
+</div>
+
+<script>
+    var vcaSubscriber = null;
+    var $logBox = $(".vca_feeds .logs");
+
+    function setVCAFeedType(apiName)
+    {
+        if (vcaSubscriber)
+        {
+            vcaSubscriber.close();
+            vcaSubscriber.clearLogs();
+        }
+
+        vcaSubscriber = VcaFeedSubscriber(
+                null,
+                kupapi.getWsServer(),
+                apiName,
+                null,
+                $logBox);
+
+        vcaSubscriber.open();
+    }
+
+</script>

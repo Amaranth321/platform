@@ -1,0 +1,152 @@
+<div class="popup_wrapper">
+    <div class="vca_content">
+        <div class="left_box" style="margin: 0px 0px 25px 0px;">
+            <div class="device_selection_top">
+                <label for="userDevices">&{'device-name'}</label>
+                <input id="userDevices" style="width: 200px"><br/>
+                <label id="channelDisplayName" for="cameraChannels">&{'channel'}</label>
+                <input id="cameraChannels" style="width: 200px">
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'sensitivity'}
+                </div>
+                <input id="sharpnessSlider" style="width:100%; margin-bottom: 10px">
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="submit_btn_box">
+                <a href="javascript:submitVca()" class="k-button">&{'submit'}</a>&nbsp;
+                <a id="btnCancel" href="javascript:vca.closePopupWindow()" class="k-button">&{'cancel'}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function initDeviceSettings()
+    {
+
+        $("#userDevices").kendoDropDownList({
+            optionLabel: "None",
+            dataTextField: "name",
+            dataValueField: "deviceId",
+            dataSource: parent.deviceManager.userDevices,
+            select: function (e)
+            {
+                var deviceItem = this.dataItem(e.item.index());
+                var channelList = $("#cameraChannels").data("kendoDropDownList");
+
+                if (deviceItem.name != "None")
+                {
+                    if (deviceItem.model.capabilities.indexOf("node") != -1)
+                    {
+                        utils.populateNodeNames(deviceItem.node.cameras, "cameraChannels");
+                    }
+                    else
+                    {
+                        utils.populateChannels(deviceItem.model.channels, "cameraChannels");
+                    }
+
+                    channelList.select(0);
+                    channelList.enable(true);
+                }
+                else
+                {
+                    channelList.enable(false);
+                }
+            }
+        });
+
+        $("#cameraChannels").kendoDropDownList({
+            dataTextField: "name",
+            dataValueField: "nodeCoreDeviceId",
+            dataSource: []
+        });
+    }
+
+    function initUiElements()
+    {
+        scheduler.init("scheduleInfo", null);
+
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: localizeResource('additional-params'),
+            isExpanded: false
+        });
+
+        $("#sharpnessSlider").kendoSlider({
+            min: 1,
+            max: 10,
+            smallStep: 1,
+            largeStep: 1
+        }).data("kendoSlider");
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+    }
+
+    function submitVca()
+    {
+        var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+        var selectedChannel = $("#cameraChannels").data("kendoDropDownList").value();
+        var sharpness = $("#sharpnessSlider").data("kendoSlider").value();
+
+        if (selectedCamera.name == "None")
+        {
+            utils.popupAlert("&{'no-device-selected'}")
+            return;
+        }
+
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "sharpness": sharpness * 10,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.addVca(
+                backend.VcaType.VIDEO_BLUR,
+                selectedCamera.id,
+                selectedChannel,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                null,
+                vca.onAddAnalyticsSuccess
+        );
+    }
+
+    $(function ()
+    {
+        initDeviceSettings();
+        initUiElements();
+        initTooltips();
+    });
+
+</script>

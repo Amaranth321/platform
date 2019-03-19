@@ -1,0 +1,219 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/vca/vcaConcurrency.js"></script>
+<link rel="stylesheet" href="/public/javascripts/vca/vca_concurrency.css"/>
+
+<script type="text/x-kendo-template" id="nodeInformationToolbarTmpl">
+    <div style="margin:5px 5px 5px 5px;">
+
+    <a id="btnExcel" class="k-button" style="float:right">
+    <img src="${CdnPath}/common/images/export-excel.png" style="margin-right:3px; height:16px">&{'Excel'}
+    </a>
+
+    <a id="btnPdf" class="k-button" style="float:right">
+    <img src="${CdnPath}/common/images/export-pdf.png" style="margin-right:3px; height:16px">&{'PDF'}
+    </a>
+
+    <a id="clrFilter"  class="k-button" style="float:right">
+    <span></span>&nbsp; &{'clear-location'}
+    </a> 
+
+    <div>
+    <label for="bucketList" class="event_filter_label">&{'bucket-name'}</label>
+    <input id="bucketList" style="width:150px" autocomplete="off" />
+    </div>
+
+    </div>
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'node-information'}</span>
+</div>
+<div id="nodesGrid"></div>
+
+<script>
+
+    var refreshNodesGrid = null;
+    var selectedBucketId = "";
+
+    $(document).ready(function() {
+
+        initializeNodesGrid();
+        populateBucketItem();
+
+        //every button bind click event
+        $("#clrFilter").bind("click", clearFilter);
+        $("#btnPdf").bind("click", exportPdf);
+        $("#btnExcel").bind("click", exportXls);
+    });
+
+    function initializeNodesGrid() {
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: function(options) {
+                    if (selectedBucketId == "") {
+                        options.success([]);
+                        return;
+                    }
+
+                    nodeGridLoading(true);
+                    getBucketDevicesByBucketId(selectedBucketId, function(successResult) {
+                        if (successResult.result != "ok") {
+                            utils.throwServerError(successResult);
+                            options.success([]);
+                            nodeGridLoading(false);
+                            return;
+                        }
+
+                        getLabelsByBucketId(selectedBucketId, function (responseData)
+                        {
+                            nodeGridLoading(false);
+                            if(responseData.result != "ok")
+                            {
+                                utils.throwServerError(responseData);
+                                return;
+                            }
+
+                            var labelLookup = {};
+                            responseData.labels.forEach(function (labelObj)
+                            {
+                                labelLookup[labelObj.labelId] = labelObj;
+                            });
+
+                            var devices = [];
+                            $.each(successResult.devices, function(index, element) {
+
+                                if (element.model.capabilities.indexOf("node") >= 0) {
+                                    var deviceItem = {};
+                                    deviceItem.id = element.id;
+                                    deviceItem.name = element.name;
+                                    deviceItem.deviceKey = element.deviceKey;
+                                    deviceItem.version = element.node.version;
+
+                                    //labels
+                                    var assignedLabels = [];
+                                    $.each(element.channelLabels, function (i, assignment)
+                                    {
+                                        var channelId = assignment["channelId"];
+                                        var labels = assignment["labels"];
+                                        labels.forEach(function(labelId){
+                                            var labelObj = labelLookup[labelId];
+                                            if(labelObj && assignedLabels.indexOf(labelObj.name) == -1)
+                                            {
+                                                assignedLabels.push(labelObj.name);
+                                            }
+                                        });
+                                    });
+
+                                    deviceItem.label = assignedLabels.join(", ");
+                                    devices.push(deviceItem);
+                                }
+                            });
+
+                            options.success(devices);
+                        });
+
+                    }, null);
+                }
+            },
+            pageSize: 15
+        });
+
+        var nodeGrid = $("#nodesGrid").kendoGrid({
+            dataSource: ds,
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+                refresh: true
+            },
+            sortable: true,
+            selectable: true,
+            resizable: true,
+            toolbar: kendo.template($("#nodeInformationToolbarTmpl").html()),
+            columns: [{field: "name", title: localizeResource('name')},
+                {field: "deviceKey", title: localizeResource('device-key')},
+                {field: "version", title: localizeResource('version')},
+                {field: "label", title: localizeResource('label')},
+                {command: [{text: "&{'more'}", click: addMoreInfo}], title: "&{'actions'}", width: "100px"}]
+        }).data("kendoGrid");
+
+        function addMoreInfo(e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            var contentPage = "/device/nodeinfo?id=" + dataItem.id + "&readonly=true";
+            utils.openPopup(localizeResource("node-info"), contentPage, null, null, true, function() {
+            });
+        }
+
+        refreshNodesGrid = function() {
+            nodeGrid.dataSource.read();
+        }
+
+    }
+
+    function populateBucketItem() {
+        $("#bucketList").kendoDropDownList({
+            dataTextField: "name",
+            dataValueField: "bucketId",
+            change: applyChangedValue,
+            suggest: true,
+            dataSource: {
+                transport: {
+                    read: function(options) {
+                        getBuckets(null, function(successResult) {
+                            if (successResult.result == "ok") {
+                                options.success(successResult.buckets);
+                                //open this page first, after populate bucket item, setting default value
+                                $("#bucketList").data('kendoDropDownList').select(0);
+                                applyChangedValue();
+                            } else {
+                                options.success([])
+                            }
+                        }, null)
+                    }
+                }
+            }
+        });
+    }
+
+    function applyChangedValue() {
+        if (checkSelectedBucketIsValid()) {
+            refreshNodesGrid();
+        }
+    }
+
+    function checkSelectedBucketIsValid() {
+        var selectedBucket = $("#bucketList").data("kendoDropDownList").dataItem();
+        if (null == selectedBucket) {
+            utils.popupAlert(localizeResource('msg-select-a-bucket'));
+            return false;
+        }
+        selectedBucketId = selectedBucket.id;
+        return true;
+    }
+
+    function clearFilter() {
+        $("#bucketList").data("kendoDropDownList").select(0);
+        applyChangedValue();
+    }
+
+    function exportPdf() {
+        if (checkSelectedBucketIsValid()) {
+            exportNodesFileByBucketId(selectedBucketId, "pdf");
+        }
+    }
+
+    function exportXls() {
+        if (checkSelectedBucketIsValid()) {
+            exportNodesFileByBucketId(selectedBucketId, "xls");
+        }
+    }
+
+    function nodeGridLoading(loading)
+    {
+        kendo.ui.progress($(".default_title_bar"), loading);
+    }
+
+</script>

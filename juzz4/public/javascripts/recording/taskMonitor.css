@@ -1,0 +1,42 @@
+.task_monitor {
+    position: absolute;
+    right: 0;
+    bottom: 0px;
+    width: 250px;
+    background-color: #212121;
+    color: #ccc;
+    z-index: 1000;
+}
+
+.task_monitor .title {
+    font-size: 13px;
+    padding: 5px 7px;
+    background-color: #151515;
+}
+
+.task_monitor .grid {
+}
+
+.task_monitor .grid .row {
+    border-bottom: 1px solid #333;
+    text-align: left;
+    background-color: #212121;
+    padding: 7px 0px 7px 10px;
+}
+
+.task_monitor .grid .row:first-child {
+    margin-top: 0px;
+}
+
+.task_monitor .grid .row .task {
+    text-align: left;
+    display: inline-block;
+    width: 180px;
+    color: #F6AE40;
+}
+
+.task_monitor .grid .row .percent {
+    text-align: right;
+    display: inline-block;
+    width: 40px;
+}

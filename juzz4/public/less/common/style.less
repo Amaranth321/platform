@@ -1,0 +1,45 @@
+@color8c:#8c8c8c;
+@white: rgb(255,255,255);
+@black: rgb(0,0,0);
+@bkb3: #b3b3b3;
+body {
+    font-family: "muli", Arial, Helvetica, sans-serif;
+    font-size:12px;
+    
+    h1 {
+        font-size: 24px;
+        line-height: 32px;
+        letter-spacing: 0.05em;
+        font-weight: normal;
+        font-style:normal;
+        color: @color8c;
+        margin: 0;
+        padding: 0 0 7px 0;
+        text-align:left;
+    }
+    
+    .ui {
+    &.popup {
+        z-index:9999;
+        color:@white;
+        font-size:10px;
+        padding:0.25em 0.45em !important;
+        background:@black;
+        border:1px solid @white;
+        opacity: .8;
+        &:before {
+            margin-left: -.325em;
+            top: -.325em;
+            left: 50%;
+            right: auto;
+            bottom: auto;
+            box-shadow: -1px -1px 0 0 @bkb3;
+            background:@black;
+        }
+    }
+    
+    }
+    
+    
+   
+}

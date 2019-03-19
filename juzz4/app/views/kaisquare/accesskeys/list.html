@@ -1,0 +1,144 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/x-kendo-template" id="toolbarTemplate">
+    <div class="toolbar">
+        <a class="k-button" id="btnAddKey">&{'generate-access-key'}</a>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="remainderTmpl">
+    # if(maxUseCount == -1) { #
+    #=  localizeResource("unlimited") #
+    # } else {#
+    #=  maxUseCount - currentUseCount #
+    # } #
+</script>
+
+
+<script type="text/x-kendo-template" id="keyStatusTemplate">
+    # if(isValid) { #
+    <div align=center class="entry_status_green">
+        #= localizeResource("active") #
+    </div>
+    # } else {#
+    <div align=center class="entry_status_gray">
+        #= localizeResource("expired") #
+    </div>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="expiryDateFormat">
+    # var localTime = new Date(data.ttl); #
+    # if(data.isValid) { #
+    #= kendo.toString(localTime, kupapi.TIME_FORMAT) #
+    # } #
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'access-key-management'}</span>
+</div>
+
+<div id="keyGrid" style="display: none"></div>
+<div id="genWin" style="overflow:hidden;"></div>
+
+<script type="text/javascript">
+
+    var dsKeys = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+                getAccessKeyList("", function (responseData) {
+                    if (responseData.result == "ok" && responseData["key-list"] != null) {
+                        options.success(responseData["key-list"]);
+                    }
+                    else {
+                        utils.throwServerError(responseData.reason);
+                        options.success([]);
+                    }
+                }, null);
+            }
+        },
+        group: { field: "bucket", dir: "asc" },
+        sort: { field: "_created", dir: "desc" },
+        pageSize: 15
+    });
+
+
+    function onPopupClosed() {
+        $("#genWin").html("");
+        $("#keyGrid").data("kendoGrid").dataSource.read();
+    }
+
+    function initKeyTable() {
+        var copyKey = function (e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            utils.copyToClipBoard(dataItem.key);
+        }
+
+        var deleteKey = function (e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+            utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function (choice) {
+                if (choice) {
+                    removeAccessKey("", dataItem.key, function (responseData) {
+                        if (responseData.result != "ok") {
+                            utils.throwServerError(responseData);
+                            return;
+                        }
+
+                        utils.slideDownInfo(localizeResource("delete-successful"));
+                        $("#keyGrid").data("kendoGrid").dataSource.read();
+                    }, null);
+                }
+            });
+        }
+
+        $("#keyGrid").kendoGrid({
+            dataSource: dsKeys,
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+                refresh: true
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            toolbar: kendo.template($("#toolbarTemplate").html()),
+            columns: [
+                { field: "isValid", title: localizeResource("status"), width: "120px",
+                    template: kendo.template($("#keyStatusTemplate").html())},
+                { field: "key", title: localizeResource("one-time-pass"), width: "150px",
+                    attributes: {
+                        "class": "unambiguous-font"
+                    }
+                },
+                { field: "userName", title: localizeResource("user-name"), width: "180px"},
+                { field: "currentUseCount", title: localizeResource("usage-remaining"), width: "180px",
+                    template: $("#remainderTmpl").html()},
+                { field: "ttl", title: "&{'expiry-date'}",
+                    template: $("#expiryDateFormat").html(), width: "180px" },
+//                { field: "payload", title: localizeResource("payload")},
+                { field: "bucket", title: localizeResource("type"),
+                    groupHeaderTemplate: kendo.template($("#groupHeaderTmpl").html())},
+                { command: [
+                    { text: "&{'copy'}", click: copyKey },
+                    { text: "&{'delete'}", click: deleteKey }
+                ], title: "&{'actions'}"}
+            ]
+        }).data("kendoGrid").hideColumn("bucket");
+
+        $("#btnAddKey").click(function (e) {
+            var contentPage = "/access/generate";
+            utils.openPopup("&{'generate-access-key'}", contentPage, 360, null, true, onPopupClosed);
+        });
+    }
+
+    $(function () {
+        initKeyTable();
+        $("#keyGrid").show();
+    });
+
+</script>

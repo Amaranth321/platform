@@ -1,0 +1,476 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+#{include HtmlPath + '/common/partial/vca_shared.html'/}
+
+<style>
+    #countChart {
+        height: 300px;
+        margin: 0px auto;
+    }
+
+    .vca_time_range_msg {
+        margin: 8px 4px 0 0;
+    }
+
+    .edit_hover_class {
+
+    }
+
+    .edit_hover_class a {
+        display: none;
+    }
+
+    .edit_hover_class:hover a {
+        display: block;
+    }
+
+    #faceListWrapper {
+        margin-top: 20px \9;
+    }
+
+    #autocomplete div {
+        float: left;
+    }
+
+    .k-multiselect-wrap .k-floatwrap li {
+        margin: 6px 2px 2px 2px;
+    }
+
+    .k-multiselect-wrap {
+        border-radius: 0;
+        width: 197px;
+    }
+
+    .vca-rep-label {
+        width: 30%;
+        float: left;
+        margin-top: 2%;
+        margin-right: 3%;
+        text-align: right;
+    }
+
+    .vca-rep-in {
+        width: 67%;
+        float: left;
+    }
+
+    #tabstrip > div {
+        height: auto !important;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="faceTemplate">
+    <div class="face_snapshot">
+
+        <div id='#= data.id #' class="edit_hover_class">
+            <div style="position: absolute;right: 3px;top: 3px;">
+                <a href='#= img #' download>
+                    <img src="${CdnPath}/common/images/download_blue.png" style="width: 16px;height: 16px;">
+                </a>
+            </div>
+            <img src="#= img #" alt="face snapshot"/>
+        </div>
+
+        <div class="timestamp">#= kendo.toString(data.time, kupapi.TIME_FORMAT) #</div>
+
+        <div>
+            <label>&{'id'}</label>: #= data.faceId # <br/>
+            <label>&{'duration'}</label>: #= (parseInt(data.duration)/1000).toFixed(1) #s
+        </div>
+
+    </div>
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'analytics-face-indexing'}</span>
+</div>
+
+<div class="vca_report_page">
+    <div class="vca_report_main_wrapper">
+        <div class="vca_report_setting_Box">
+            <div class="vca-rep-firstDiv">
+                <div>
+                    <div class="vca-rep-label">
+                        <label for="instanceList" class="vca_report_others_label">&{'active-instance'} :</label>
+                    </div>
+                    <div class="vca-rep-in">
+                        <input id="instanceList" style="width:200px" autocomplete="off"/>
+                    </div>
+                </div>
+
+                <div id="otherGroup" class="vca_more_device">
+                    <div id="autocomplete" class="wrap-long-label">
+                        <div class="vca-rep-label" style="margin-top: 0;">
+                            <label id="labelDisplay" for="labels" class="vca_report_others_label">
+                            &{'label'} :
+                            </label>
+                        </div>
+                        <div class="vca-rep-in"><input id="labels"/></div>
+                    </div>
+                    <div style="clear: both;"></div>
+                    <div>
+                        <div class="vca-rep-label" style="margin-top: 0;">
+                            <label for="dvcList" class="vca_report_others_label">&{'device-name'} :</label>
+                        </div>
+                        <div class="vca-rep-in">
+                            <input id="dvcList" style="width: 200px" autocomplete="off"/>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="vca-rep-label" style="margin-top: 0;">
+                            <label id="channelDisplayName" for="channList" class="vca_report_others_label">
+                            &{'channel'} :
+                            </label>
+                        </div>
+                        <div class="vca-rep-in">
+                            <input id="channList" style="width: 200px" autocomplete="off"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="vca-rep-secDiv">
+                <label id="fromDate" for="start">&{'from'} :</label>
+                <input id="start" style="width:180px" autocomplete="off" title="&{'msg-choose-timerange'}"/>
+
+                <label id="toDate" for="end">&{'to'} :</label>
+                <input id="end" style="width:180px" autocomplete="off" title="&{'msg-choose-timerange'}"/>
+            </div>
+            <div class="vca-rep-thirdDiv">
+                <input id="btnGenerate" type="button" class="k-button vca-btn-refresh"
+                       value="&{'generate-report'}"/>
+            </div>
+        </div>
+
+        <div class="vca_report_pdf_exportbtn">
+            <a id="btnReportExport" href="javascript:void(0)" class="k-button"
+               style="margin-bottom: 8px"> <img
+                    src="${CdnPath}/common/images/export-pdf.png" style="height: 16px;">
+            &{'PDF'}
+            </a>
+            <a id="btnReportExportCSV" href="javascript:void(0)" class="k-button" style="margin: 0 0 8px 5px">
+                <img src="${CdnPath}/common/images/export-csv.png" style="height: 16px">
+            &{'csv'}
+            </a>
+        </div>
+
+        <div id="chartContainer" class="vca_report_chart_small"></div>
+
+        <div id="faceListWrapper" style="display: none">
+            <div id="faceListView" style="height:590px; width:920px;"></div>
+            <div id="faceListPager" class="k-pager-wrap"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+var currentReportInfo = null;
+var currentEventIdList = null;
+var eventMasterList = [];
+var onePageEvents = null;
+var results = [];
+var index = 0;
+var selectedDvcId;
+var selectedChannId;
+var currentFromDate;
+var currentToDate;
+var totalResult = 0;
+var isReportGenerating = false;
+var isFaceSnapshotGenerating = false;
+
+var dsFaces = new kendo.data.DataSource({
+    transport: {
+        read: function (options) {
+            if (typeof currentToDate === 'undefined' || typeof currentFromDate === 'undefined') {
+                options.success([]);
+                return;
+            }
+            isFaceSnapshotGenerating = true;
+
+            results = [];
+            currentEventIdList = [];
+
+            //response field selection
+            getEventsWithBinary(
+                    KupEvent.FACE_INDEXING,
+                    options.data.skip,
+                    options.data.take,
+                    selectedDvcId,
+                    selectedChannId,
+                    currentFromDate,
+                    currentToDate,
+                    function (resp) {
+                        if (resp.result == 'ok' && resp.events != null) {
+                            //slice one relevant page
+                            onePageEvents = resp.events;  //eventMasterList.slice(options.data.skip, options.data.skip + options.data.take);
+
+                            $.each(onePageEvents, function (index, element) {
+                                makeSegmentedCalls(element, options);
+                            });
+
+                        } else {
+                            options.success([]);
+                        }
+                        isReportGenerating = false;
+                        isFaceSnapshotGenerating = false;
+                    });
+        }
+    },
+    requestStart: function (e) {
+        if (isFaceSnapshotGenerating) {
+            e.preventDefault();
+        }
+    },
+    pageSize: 21,
+    serverPaging: true,
+    schema: {
+        total: function () {
+            return totalResult;
+        }
+    }
+});
+
+function makeSegmentedCalls(oneEvent, options) {
+    var evt = oneEvent;
+    var details = JSON.parse(evt.data);
+    var snapshot = {
+        "id": evt.id,
+        "time": utils.convertUTCtoLocal(kendo.parseDate(evt.time, kupapi.TIME_FORMAT)),
+        "faceId": details.faceId,
+        "duration": details.duration,
+        "img": "${CdnPath}/common/images/loading_snapshot.gif"
+    }
+    results.push(snapshot);
+    options.success(results);
+    currentEventIdList.push(evt.id);
+
+    getEventBinaryData(evt.eventId, function (responseData) {
+        var base64Img = "${CdnPath}/common/images/empty_background.jpg";
+        if (responseData.result == "ok"
+                && responseData["image-base64"] != null
+                && responseData["image-base64"].length > 100) {
+            //normally empty image will be AA\u003d\u003d\r\n which is less than 100 bytes.
+            base64Img = "data:image/jpeg;base64," + responseData["image-base64"];
+        }
+
+        $("#" + evt.id).children("img").attr("src", base64Img);
+        $("#" + evt.id).children("div").children("a").attr("href", base64Img);
+
+    }, null);
+}
+
+function initReportPage() {
+    vca.initReportVcaList(analyticsType.FACE_INDEXING);
+    vca.initUserDevicesLabels("labels");
+    vca.initUserDeviceAndChannelDropdowns("dvcList", "channList");
+    utils.createDateTimeRangeSelection("start", "end");
+    var start = $("#start").data("kendoDateTimePicker");
+    var end = $("#end").data("kendoDateTimePicker");
+
+    $("#btnGenerate").click(function () {
+        if (!isReportGenerating) {
+            isReportGenerating = true;
+        } else {
+            return;
+        }
+        var selectedInstance = $("#instanceList").data("kendoDropDownList").dataItem();
+        if (selectedInstance == null || selectedInstance.id == "None") {
+            utils.popupAlert("&{'no-channel-selected'}");
+            isReportGenerating = false;
+            return;
+        }
+        else if (selectedInstance.deviceName == "&{'historical'}") {
+            var selectedDevice = $("#dvcList").data("kendoDropDownList").dataItem();
+            if (selectedDevice == null || selectedDevice.name == "None") {
+                utils.popupAlert("&{'no-device-selected'}");
+                isReportGenerating = false;
+                return;
+            }
+
+            selectedDvcId = selectedDevice.id;
+            selectedChannId = $("#channList").data("kendoDropDownList").value();
+
+            if (utils.isNullOrEmpty(selectedChannId)) {
+                utils.popupAlert("&{'empty-camera'}");
+                isReportGenerating = false;
+                return;
+            }
+        }
+        else {
+            selectedDvcId = selectedInstance.platformDeviceId;
+            selectedChannId = selectedInstance.channelId;
+        }
+
+        var dtStart = start.value();
+        var dtEnd = end.value();
+        var invalidDates = (dtStart == null || dtEnd == null);
+        if (invalidDates) {
+            utils.popupAlert("&{'invalid-dates'}!");
+            isReportGenerating = false;
+            return;
+        }
+
+
+        generateReport(selectedDvcId, selectedChannId, dtStart, dtEnd);
+    });
+
+
+    $("#btnReportExport").click(function () {
+        var eveIds = [];
+        var IdFieldOnly = [];
+        IdFieldOnly.push("type");
+
+        if (currentReportInfo == null) {
+            console.log("missing report info");
+            return;
+        }
+
+        var svg = vca.getPrinterFriendlyChart("countChart");
+        if (svg == null || svg == "") {
+            return;
+        }
+
+        utils.showLoadingTextOverlay(localizeResource("generating-download-file"), false);
+        getEventsWithBinary(
+                KupEvent.FACE_INDEXING,
+                0,
+                0,
+                selectedDvcId,
+                selectedChannId,
+                currentFromDate,
+                currentToDate,
+                function (resp) {
+                    if (resp.result == 'ok' && resp.events != null) {
+                    	 $.each(resp.events, function (index, evt) {
+                             eveIds.push(evt.id);
+                         });
+                         currentEventIdList = eveIds;
+                         exportFaceIndexingReport(svg, JSON.stringify(currentReportInfo), JSON.stringify(currentEventIdList));
+                    }
+					utils.hideLoadingOverlay();
+                });
+    });
+
+    $("#btnReportExportCSV").click(function () {
+        var eveIds = [];
+        var IdFieldOnly = [];
+        IdFieldOnly.push("type");
+        utils.showLoadingTextOverlay(localizeResource("generating-csv"), false);
+        var fromStr = kendo.toString(utils.convertToUTC(start.value()), "ddMMyyyyHHmmss");
+        var toStr = kendo.toString(utils.convertToUTC(end.value()), "ddMMyyyyHHmmss");
+        var baseUnit = vca.currentChartbaseUnit;
+
+        exportDataLogs("csv", KupEvent.FACE_INDEXING, selectedDvcId, selectedChannId, 
+        		currentFromDate, currentToDate,  function (resp) {
+        	utils.hideLoadingOverlay();
+            if (resp.result == 'ok' && resp["download-url"] != null) {
+            	window.open(resp["download-url"], '_blank');
+                window.focus();
+            } 
+        }, null);
+    });
+}
+
+function generateReport(dvcId, channId, fromDate, toDate) {
+
+    //convert to UTC dates
+    var fromStr = currentFromDate = kendo.toString(utils.convertToUTC(fromDate), "ddMMyyyyHHmmss");
+    var toStr = currentToDate = kendo.toString(utils.convertToUTC(toDate), "ddMMyyyyHHmmss");
+
+    // vca.getEventsBySegmentedCalls(KupEvent.FACE_INDEXING, dvcId, channId, fromStr, toStr,
+    vca.currentEventType = KupEvent.FACE_INDEXING;
+    getAnalyticsReport("", KupEvent.FACE_INDEXING, null, dvcId, channId, fromStr, toStr, null, function (resp) {
+
+        if (resp.result == 'ok') {
+            eventMasterList = resp.data;
+
+            if (eventMasterList.length == 0) {
+                utils.popupAlert(localizeResource("no-records-found"));
+                setResultAreaVisibility(false);
+                isReportGenerating = false;
+                return;
+            }
+
+            var countList = [];
+            countList.push({time: fromDate, count: 0});     //make sure graph starts at fromDate
+            countList.push({time: toDate, count: 0});  //and ends at toDate
+            totalResult = 0;
+            $.each(eventMasterList, function (index, evt) {
+                var countItem = {};
+                countItem.time = utils.convertUTCtoLocal(kendo.parseDate(evt.date, "yyyy/MM/dd HH:mm:ss"));
+                countItem.count = evt.count;
+                countList.push(countItem);
+                totalResult += evt.count;
+            });
+
+            vca.createCountChart("chartContainer", "&{'face-detected-time'}", "column", countList);
+
+            //update face list view
+            dsFaces.page(1);
+            setResultAreaVisibility(true);
+
+            //pdf export details
+            deviceManager.WaitForReady(function () {
+                var anyEvt = eventMasterList[0];
+                deviceManager.attachDeviceDetails(anyEvt, null, anyEvt.deviceId, channId);
+
+                currentReportInfo = {
+                    "event-type": KupEvent.FACE_INDEXING,
+                    "device-name": anyEvt.deviceName,
+                    "channel": anyEvt.channelName,
+                    "from": kendo.toString(fromDate, kupapi.TIME_FORMAT),
+                    "to": kendo.toString(toDate, kupapi.TIME_FORMAT),
+                    "total-results": totalResult + ""
+                };
+            });
+        }
+    });
+}
+
+function setResultAreaVisibility(visibility) {
+    if (visibility) {
+        $(".vca_report_pdf_exportbtn").show();
+        $("#faceListWrapper").show();
+    } else {
+        $(".vca_report_pdf_exportbtn").hide();
+        $("#faceListWrapper").hide();
+        $("#chartContainer").html("");
+    }
+}
+
+function downloadFaceSnapshot(snapshotDataUrl) {
+    window.open(snapshotDataUrl);
+}
+
+$(function () {
+
+    $("#faceListPager").kendoPager({
+        input: true,
+        numeric: false,
+        refresh: false,
+        dataSource: dsFaces,
+        messages: {
+            empty: "No snapshots to display"
+        }
+    });
+
+    $("#faceListView").kendoListView({
+        dataSource: dsFaces,
+        template: kendo.template($("#faceTemplate").html())
+    });
+
+    initReportPage();
+    $("#start").attr("readonly", "readonly");
+    $("#end").attr("readonly", "readonly");
+    $("#start").kendoTooltip({
+        filter: "a",
+        width: 120,
+        position: "top"
+    }).data("kendoTooltip");
+    $("#end").kendoTooltip({
+        filter: "a",
+        width: 120,
+        position: "top"
+    }).data("kendoTooltip");
+});
+
+</script>

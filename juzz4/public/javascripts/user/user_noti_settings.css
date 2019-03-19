@@ -1,0 +1,41 @@
+.noti-setts {
+    width: 600px;
+    margin: 10px auto;
+    background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    text-align: left;
+}
+
+.noti-setts input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+    margin-left: 30px;
+    margin-right: 5px;
+}
+
+.noti-setts .row {
+    border-bottom: 1px solid #353535;
+}
+
+.noti-setts .event_type {
+    display: inline-block;
+    width: 150px;
+    line-height: 38px;
+    text-align: left;
+    margin-left: 20px;
+}
+
+.noti-setts .check_list label {
+    color: #ddd;
+    display: inline-block;
+}
+
+.noti-setts .btn_group {
+    text-align: center;
+    padding: 5px;
+}
+
+.noti-setts .btn_group .k-button {
+    width: 80px;
+    height: 26px;
+}

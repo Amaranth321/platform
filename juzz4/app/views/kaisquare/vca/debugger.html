@@ -1,0 +1,223 @@
+<script src="${CdnRootPath}/public/javascripts/vca/debugger.js"></script>
+
+<style>
+
+    .debug_win {
+        margin: -6px;
+        padding: 7px;
+        background: #252525 url(${CdnPath}/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        color: #F6AE40;
+    }
+
+    .debug_win label {
+        color: #F6AE40;
+    }
+
+    .debug_win .help_icon {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        margin: 0px 0px -3px 5px;
+        background: url(${CdnPath}/common/images/help.png) center center no-repeat;
+        background-size: 14px 14px;
+    }
+
+    .debug_win .dual_video_box {
+        width: 735px;
+        height: 320px;
+        margin: 0px auto;
+    }
+
+    .debug_win .vca_debug_left_box {
+        float: left;
+    }
+
+    .debug_win .vca_debug_right_box {
+        float: right;
+    }
+
+    .debug_win .vca_debug_right_box label {
+        display: inline-block;
+        width: 70px;
+        line-height: 25px;
+        margin-left: 5px;
+    }
+
+    .debug_win .vca_debug_right_box span {
+        color: #f5f5f5;
+    }
+
+    .debug_win .vca_debug_view_box {
+        width: 360px;
+        height: 270px;
+        margin-left: 5px;
+        margin-bottom: 5px;
+        background: #111;
+    }
+
+    .debug_win .vca_debug_view_box iframe {
+        width: 360px;
+        height: 270px;
+        border: 1px solid #333;
+        margin: auto;
+    }
+
+    .debug_win .vca_debug_settings_box {
+        border: 1px solid #333;
+        margin-bottom: 0px;
+        padding: 2px;
+    }
+
+    .debug_win .vca_debug_settings_box #btnApply {
+        width: 60px;
+        margin-right: 3px;
+    }
+
+    .debug_win .vca_debug_settings_box input {
+        height: 25px;
+        width: 670px;
+        background: #444;
+        color: #eee;
+    }
+
+    .debug_win .readonly_textbox {
+        margin: 0px auto;
+        border: 1px solid #333;
+        color: #f1f1f1;
+        background: #181818;
+        padding: 5px;
+        font-family: "courier new";
+    }
+
+    .debug_win .commands {
+        min-height: 60px;
+    }
+
+    .debug_win .vca_instance_details {
+        margin: 5px auto 0px auto;
+        width: 740px;
+    }
+
+    .debug_win .debugger_video_box_title {
+        text-align: center;
+        color: #F6AE40;
+        margin: 0px 0px 5px 3px;
+    }
+
+    .debug_win .debugger_info_title {
+        color: #F6AE40;
+        margin: 12px 0px 3px 3px;
+    }
+
+    .debug_win .vca_details_wrapper {
+        border: 1px solid #333;
+        color: #f1f1f1;
+        background: #181818;
+        padding: 5px;
+    }
+
+    .debug_win .vca_details_wrapper label {
+        display: inline-block;
+        width: 95px;
+        line-height: 18px;
+        margin-left: 10px;
+    }
+
+    .debug_win .vca_details_wrapper input[type=checkbox] {
+        margin-left: 15px;
+        vertical-align: middle;
+    }
+
+    .debug_win .vca_details_wrapper .process_fps {
+        display: none;
+    }
+
+    .debug_win .vca_details_wrapper .stream_fps {
+        display: none;
+    }
+
+    .debug_win .server_msg {
+        min-height: 45px;
+    }
+
+    .debug_win .left_column {
+        margin-right: 407px;
+    }
+
+    .debug_win .right_column {
+        float: right;
+        width: 400px;
+    }
+
+    .debug_win .right_column .event_wrapper {
+        margin-top: 5px;
+    }
+
+    .debug_win .right_column .event_wrapper iframe {
+        background: #eee;
+        border: 0px;
+        width: 100%;
+    }
+
+</style>
+
+<div class="debug_win">
+    <div class="right_column">
+        <div class="vca_details_wrapper">
+            <label>&{'version'}</label><span class="version"></span><br/>
+            <label>&{'running-at'}</label><span class="vcaUrl"></span><br/>
+
+            <div class="process_fps"><label>&{'processing-rate'}</label><span>0</span> fps</div>
+            <div class="stream_fps"><label>&{'stream-rate'}</label><span>0</span> fps</div>
+        </div>
+
+        <div class="event_wrapper"></div>
+    </div>
+
+    <div class="left_column">
+
+        <div class="dual_video_box">
+
+            <div class="vca_debug_left_box">
+                <div id="feedViewBox" class="vca_debug_view_box"></div>
+            </div>
+
+            <div class="vca_debug_right_box">
+                <div id=processedViewBox class="vca_debug_view_box"></div>
+
+                <div class="debugger_video_box_title" style="text-align: left;">
+                    <label for="viewList">&{'view-type'}</label><input id="viewList" style="width:285px;"><br/>
+                    <label>&{'resolution'}</label><span class="resolution"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="vca_instance_details">
+            <div class="debugger_info_title">
+            &{'vca-current-command'}
+            </div>
+            <div id="vcaCommands" class="readonly_textbox commands"></div>
+
+            <div class="debugger_info_title">
+            &{'change-parameters'} <span id="changeInfo" class="help_icon"></span>
+            </div>
+            <div class="vca_debug_settings_box">
+                <a id="btnApply" href="javascript:debugWin.applyNewCommands()" class="k-button">&{'apply'}</a>
+                <input id="editCommands" type="text" class="k-input k-textbox"/>
+            </div>
+
+            <div class="debugger_info_title">&{'system-message'}</div>
+            <div id="statusText" class="readonly_textbox server_msg"></div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function ()
+    {
+        debugWin.start("${instanceId}");
+    })
+
+</script>

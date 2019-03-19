@@ -1,0 +1,46 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style>
+
+    .dummy {
+        padding: 20px;
+    }
+
+    .dummy .out_box {
+        padding: 10px;
+        border: 1px solid #444;
+    }
+</style>
+
+<div class="dummy">
+    <pre class="out_box"></pre>
+</div>
+
+<script>
+
+    var dummy = {
+        $pageMain: $(".dummy"),
+
+        print: function (log, append)
+        {
+            var $box = dummy.$pageMain.find(".out_box");
+            if (!append)
+            {
+                $box.html("");
+            }
+            $box.append(log);
+        }
+    };
+
+    $(function ()
+    {
+        /**
+         * add test codes below. Make sure not to commit them to git.
+         */
+
+
+    });
+
+</script>
+
+

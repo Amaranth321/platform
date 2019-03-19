@@ -1,0 +1,134 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/} #{include HtmlPath + '/common/partial/vca_shared.html'/}
+<div id="main-header" class="clearfix">
+    <div class="header-title wrapper">
+        <div class="header-calendar pos-r clearfix">
+            <h1 id="reportTitle" class="left">...</h1>
+            <div id="calendar-reservation" class="pos-r right">
+                <span></span>
+                <i class="arrow"></i>
+            </div>
+            <!-- End of calendar-->
+        </div>
+        <!-- End of clearfix-->
+        <div class="drag-area">
+            <div class="drop-place">
+                <span class="drop-here">&{'drag-to-here'}</span>
+            </div>
+        </div>
+        <!-- End of drag-area-->
+        <div class="modifyConfirm">
+            <button id="applyBtn" class="applyBtn btn btn-small btn-success">&{'apply'}</button>
+            <button id="cancelBtn" class="cancelBtn btn btn-small btn-default">&{'cancel'}</button>
+        </div>
+    </div>
+    <!-- End of header-title-->
+    <div class="header-body wrapper clearfix">
+        <div class="email-export left">
+            <!-- <div class="email-options left pos-r">
+                <a href="#" class="parent">Email</a>
+
+                <div class="options" style="">
+                    <form action="#" id="email-options-f" class="clearfix">
+                        <input type="text" name="email-options" id="email-input" class="left" value="Enter your email to send the report.">
+
+                        <input type="submit" value="Send" id="email-submit" class="right">
+
+                        <span class="status-done right">Done</span>
+                    </form>
+                </div>
+            </div> -->
+            <!-- End of email-options-->
+            <div id="exportOutput" class="export-options pos-r left">
+                <a class="parent">&{'export'}</a>
+                <ul id="mainOutputDetail" class="inner ul-clear">
+                    <li id="pdfOutput" class="pdf"><a>&{'pdf'}</a></li>
+                    <li id="csvOutput" class="csv"><a>&{'csv'}</a></li>
+                </ul>
+                <ul id="csvOutputDetail" class="inner inner-csv ul-clear">
+                    <li id="csvOutputForH" class="csv"><a>&{'hourly'}</a></li>
+                    <li id="csvOutputForD" class="csv"><a>&{'daily'}</a></li>
+                    <li id="csvOutputForW" class="csv"><a>&{'weekly'}</a></li>
+                    <li id="csvOutputForM" class="csv"><a>&{'monthly'}</a></li>
+                </ul>
+            </div>
+            <!-- End of export options-->
+        </div>
+        <!-- End of export-options-->
+        <!-- <div class="permalink pos-r right">
+            <a href="#" class="parent">Permalink</a>
+
+            <ul class="inner ul-clear" style="">
+                <li><a href="#">Copy link</a>
+                </li>
+                <li><a href="#">Stop sharing</a>
+                </li>
+            </ul>
+
+            <ul class="inner permalink-status ul-clear" style="">
+                <li class="is_active last">Link copied to clipboard</li>
+            </ul>
+        </div> -->
+        <!-- End of permalink-->
+    </div>
+    <!-- End of header-body-->
+    <div id="chartRadio" class="header-footer wrapper clearfix chartTimelineRadio">
+        <form action="#" id="charts-radio-f" class="clearfix">
+            <div class="icon charts-icon">
+                <div class="radio" id="uniform-charts">
+                    <span>
+                        <input type="radio" name="charts-radio" id="charts" class="u-radio">
+                    </span>
+                </div>
+                <strong>&{'charts'}</strong>
+            </div>
+            <!-- End of charts-icon-->
+            <div class="icon timecard-icon">
+                <div class="radio" id="uniform-timecard">
+                    <span>
+                        <input type="radio" name="charts-radio" id="timecard" class="u-radio">
+                    </span>
+                </div>
+                <strong>&{'time-card'}</strong>
+            </div>
+            <!-- End of timecard-icon-->
+        </form>
+    </div>
+    <!-- End of header-footer-->
+</div>
+<!-- End of main-header-->
+<div id="main-charts" class="clearfix"></div>
+<!-- End of main-charts-->
+
+<!-- common vca reports load css and js -->
+<link rel="stylesheet" type="text/css" href="${CdnPath}/kup/report/css/report.css" />
+<script type="text/javascript" src="/public/javascripts/heatmap.min.js"></script>
+<script src="${CdnRootPath}/public/javascripts/devicetree/device_treeview.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/kup.widget.report.js"></script>
+
+<!-- each vca type load js -->
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/trafficflow.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/peoplecounting.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/passerby.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/crowd.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/profiling.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/attention.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/intrusion.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/pdefense.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/loitering.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/objcounting.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/videoblur.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/report.type/faceindexing.js"></script>
+
+<!-- traffic flow load extra js -->
+<script src="${CdnRootPath}/public/javascripts/reports/raphael.min.fixed.js"></script>
+<script src="${CdnRootPath}/public/javascripts/reports/kaiFlow.js"></script>
+<script src="${CdnRootPath}/public/javascripts/external/ua-parser.min.js"></script>
+
+<script>
+jQuery(document).ready(function($) {
+    var config = KUP.widget.report.getOpt();
+    config.days = 7;
+    KUP.widget.report.setOpt(config);
+    KUP.widget.report.init();
+});
+</script>

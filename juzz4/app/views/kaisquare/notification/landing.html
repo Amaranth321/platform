@@ -1,0 +1,11 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script>
+    $(function ()
+    {
+        var alertType = "${alertType}";
+        var eventId = "${eventId}";
+
+        utils.viewEventDetails(eventId, alertType);
+    });
+</script>

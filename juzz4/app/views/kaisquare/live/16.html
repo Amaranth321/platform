@@ -1,0 +1,32 @@
+#{extends HtmlPath + '/live/index.html'/}
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        document.getElementById('view16link').className = 'on';
+        $(".videoBox16").on("click",function(){
+            liveViewMng.selectViewSlot($(this).attr("id"));
+        });
+    });
+</script>
+
+<ul id=vList class="video_list">
+    <li id=1611 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1612 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1613 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1614 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+
+    <li id=1621 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1622 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1623 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1624 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+
+    <li id=1631 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1632 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1633 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1634 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+
+    <li id=1641 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1642 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1643 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+    <li id=1644 class="videoBox16"><span class="dropTarget">&{'no-camera'}</span></li>
+</ul>

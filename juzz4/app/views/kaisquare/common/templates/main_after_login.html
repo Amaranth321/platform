@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+#{include HtmlPath + '/common/partial/main_head.html'/}
+</head>
+<body>
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+<div id="container" class="pos-r">
+    <div id="header" class="clearfix">
+    #{include HtmlPath + '/common/partial/header_toolbar.html'/}
+    #{include HtmlPath + '/common/partial/kendo_templates.html'/}
+    </div>
+
+    <div id="content" class="clearfix">
+        <div id="sidebar">
+            <div class="sidebar-inner">
+            #{include HtmlPath + '/common/partial/right_menu_bar.html'/}
+
+            #{if liveViewPage}
+                #{include HtmlPath + '/live/live_submenu.html'/}
+            #{/if}
+
+            #{elseif reportPage}
+                #{include HtmlPath + '/vca/reports/submenu.html'/}                
+            #{/elseif}
+            
+            #{elseif realTimePage}
+                #{include HtmlPath + '/realtime/submenu.html'/}                
+            #{/elseif}
+            </div>
+        </div>
+
+        <div id="main">
+        #{doLayout /}
+        </div>
+
+        <div id="footer">
+        #{include HtmlPath + '/common/partial/footer.html'/}
+        </div>
+    </div>
+</div>
+
+#{include HtmlPath + '/common/partial/piwik_tracker.html'/}
+#{include HtmlPath + '/common/partial/hidden_divs.html'/}
+
+</body>
+</html>

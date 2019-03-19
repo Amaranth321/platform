@@ -1,0 +1,97 @@
+.server_configs {
+}
+
+.server_configs input[type=checkbox] {
+    margin: 0px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.server_configs .k-button {
+    padding: 3px 15px 5px 15px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.server_configs .clear_both {
+    clear: both;
+}
+
+.server_configs .header {
+    padding: 10px;
+    border-bottom: 1px solid #000000;
+}
+
+.server_configs .header .info {
+    margin-left: 20px;
+}
+
+.server_configs .header .info ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+.server_configs .header .info li {
+    list-style-type: square;
+    line-height: 18px;
+}
+
+.server_configs .main_wrapper {
+    width: 700px;
+    margin: 10px auto;
+}
+
+.server_configs .main_wrapper.btn_grp {
+}
+
+.server_configs .main_wrapper .body {
+    background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+}
+
+.server_configs .body .category {
+    /*margin: 10px;*/
+    padding: 5px 20px 10px 20px;
+    border-radius: 2px;
+}
+
+.body .category .title {
+    color: #ddd;
+    font-size: 13px;
+    padding: 5px 0px 5px 5px;
+    border-bottom: 1px solid #444;
+}
+
+.body .category .input_grp {
+    margin-top: 3px;
+    padding: 0px 5px;
+}
+
+.body .category .input_grp:hover {
+    background: #181818;
+}
+
+.category .input_grp label {
+    display: inline-block;
+    width: 350px;
+    line-height: 24px;
+}
+
+.category .input_grp input {
+    display: inline-block;
+}
+
+.category .input_grp input[type=number] {
+    line-height: 18px;
+    padding-left: 5px;
+    text-align: center;
+    width: 70px;
+}
+
+.category .input_grp input[type=checkbox] {
+    cursor: pointer;
+}
+
+.category .input_grp input[type=text], input[type=password] {
+    width: 300px;
+    padding: 3px 5px;
+}

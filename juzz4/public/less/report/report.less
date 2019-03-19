@@ -1,0 +1,166 @@
+@white: rgb(255,255,255);
+@black: rgb(0,0,0);
+@yellow:#f6ae40;
+@gray4d:#4d4d4d;
+@gray80:#808080;
+@grayd9:#d9d9d9;
+@calenderHover:#5b5b5b;
+@dateRadius:0px;
+@btnRadius:2px;
+@yellowHover:#f29f1f;
+@grayHover:#454545;
+@stikerHover:#9d9d9d;
+.daterangepicker td.active, .daterangepicker td.active:hover, .daterangepicker td.in-range {
+color:@black;
+background-color: @yellow;
+border-radius: @dateRadius;
+-webkit-border-radius: @dateRadius;
+-moz-border-radius: @dateRadius;
+}
+
+#main-header {
+    .header-title {
+        position:relative;
+        min-height:90px;
+        .header-calendar {
+            h1 {}
+            #calendar-reservation {
+                &:hover {background:@calenderHover;}
+                span {}
+                i {}
+            }
+        }
+        
+        .drag-area {
+            width:85%;
+            height:auto;
+            &::after {clear:both; content:" "; display:block;}
+            .drop-place {
+                span {
+                    &.drop-here {
+                        color: @yellow;
+                        height: 20px;
+                        padding: 0 10px;
+                        display: none;
+                        line-height: 20px;
+                        border: 1px solid @yellow;
+                        float:left;
+                    }
+                    &.drop-item{
+                        cursor:default;
+                        border:none;
+                        color:@grayd9;
+                        background:@gray80;
+                        border:1px solid @gray80;
+                        margin: 0 4px 4px 0;
+                        padding: 0 15px 0 7px;
+                        a {cursor:pointer;}
+                    }
+                &.stickerItem {
+                    &:hover {border:1px solid @stikerHover;}
+                &.isActive {
+                    a {
+                        &.btn-remove {
+                            cursor:pointer;
+                            width: 8px;
+                            height: 8px;
+                            position: absolute;
+                            top: 5px;
+                            right: 4px;
+                            background: url(../img/btn-remove.png) 0 0 no-repeat;
+                        }
+                    }
+                }
+                }
+                }
+            }    
+        }
+        
+        .modifyConfirm {
+            display: none;
+            position:absolute;
+            right:20px;
+            top:47px;
+            button {
+                font-size:12px;
+                width:76px !important;
+                height:22px !important;
+                line-height:22px;
+                padding:0;
+                color:@white;
+                text-shadow:none;
+                border:none;
+                box-shadow: 0 1px 5px 0 rgba(0,0,0,0.5);
+                border-radius: @btnRadius;
+                -webkit-border-radius: @btnRadius;
+                -moz-border-radius: @btnRadius;
+            &.applyBtn {
+                background:@yellow;
+                margin-right:5px;
+                &:hover {background:@yellowHover;}
+            }
+            &.cancelBtn {
+                background:@gray4d;
+                &:hover {background:@grayHover;}
+            }
+            }
+        }
+        
+    /* .header-title */}
+    
+    .header-body {
+        .email-export {
+            #exportOutput {
+                position:relative;
+                cursor:pointer;
+            }
+        }
+        
+    /* .header-body */}
+    
+/* #main-header */}
+
+#main-charts {
+    /* Main Container */
+    padding-bottom:100px;
+    
+    #lineChartContainer {
+    /* Vistors vs Time */
+       &.vca_report_line_chart {height:auto !important;}
+    }
+    
+    .plpcount_buttom_wrapper {
+        margin:0 auto;
+        min-height:auto !important;
+        width:90% !important;
+        padding-top:3em;
+        text-align:center;
+        
+       
+        .plpcount_buttom_left { 
+        /* Total Visits & Average Visits & Most Visits & Least Visits & Top5*2 */
+            display:inline-block; 
+            position:relative; 
+            vertical-align:top;
+        }
+        
+        .plpcount_buttom_right{
+           display:inline-block;
+            margin-right:0 !important;
+            float:none;
+            &.plpcount_sections{}
+            
+           
+            .plpcount_contain { 
+            /* Total Visits */
+                .plpcount_contain_title {}
+                }
+        }
+    }
+}
+
+#crosssite_report_container, .report_buttom_wrapper  {
+    display:none;
+}
+
+

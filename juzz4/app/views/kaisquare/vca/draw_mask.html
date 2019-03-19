@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+#{include HtmlPath + '/common/partial/kup_headers.html'/}
+#{include HtmlPath + '/common/partial/kendo_headers.html'/}
+
+    <script src="/public/javascripts/sketch/kup.sketch.js" type="text/javascript"></script>
+    <script src="/public/javascripts/sketch/Event.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        kupInit('${bucket}', function (responseData) {
+
+        });
+    </script>
+
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        button:hover, input[type="button"]:hover {
+            cursor: pointer;
+            background-color: #61d33a;
+        }
+
+        button:active, input[type="button"]:active {
+            background-color: #41b31a;
+        }
+
+        div.controls div span {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        div.controls div {
+            padding: 10px;
+        }
+
+        div#areaDraw {
+            width: 100%;
+            min-height: 100%;
+            z-index: 1000;
+            cursor: crosshair;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="areaDraw"></div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    var sketch;
+    var existingPath = '${maskPath}';
+    var options;
+    var bgImageLoaded = false;
+
+    function initSketchTool(existingPath, toolOptions) {
+        sketch = new Sketch({
+            element: document.getElementById("areaDraw"),
+            path: existingPath,
+            zoom: 1
+        });
+
+        options = toolOptions;
+
+        setEmptyBackground();
+        applyOptions();
+
+        // Listen for the resizing the canvas area.
+        Event.add(window, "resize", function () {
+            sketch.resize(window.innerWidth, window.innerHeight);
+        }).listener();
+
+        /// Prevent right-click on desktops.
+        Event.add(document.body, 'contextmenu', Event.prevent);
+    }
+
+    function applyOptions() {
+        setStroke(options.color, options.width);
+        setOpacity(options.opacity);
+        setZoom(100);
+    }
+
+    function setStroke(color, width) {
+        sketch.style.strokeStyle = color;
+        sketch.style.lineWidth = width;
+    }
+
+    function setZoom(value) {
+        sketch.zoom = value / 100;
+        sketch.redrawFast();
+    }
+
+    function setOpacity(value) {
+        sketch.style.globalAlpha = parseInt(value) / 100;
+    }
+
+    function setDrawingTool(type) {
+        sketch.setTool(type);
+
+        if (type == "eraser") {
+            setOpacity(100);
+        } else {
+            setOpacity(50);
+        }
+    }
+
+    function exportImage() {
+        var win = window.open();
+        $(win.document.body).html('<img src="' + sketch.toDataURL() + '" />');
+    }
+
+    function getMaskImage() {
+        return sketch.toDataURL();
+    }
+
+    function getMaskPath() {
+        return sketch.path;
+    }
+
+    function setCanvasImage(url) {
+        $('body').css({"background": "url(" + url + ") no-repeat center center"});
+        $('body').css({"background-size": "100% 100%"});
+    }
+
+    function setEmptyBackground() {
+        $('body').css({"background": "#000 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALklEQVQ4T2NUUlL6z4AH3Lt3D580A+OoAcMiDICRjDcdAKMZfzoYNYCBceiHAQDsuisx5wDZVAAAAABJRU5ErkJggg==')"});
+    }
+
+    function updateBackgroundImage(coreDeviceId, channelId) {
+        bgImageLoaded = false;
+
+        parent.utils.showLoadingOverlay();
+        parent.DvcMgr.getCameraSnapshot(coreDeviceId, channelId, function(jpegUrl) {
+            if(jpegUrl == null) {
+                parent.utils.popupAlert(localizeResource('error-loading-image'));
+                setEmptyBackground();
+            } else {
+                setCanvasImage(jpegUrl);
+                bgImageLoaded = true;
+            }
+
+            parent.utils.hideLoadingOverlay();
+        });
+    }
+
+    function enableDrawingTools(flag) {
+        if (flag) {
+            $('#areaDraw').css({"cursor": "crosshair"});
+            applyOptions();
+            window.parent.$(".toolbox").show("slide", { direction: "left" });
+        }
+        else {
+            $('#areaDraw').css({"cursor": "default"});
+            setOpacity(0);
+            window.parent.$(".toolbox").hide("slide", { direction: "left" });
+        }
+    }
+
+    function bgImageExists(){
+        return bgImageLoaded;
+    }
+
+</script>

@@ -1,0 +1,156 @@
+.node_browser {
+}
+
+.node_browser input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.node_browser .title_bar {
+    height: 55px;
+    background-color: #212121;
+    padding: 10px 0px 0px 15px;
+}
+
+.node_browser .title_bar .title {
+    font-size: 18px;
+    color: #bbb;
+}
+
+.node_browser .search {
+}
+
+.node_browser .search .filters {
+    padding: 10px;
+    border-bottom: 1px solid #000000;
+}
+
+.node_browser .search .term {
+    display: inline-block;
+}
+
+.node_browser .search label {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.node_browser .search input {
+    display: inline-block;
+    margin-right: 30px;
+    padding: 2px 3px;
+}
+
+.node_browser .search .btn_group {
+    margin-top: 10px;
+}
+
+.node_browser .search .btn_group .btn_search {
+    height: 28px;
+    width: 80px;
+    padding: 0px 5px;
+    line-height: 28px;
+}
+
+.node_browser .or {
+    margin-right: 25px;
+}
+
+.node_browser .grid {
+    width: 100%;
+    height: 100%;
+}
+
+.node_browser .grid .k-loading-image {
+    background-image: none;
+}
+
+.node_browser .grid .camera_grid {
+    margin-bottom: 5px;
+}
+
+.node_browser .grid .vca_grid {
+    margin-bottom: 5px;
+}
+
+.node_browser .status {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0px 0px -4px 1px;
+    border-radius: 2px;
+}
+
+.node_browser .unknown {
+    background: gray;
+}
+
+.node_browser .connected {
+    background: #74A402;
+}
+
+.node_browser .disconnected {
+    background: #CD1625;
+}
+
+.node_browser .sub_filter {
+    border-bottom: 1px solid #000000;
+}
+
+.node_browser .sub_filter label {
+    padding: 10px;
+}
+
+.node_browser .sub_filter input {
+    margin: 0px 3px 0px 0px;
+}
+
+.vca_status_wrapper {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0px 0px -4px 1px;
+}
+
+.vca-state-WAITING {
+    background: url(/public/css/common/images/vca_status_loading.gif) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-state-RUNNING {
+    background: url(/public/css/common/images/vca_status_running.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-state-ERROR {
+    background: url(/public/css/common/images/alert.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-state-NOT_SCHEDULED {
+    width: 18px;
+    height: 18px;
+    background: url(/public/css/common/images/vca_status_stopped.png) center center no-repeat;
+    background-size: 18px 18px;
+}
+
+.vca-state-DISABLED {
+    background: url(/public/css/common/images/vca_status_inactive.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.popup_wrapper #maskErrorBox {
+    display: none;
+    color: #FF4040;
+}
+
+.node_browser .group_header {
+    color: #0da9ee;
+    font-weight: bold;
+}
+
+.node_browser .search .title {
+    display: inline-block;
+    width: 60px;
+    padding-left: 10px;
+}

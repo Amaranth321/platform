@@ -1,0 +1,20 @@
+#{extends HtmlPath + '/live/index.html'/}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById('view1link').className = 'on';
+        $(".videoBox1").on("click",function(){
+            liveViewMng.selectViewSlot($(this).attr("id"));
+        });
+        
+        var deviceId = '${deviceId}';
+        
+        setTimeout(function(){
+            liveViewMng.loadVideo(111, deviceId, 0, null);
+        }, 500);
+    });
+</script>
+
+<ul id=vList class="video_list">
+<li id=111 class="videoBox1"><span>&{'no-camera'}</span></li>
+</ul>

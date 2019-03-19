@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+
+#{include HtmlPath + '/common/partial/kup_headers.html'/}
+*{#{include HtmlPath + '/common/partial/kendo_headers.html'/}}*
+*{#{include HtmlPath + '/common/partial/hidden_divs.html'/}}*
+#{include HtmlPath + '/common/partial/leaflet_scripts.html'/}
+
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        #leafletArea {
+            width: 520px;
+            height: 390px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="leafletArea"></div>
+
+<script>
+    var gMaskArea = {
+        canvas: {
+            divId: "leafletArea",
+            width: null,
+            height: null
+        },
+        style: {
+            polygon: {
+                title: localizeResource('draw'),
+                allowIntersection: false,
+                shapeOptions: {
+                    stroke: true,
+                    color: '#ddd',
+                    weight: 1,
+                    fillColor: '#AA40FF',
+                    fillOpacity: 0.45,
+                    opacity: 0.9,
+                    clickable: false
+                }
+            }
+        }
+    };
+
+    gMaskArea.start = function ()
+    {
+        gMaskArea.initLeafletCanvas();
+        gMaskArea.handleDrawingEvents();
+    }
+
+    gMaskArea.initLeafletCanvas = function ()
+    {
+        mapManager.initialize(gMaskArea.canvas.divId, 20, false, false);
+        mapManager.map.doubleClickZoom.disable();
+        mapManager.map.scrollWheelZoom.disable();
+        mapManager.initializeDrawingTools(false, false, gMaskArea.style.polygon, false, false, true);
+        mapManager.setEmptyBackground();
+
+        //save dimensions
+        var $leafletArea = $("#" + gMaskArea.canvas.divId);
+        gMaskArea.canvas.width = $leafletArea.width();
+        gMaskArea.canvas.height = $leafletArea.height();
+    }
+
+    gMaskArea.handleDrawingEvents = function ()
+    {
+        mapManager.map.on('draw:created', function (e)
+        {
+            //request region name
+            parent.utils.requestUserInput(localizeResource("region-name"), function (saved, userInput)
+            {
+                if (!saved)
+                {
+                    return;
+                }
+
+                //check same names
+                userInput = userInput.trim();
+                var currentRegions = gMaskArea.getRegions();
+                var nameRepeats = false;
+                $.each(currentRegions, function (i, region)
+                {
+                    if (userInput.toLowerCase() == region.name.toLowerCase())
+                    {
+                        nameRepeats = true;
+                        return false;
+                    }
+                });
+
+                if (nameRepeats)
+                {
+                    parent.utils.popupAlert(localizeResource('duplicate-region-name'));
+                    return;
+                }
+
+                var layer = e.layer;
+                layer.name = userInput;
+                layer.label = mapManager.addLabel(layer.name, mapManager.getEstimatedCenter(layer), 'polygon_label');
+                mapManager.drawnItems.addLayer(layer);
+            });
+        });
+
+        mapManager.map.on('draw:drawstop', function (e)
+        {
+            mapManager.map.dragging.disable();
+        });
+    }
+
+    gMaskArea.loadCurrent = function (snapshotUrl, currentRegions)
+    {
+        mapManager.setBackgroundImage(snapshotUrl);
+        gMaskArea.setRegions(currentRegions);
+    }
+
+    gMaskArea.getRegions = function ()
+    {
+        var regions = [];
+
+        mapManager.drawnItems.eachLayer(function (layer)
+        {
+            var polygonPoints = [];
+            $.each(layer._originalPoints, function (index, point)
+            {
+                polygonPoints.push(gMaskArea.getNormalizedPoint(point));
+            });
+
+            var region = {
+                "name": layer.name,
+                "points": polygonPoints
+            };
+
+            regions.push(region);
+        });
+
+        return regions;
+    }
+
+    gMaskArea.setRegions = function (regions)
+    {
+        if (regions == null)
+        {
+            console.error("regions is null");
+            return;
+        }
+
+        $.each(regions, function (index, region)
+        {
+            var latLngPoints = [];
+            $.each(region.points, function (f, p)
+            {
+                latLngPoints.push(gMaskArea.getLatLngPoint(p));
+            });
+
+            //polygon
+            var polygon = L.polygon(latLngPoints, gMaskArea.style.polygon.shapeOptions);
+            var layer = polygon.addTo(mapManager.map);
+            //label
+            layer.name = region.name;
+            layer.label = mapManager.addLabel(region.name, mapManager.getEstimatedCenter(layer), 'polygon_label');
+
+            mapManager.drawnItems.addLayer(layer);
+        });
+    }
+
+    gMaskArea.getNormalizedPoint = function (point)
+    {
+        var nX = (point.x / gMaskArea.canvas.width);
+        var nY = (point.y / gMaskArea.canvas.height);
+
+        //Ensure the points are within the view
+        nX = (nX < 0) ? 0 : nX;
+        nX = (nX > 1) ? 1 : nX;
+        nY = (nY < 0) ? 0 : nY;
+        nY = (nY > 1) ? 1 : nY;
+
+        //limit 3 decimals
+        nX = parseFloat(nX.toFixed(4));
+        nY = parseFloat(nY.toFixed(4));
+
+        return { x: nX, y: nY};
+    }
+
+    gMaskArea.getLatLngPoint = function (normalizedPoint)
+    {
+        //change points to domain in map dimensions
+        var llX = normalizedPoint.x * gMaskArea.canvas.width;
+        var llY = normalizedPoint.y * gMaskArea.canvas.height;
+
+        return mapManager.map.containerPointToLatLng(new L.Point(llX, llY));
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/analyticsType.js"></script>
+
+<link rel="stylesheet" type="text/css" href="${CdnRootPath}/public/javascripts/bucket/dvc_vca_tree.css"/>
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/bucket/dvcVcaTree.js"></script>
+
+<script src="/public/javascripts/vca/vcaConcurrency.js"></script>
+<link rel="stylesheet" href="/public/javascripts/vca/vca_concurrency.css"/>
+
+<link rel="stylesheet" type="text/css" href="${CdnRootPath}/public/javascripts/bucket/bkt_noti_settings.css"/>
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/bucket/bktNotiSettings.js"></script>
+
+<link rel="stylesheet" type="text/css" href="${CdnRootPath}/public/javascripts/bucket/bucket.css"/>
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/bucket/bucketManager.js"></script>
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/bucket/bucketModel.js"></script>
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/bucket/bucketSelector.js"></script>
+
+
+<script id="bucketDetailsItemTmpl" type="text/kendo-ui-template">
+    # var itemClass = item.isRoot? "root_item" : "child_item"; #
+    # itemClass += item.activated? "" : " suspended"; #
+    # itemClass += item.deleted? " deleted" : ""; #
+
+    <span id="bkt#= item.id #" class="tree_item #= itemClass #">
+        <span class="name">#= item.name #</span>
+    </span>
+</script>
+
+<script id="featureItemTmpl" type="text/kendo-ui-template">
+    <span id="feature#= item.id #" class="tree_item">
+        <span class="name">#= item.name #</span>
+    </span>
+</script>
+
+<script type="text/x-kendo-template" id="eventSettingsRowTmpl">
+    <div class="row">
+        <label class="event_type">#= localizeResource(eventType) #</label>
+
+        # if(notificationEnabled) { #
+        <input name="#= eventType #_notification" class="notification" type="checkbox" checked>
+        # } else { #
+        <input name="#= eventType #_notification" class="notification" type="checkbox">
+        # }#
+
+        # if(videoRequired) { #
+        <input name="#= eventType #_video" class="video" type="checkbox" checked>
+        # } else { #
+        <input name="#= eventType #_video" class="video" type="checkbox">
+        # }#
+    </div>
+</script>
+
+<div class="bucket_manager">
+    <div class="title_bar">
+        <span class="title">&{'bucket-management'}</span>
+    </div>
+
+    <div class="toolbar">
+        <a href="javascript:bucketManager.add()" class="k-button add_btn">
+            <span class="k-icon k-i-plus"></span>&{'add-bucket'}
+        </a>
+
+        <label class="display_deleted">
+            <input type="checkbox" onclick="bucketManager.showDeletedBuckets(this.checked)">
+        &{'show-deleted-buckets'}
+        </label>
+    </div>
+
+    <div class="left_panel">
+        <div class="bucket_tree">
+            <div class="search_bar">
+                <input id="bktSearchBox" type="text" class="k-textbox">
+            </div>
+
+            <div class="btn_group">
+                <a href="javascript:bucketManager.collapseFullTree()" class="k-button collapse"
+                   title="&{'collapse-all'}"></a>
+
+                <a href="javascript:bucketManager.refreshBucketTree()" class="k-button refresh" title="&{'refresh'}">
+                    <span class="k-icon k-i-refresh"></span>
+                </a>
+            </div>
+
+            <div id="bucketMgrTree"></div>
+        </div>
+    </div>
+
+    <div class="bucket_details">
+        <div class="tab_strip">
+            <ul>
+                <li class="k-state-active">
+                    <div class="tab_title overview">
+                    &{'overview'}
+                    </div>
+                </li>
+
+                <li>
+                    <div class="tab_title users">
+                    &{'users'}
+                    </div>
+                </li>
+
+                <li>
+                    <div class="tab_title analytics">
+                    &{'account-assets'}
+                    </div>
+                </li>
+
+                <li>
+                    <div class="tab_title notifications">
+                    &{'notification-settings'}
+                    </div>
+                </li>
+                
+                <li>
+                    <div class="tab_title password_policy">
+                    &{'password-policy'}
+                    </div>
+                </li>
+
+                <li>
+                    <div class="tab_title change_history">
+                    &{'bucket-history'}
+                    </div>
+                </li>
+            </ul>
+
+            <div>
+                <div class="tab_content details_tab">
+
+                    <div class="logoSetting">
+                        <span class="logo"></span>
+                        <a href="javascript:bucketManager.editSettings()" class="k-button upload"
+                           data-content="&{'upload-logo'}" id="cameraIcon"></a>
+                    </div>
+
+                    <div class="info">
+                        <div id="bucketInfo" class="left_box defaultStatus">
+                            <div class="title">
+                                <span>&{'bucket-information'}</span>
+                                <a href="javascript:bucketManager.editBucketInfo()" class="k-button modify"
+                                   title="&{'edit'}">
+                                    <span class="edit" data-content="&{'edit'}" data-variation="small"></span>
+                                </a>
+
+                                <a href="javascript:bucketManager.delete()" class="k-button delete">
+                                &{'delete-bucket'}
+                                </a>
+
+                                <a href="javascript:bucketManager.restore()" class="k-button btn_restore">
+                                &{'restore'}
+                                </a>
+                            </div>
+
+
+                            <label>&{'company-id'}</label>
+                            <span class="name"></span>
+                            <br/>
+                            <br/>
+
+
+                            <label for="parentName">&{'parent-bucket'}</label>
+                            <span class="parentName"></span>
+                            <input name="parent" type="text" class="k-input k-textbox" value="&{'no-parent-bucket'}"
+                                   disabled data-bind="value:parentName">
+                            <a href="javascript:bucketModel.chooseParent(false)" class="k-button modify" title="&{'edit'}"
+                               id="parentEditIcon">
+                                <span class="edit" data-content="&{'edit'}" data-variation="small"></span>
+                            </a>
+                            <br/>
+                            <br/>
+
+
+                            <label for="path">&{'path'}</label>
+                            <span class="path"></span>
+                            <input id="path" type="text" class="k-input k-textbox" name="path" required
+                                   validationMessage="&{'required'}" data-bind="value:path">
+                            <br/>
+                            <br/>
+
+                            <label>&{'description'}</label>
+                            <span class="description"></span>
+                            <textarea id="description" type="text" class="k-textbox" name="description"
+                                      data-bind="value:description"></textarea>
+                            <br/>
+                            <br/>
+
+
+                            <label>&{'status'}</label>
+                            <span class="status"></span>
+                            <a href="javascript:bucketManager.suspend()" class="k-button suspend"
+                               id="deactivateBttn">&{'deactivate'}</a>
+                            <a href="javascript:bucketManager.unsuspend()" class="k-button activate"
+                               id="activateBttn">&{'activate'}</a>
+                            <br/>
+                            <br/>
+
+                            <label for="userLimit">&{'max-user-count'}</label>
+                            <span class="userLimit"></span>
+                            <input type="number" id="userLimit" name="userLimit" required
+                                   validationMessage="&{'required'}" data-bind="value:userLimit"
+                                   data-container-for="userLimit">
+                            <br/>
+                            <br/>
+
+                            <label for="emailverificationofusers">&{'email-verification-of-users'}</label>
+                            <input name="emailverificationofusers" type="checkbox"
+                                   data-bind="checked:emailverificationofusersenabled"
+                                   data-container-for="emailverificationofusers">
+
+                            <br/>
+                            <br/>
+
+
+                            <label for="mapSource">&{'map-source'}</label>
+                            <span class="mapSource"></span>
+
+                            <div class="k-edit-field" data-container-for="mapsource">
+                                <input id="mapsourceList" name="mapsource" style="width: 170px">
+                            </div>
+
+                            <div class="button_group">
+                                <a href="javascript:bucketManager.updateBucketInfo()"
+                                   class="k-button update">&{'update'}</a>
+                                <a href="javascript:bucketManager.cancelBucketInfo()"
+                                   class="k-button cancel">&{'cancel'}</a>
+                            </div>
+
+                        </div>
+
+                        <div class="features">
+                            <div class="title">
+                                <span>&{'features-currently-enabled'}</span>
+                                <a href="javascript:bucketManager.editFeatures()" class="k-button modify"
+                                   title="&{'edit'}">
+                                    <span class="edit" data-content="&{'edit'}" data-variation="small"></span>
+                                </a>
+                            </div>
+
+                            <div id="bktFeatureTree" class="tree"></div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div>
+                <div class="tab_content remove_default_tab_padding">
+                    <div id="userList"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="tab_content remove_default_tab_padding">
+                    <div class="analytics_tab">
+                        <div class="title"></div>
+                        <div class="diagram_wrapper">
+                            <div class="dvc_vca_tree"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="tab_content remove_default_tab_padding">
+                    <div class="noti_setts">
+                        <div class="grid">
+                            <div class="headers">
+                                <div class="row">
+                                    <span class="event_type header">&{'event-type'}</span>
+                                    <span class="notification header">&{'notification'}</span>
+                                    <span class="video header">&{'video-recording'}</span>
+                                </div>
+                            </div>
+                            <div class="body"></div>
+                        </div>
+                        <div class="btn_group">
+                            <a href="javascript:bucketManager.notiSetts.restoreDefaults()" class="k-button restore">
+                            &{'restore-defaults'}</a>
+                            <a href="javascript:bucketManager.notiSetts.saveChanges()" class="k-button save">
+                            &{'save'}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+			<div style="min-height: 550px;">
+                <div class="tab_content remove_default_tab_padding">
+                    #{include HtmlPath + '/bucket/password_policy.html'/}
+		        </div>
+		    </div>
+            
+            <div>
+                <div class="tab_content remove_default_tab_padding">
+                    <div id="changeList"></div>
+                </div>
+            </div>
+
+		</div>
+    </div>
+</div>
+
+<script>
+    var currentBucketId = "${bucketId}";
+
+    $(function () {
+        bucketManager.generatePage(currentBucketId);
+    });
+
+    var targetBucketId = "${targetBucketId}";
+
+    $(function () {
+        bucketModel.init(targetBucketId);
+
+        $('.modify .edit, .upload').popup({
+            inline: true,
+            hoverable: true,
+            position: 'bottom center',
+            delay: {
+                show: 50,
+                hide: 50
+            }
+        });
+    });
+
+</script>

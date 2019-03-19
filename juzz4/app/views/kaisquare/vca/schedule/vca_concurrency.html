@@ -1,0 +1,36 @@
+<script type="text/x-kendo-template" id="concurrentVcaList">
+    # $.each(data, function(i, vca){ #
+    <div class="vca">
+        <span class="entry">#= vca.type #</span>
+        <span class="entry">#= localizeResource(vca.program) #</span>
+        <span class="entry">#= vca.deviceName #</span>
+        <span class="entry">#= vca.channelName #</span>
+        <span class="entry">#= vca.scheduleSummary #</span>
+    </div>
+    # }); #
+</script>
+
+<div class="vca_ccy">
+    <div class="chart_container">
+        <div id="ccyChart"></div>
+    </div>
+
+    <div class="hover_win"></div>
+</div>
+
+<script>
+
+    var nodeId = "&{nodeId}";
+    var maxVcaConcurrency = "&{maxVcaConcurrency}";
+
+    $(function ()
+    {
+        vcaCcy.loading(true);
+        DvcMgr.ready(function ()
+        {
+            vcaCcy.loading(true);
+            vcaCcy.generate("ccyChart", nodeId, maxVcaConcurrency);
+        });
+    });
+
+</script>

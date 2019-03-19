@@ -1,0 +1,31 @@
+/* Live view full screen
+-------------------------------------------------------------------------- */
+#liveViewBox:-webkit-full-screen {
+position: absolute;
+left: 0px;
+top: 0px;
+width: 100% !important;
+height: 100% !important;
+background: #000;
+}
+
+.view_box {
+	position: absolute;
+	width: 70px;
+	right: 0px;
+	top: 140px;
+}
+
+.view_block a {
+display: block;
+width: 100%;
+cursor: pointer;
+padding: 10px 0 50px 0;
+background:#000;
+margin-top:1px;
+}
+
+.view_block a:hover {
+	color:#fff;
+	background:#f6ae40;
+}

@@ -1,0 +1,76 @@
+
+.vca_ccy {
+    width: 1100px;
+    background: url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    margin: -6px;
+    overflow: hidden;
+}
+
+.vca_ccy .chart_container {
+    width: 100%;
+    height: 420px;
+}
+
+.vca_ccy .hover_win {
+    margin: 3px 10px 7px 10px;
+    background: #151515;
+    opacity: 0.8;
+    text-align: left;
+    border-radius: 3px;
+    border-left: 3px solid #F6AE40;
+}
+
+.vca_ccy .hover_win .vca {
+    padding: 0px 5px 0px 15px;
+    border-bottom: 1px solid #333;
+}
+
+.vca_ccy .hover_win .vca:last-child {
+    padding: 0px 5px 0px 15px;
+    border-bottom: 0px;
+}
+
+.vca_ccy .hover_win .vca .entry {
+    display: inline-block;
+    width: 18%;
+    line-height: 26px;
+}
+
+.vca_ccy .axis text {
+    font-size: 11px;
+    fill: #ccc;
+}
+
+.vca_ccy .axis path {
+    display: none;
+}
+
+.vca_ccy .axis line {
+    fill: none;
+    stroke: none;
+    stroke: #555;
+    shape-rendering: crispEdges;
+}
+
+.vca_ccy .grid line,
+.vca_ccy .grid path {
+    fill: none;
+    stroke: none;
+    stroke: #555;
+    shape-rendering: crispEdges;
+}
+
+.vca_ccy .grid .minor.tick line {
+    stroke-opacity: .5;
+}
+
+.vca_ccy svg .period_rect {
+    shape-rendering: crispEdges;
+    stroke-width: 0;
+    stroke: #505050;
+    fill-opacity : 0.8;
+}
+
+.vca_ccy .period_rect:hover {
+    fill: white;
+}

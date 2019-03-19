@@ -1,0 +1,177 @@
+
+%{ if(!privateCloud && mapSource == "baidu" && internetStatus == "Connected"){ }%
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=BVqcGIp8NRN7sq4LlUbju3zf"></script>
+<script src="/public/javascripts/map/bmap_TextIconOverlay_min.js"></script>
+<script src="/public/javascripts/map/bmap_MarkerClusterer_min.js"></script>
+<script src="/public/javascripts/map/manager.bmap.js" type="text/javascript"></script>
+
+%{ } }%
+
+<script src="/public/javascripts/map/constants.js" charset="utf-8"></script>
+<script type="text/x-kendo-template" id="infoBoxTemplate">
+
+    <div class="infobox">
+
+        # if(name) { #
+        <div class="infobox-title">#= data.name #</div>
+        #} else {#
+        <div class="infobox-title">#= data.vehicleLicensePlate #</div>
+        #}#
+
+        # if(data.type) { #
+        <div><span class="infobox-details">&{'type'}</span> : #= data.type #</div>
+        #} else if(data.model) {#
+        <div><span class="infobox-details">&{'model'}</span> : #= data.model.name #</div>
+        <div><span class="infobox-details">&{'live-view'}</span> :
+            <a href="/${bucket}/live/viewdevice/#= data.deviceId #" target="_blank">
+                <img src="${CdnPath}/common/images/cctv.png" style="height:16px;vertical-align:text-bottom"/>
+            </a>
+        </div>
+        #}#
+
+        # if(data.vehicleNumber) { #
+        <div><span class="infobox-details">&{'vehicle-number'}</span> : #= data.vehicleNumber #</div>
+        #}#
+
+
+        # if(data.vehicleCategory) { #
+        <div><span class="infobox-details">&{'category'}</span> : #= data.vehicleCategory #</div>
+        #}#
+
+        # if(data.vehicleDescription) { #
+        <div><span class="infobox-details">&{'description'}</span> : #= data.vehicleDescription #</div>
+        #}#
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="eventinfoBoxTemplate">
+    <div class="infobox">
+
+        # if(event.type) { #
+        <div class="infobox-title">#= localizeResource(event.type) #</div>
+        #}#
+
+        # if(vehicle.vehicleNumber) { #
+        <div><span class="infobox-details">&{'vehicle-number'}</span> : #= vehicle.vehicleNumber #</div>
+        #}#
+
+        # if(Driver.name) { #
+        <div><span class="infobox-details">&{'driver-name'}</span> : #= Driver.name #</div>
+        #}#
+
+        # if(schedule.startTime) { #
+        <div><span class="infobox-details">&{'schedule-starttime'}</span> : #= kendo.toString(new
+            Date(schedule.startTime), "G") #
+        </div>
+        #} else {#
+        <span></span>
+        #}#
+        # if(schedule.endTime) { #
+        <div><span class="infobox-details">&{'schedule-endtime'}</span> : #= kendo.toString(new Date(schedule.endTime),
+            "G") #
+        </div>
+        #} else {#
+        <span></span>
+        #}#
+        # if(schedule.route) { #
+        <div><span class="infobox-details">&{'route'}</span> : #= schedule.route #</div>
+        #} else {#
+        <span></span>
+        #}#
+
+        # if(event.longitude) { #
+        <div><span class="infobox-details">&{'longitude'}</span> : #= event.longitude #</div>
+        #}#
+
+        # if(event.latitude) { #
+        <div><span class="infobox-details">&{'latitude'}</span> : #= event.latitude #</div>
+        #}#
+
+        # if(event.time) { #
+        <div><span class="infobox-details">&{'time'}</span> : #= event.time #</div>
+        #}#
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="InfoWindowTemplate">
+	<div class="infowindow">
+        # if(name) { #
+        <div class="infowindow-title">#= data.name #</div>
+        #} else {#
+        <div class="infowindow-title">#= data.vehicleLicensePlate #</div>
+        #}#
+
+        # if(data.type) { #
+        <div><span class="infowindow-details">&{'type'}</span> : #= data.type #</div>
+        #} else if(data.model) {#
+        <div><span class="infowindow-details">&{'model'}</span> : #= data.model.name #</div>
+        <div><span class="infowindow-details">&{'live-view'}</span> :
+            <a href="/${bucket}/live/viewdevice/#= data.deviceId #" target="_blank">
+                <img src="${CdnPath}/common/images/cctv.png" style="height:16px;vertical-align:text-bottom"/>
+            </a>
+        </div>
+        #}#
+
+        # if(data.vehicleNumber) { #
+        <div><span class="infowindow-details">&{'vehicle-number'}</span> : #= data.vehicleNumber #</div>
+        #}#
+
+
+        # if(data.vehicleCategory) { #
+        <div><span class="infowindow-details">&{'category'}</span> : #= data.vehicleCategory #</div>
+        #}#
+
+        # if(data.vehicleDescription) { #
+        <div><span class="infowindow-details">&{'description'}</span> : #= data.vehicleDescription #</div>
+        #}#  
+	</div>
+</script>
+
+<script type="text/x-kendo-template" id="eventinfoWindowTemplate">
+	<div class="infowindow">
+        # if(event.type) { #
+        <div class="infowindow-title">#= localizeResource(event.type) #</div>
+        #}#
+
+        # if(vehicle.vehicleNumber) { #
+        <div><span class="infowindow-details">&{'vehicle-number'}</span> : #= vehicle.vehicleNumber #</div>
+        #}#
+
+        # if(Driver.name) { #
+        <div><span class="infowindow-details">&{'driver-name'}</span> : #= Driver.name #</div>
+        #}#
+
+        # if(schedule.startTime) { #
+        <div><span class="infowindow-details">&{'schedule-starttime'}</span> : #= kendo.toString(new
+            Date(schedule.startTime), "G") #
+        </div>
+        #} else {#
+        <span></span>
+        #}#
+        # if(schedule.endTime) { #
+        <div><span class="infowindow-details">&{'schedule-endtime'}</span> : #= kendo.toString(new Date(schedule.endTime),
+            "G") #
+        </div>
+        #} else {#
+        <span></span>
+        #}#
+        # if(schedule.route) { #
+        <div><span class="infowindow-details">&{'route'}</span> : #= schedule.route #</div>
+        #} else {#
+        <span></span>
+        #}#
+
+        # if(event.longitude) { #
+        <div><span class="infowindow-details">&{'longitude'}</span> : #= event.longitude #</div>
+        #}#
+
+        # if(event.latitude) { #
+        <div><span class="infowindow-details">&{'latitude'}</span> : #= event.latitude #</div>
+        #}#
+
+        # if(event.time) { #
+        <div><span class="infowindow-details">&{'time'}</span> : #= event.time #</div>
+        #}#
+	</div>
+</script>

@@ -1,0 +1,99 @@
+{
+    "default-bucket-features": [
+        "live-view",
+        "cloud-playback",
+        "node-playback",
+        "analytics-traffic-flow",
+        "analytics-people-counting",
+        "analytics-passerby",
+        "analytics-crowd-detection",
+        "analytics-audience-profiling",
+        "analytics-area-intrusion",
+        "analytics-perimeter-defense",
+        "analytics-area-loitering",
+        "analytics-object-counting",
+        "analytics-video-blur",
+        "analytics-face-indexing",
+        "analytics-object-detection",
+        "report-traffic-flow",
+        "report-people-counting",
+        "report-passerby",
+        "report-crowd-detection",
+        "report-audience-profiling",
+        "report-area-intrusion",
+        "report-perimeter-defense",
+        "report-area-loitering",
+        "report-object-counting",
+        "report-video-blur",
+        "report-face-indexing",
+        "report-audience-attention",
+        "report-object-detection",
+        "user-management",
+        "role-management",
+        "device-management",
+        "kai-nodes",
+        "pos-management",
+        "local-license-management",
+        "label-management",
+        "historical-alerts"
+    ],
+
+    "node-user-role": {
+        "features": [
+            "live-view",
+            "node-playback",
+            "kai-nodes"
+        ]
+    },
+
+    "default-notification-settings": [
+        {
+            "event-type": "event-vca-intrusion",
+            "notification-enabled": true,
+            "video-required": true,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-vca-perimeter",
+            "notification-enabled": true,
+            "video-required": true,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-vca-loitering",
+            "notification-enabled": true,
+            "video-required": true,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-vca-object-counting",
+            "notification-enabled": true,
+            "video-required": false,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-vca-video-blur",
+            "notification-enabled": true,
+            "video-required": false,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-vca-face",
+            "notification-enabled": true,
+            "video-required": false,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-vca-object-detection",
+            "notification-enabled": true,
+            "video-required": false,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        },
+        {
+            "event-type": "event-occupancy-limit",
+            "notification-enabled": true,
+            "video-required": false,
+            "notify-methods": ["ON_SCREEN", "EMAIL", "SMS", "MOBILE_PUSH"]
+        }
+    ]
+}

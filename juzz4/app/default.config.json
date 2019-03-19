@@ -1,0 +1,50 @@
+{
+    "application-type": "cloud",
+    "cloud-server": [
+        {
+            "host": "public-ip-to-node",
+            "port": 80
+        }
+    ],
+    "core-engine": {
+        "host": "core-engine-host",
+        "ports": {
+            "stream-control": 10600,
+            "data": 10688,
+            "device-management": 10689,
+            "device-control": 10604,
+            "arbiter-management": 10771,
+            "config": 10687
+        }
+    },
+    "rabbitmq-server": {
+        "host": "message-queue-host",
+        "port": 5672,
+        "user": "kaimq",
+        "password": "kaimq@kaisync#kaisquare"
+    },
+    "platform-sync": {
+        "host": "mq-host",
+        "port": 16320,
+        "ssl-port": 16330,
+        "keystore": "keystore/platform.jks",
+        "keypass": "kaisquare",
+        "user": "kaimq",
+        "password": "kaimq@kaisync#kaisquare",
+        "truststore": "keystore/node.jks",
+        "trustpass": "kaisquare"
+    },
+    "file-server": {
+        "host": "public-ip-to-node",
+        "port": 16321,
+        "truststore": "keystore/node.jks",
+        "trustpass": "kaisquare",
+        "timeout": 300000,
+        "bucket": "fileserver",
+        "openlimits": 800
+    },
+    "software-update": {
+        "host": "public-ip-to-node",
+        "port": 16322
+    }
+}

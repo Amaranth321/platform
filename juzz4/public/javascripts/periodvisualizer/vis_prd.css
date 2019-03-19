@@ -1,0 +1,40 @@
+
+.vis_prd {
+    width: 1000px;
+    height: 410px;
+    background: url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    margin: -5px;
+    overflow: hidden;
+}
+
+.vis_prd .grid_background {
+    fill: #333;
+}
+
+.vis_prd .axis text {
+    font-size: 11px;
+    fill: #ccc;
+}
+
+.vis_prd .axis path {
+    display: none;
+}
+
+.vis_prd .axis line {
+    fill: none;
+    stroke: none;
+    stroke: #555;
+    shape-rendering: crispEdges;
+}
+
+.vis_prd .grid line,
+.vis_prd .grid path {
+    fill: none;
+    stroke: none;
+    stroke: #555;
+    shape-rendering: crispEdges;
+}
+
+.vis_prd .grid .minor.tick line {
+    stroke-opacity: .5;
+}

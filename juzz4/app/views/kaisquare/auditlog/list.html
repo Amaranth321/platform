@@ -1,0 +1,58 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+<script type="text/javascript" src="/public/javascripts/audit.js"></script>
+<script type="text/x-kendo-template" id="toolbarTemplate">
+    <div class="toolbar">
+	<div id=searchOptions class="event_filter_box" style="display: block;">
+            <a id="clrFilter" class="k-button" style="float:right; margin-top: 6px;">
+                <span></span>&nbsp; &{'clear-location'}
+            </a>
+            <a id="btnFilter" class="k-button" style="float:right; margin-top: 6px;">
+                <span class="k-icon k-i-search"></span>&nbsp; &{'filter'}
+            </a>
+            <div>
+                <label style="margin:0px 0px 0px 6px">&{'company-name'} :</label>
+                <input id=compNameFilter type="text" style="width:164px" class="k-input k-textbox">
+                <label style="margin:0px 5px 0px 30px">&{'username'} :</label>
+                <input id=userNameFilter type="text" style="width:164px" class="k-input k-textbox">
+                <label style="margin:0px 5px 0px 30px">&{'activity-type'} :</label>
+                <input id=activityFilter type="text" style="width:164px" class="k-input k-textbox">
+            </div>
+            <div>
+                <label style="margin:0 2px 0 36px">&{'ip'} :</label>
+                <input id=ipFilter type="text" style="width:164px" class="k-input k-textbox">
+                <label style="margin:0px 5px 0px 59px">&{'from'} :</label>
+                <input id=startDateTime style="width:164px; margin-top:1px;" autocomplete="off">
+                <label style="margin:0 5px 0 100px;">&{'to'} :</label>
+                <input id=endDateTime style="width:164px; margin-top:1px;" autocomplete="off">
+            </div>
+            <div style="float: right; margin-right:29px;">
+                <a id="btnExcel" class="k-button" style="float:right">
+                    <img src="${CdnPath}/common/images/export-excel.png" style="margin-right:3px; height:16px">&{'Excel'}
+                </a>
+                <a id="btnPdf" class="k-button" style="float:right">
+                    <img src="${CdnPath}/common/images/export-pdf.png" style="margin-right:3px; height:16px">&{'PDF'}
+                </a>
+            </div>
+    
+        </div>
+    </div>
+</script>
+<div class="k-content" style="margin: 3px 10px 5px 5px">
+    <div class="default_title_bar">
+        <span class="title">&{'audit-log'}</span>
+    </div>
+    <div id="auditGrid"></div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        audit.initializeGrid("auditGrid", true);
+    });
+</script>
+
+<style>
+.k-datetimepicker .k-select{
+    right: 28px !important;
+}
+</style>
+    

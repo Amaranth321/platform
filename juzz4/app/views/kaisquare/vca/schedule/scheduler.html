@@ -1,0 +1,53 @@
+
+<script type="text/x-kendo-template" id="dayOfWeekTmpl">
+    <div class="day_of_week_wrapper">
+        <input id="chb#= dayOfWeek #" type="checkbox">
+        <label for="chb#= dayOfWeek #">#= scheduler.dayOfWeekNames[dayOfWeek] #</label>
+        <span id="pBox#= dayOfWeek #" class="periods_box"></span>
+        <a id="btnAdd#= dayOfWeek #" class="k-button"
+           href="javascript:scheduler._addPeriod('#= dayOfWeek #', null, null, true)">+</a>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="periodTmpl">
+    <div id="#= periodId #">
+        <input id="startTime#= periodId #" type="text" class="time_selector">
+        <span class="to_separator">&{'to'}</span>
+        <input id="endTime#= periodId #" type="text" class="time_selector">
+
+        # if(removable) {#
+        <a href="javascript:scheduler._removePeriod('#= dayOfWeek #','#= periodId #')"
+           class="remove-btn"></a>
+        # } #
+    </div>
+</script>
+
+<div class="scheduler_container">
+
+    <div class="presets_box">
+        <a href="javascript:scheduler._loadPreset()" class="k-button">&{'load-preset'}</a>
+    </div>
+    <div class="tz_info">
+        &{'schedule-tz-info'}
+    </div>
+    <div class="main_box"></div>
+
+    <div class="summary_box">
+        <input id="summaryInput" type="text" class="k-textbox" placeholder="&{'summary'}">
+    </div>
+</div>
+
+<div class="scheduler_button_box">
+    <a href="javascript:scheduler._savePreset()" class="k-button">&{'save-as-preset'}</a>&nbsp;
+    <a href="javascript:scheduler._preview()" class="k-button">&{'preview'}</a>&nbsp;
+    <a id="btnSubmit" href="javascript:scheduler._confirmAndSubmit()" class="k-button">&{'set-schedule'}</a>&nbsp;
+    <a id="schedulerCancelBtn" href="javascript:scheduler._closePopup()" class="k-button">&{'cancel'}</a>
+</div>
+
+<script>
+
+    $(function () {
+        scheduler._generateUI();
+    });
+
+</script>

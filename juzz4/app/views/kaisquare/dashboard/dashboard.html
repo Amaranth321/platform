@@ -1,0 +1,240 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<div class="dashboard-container">
+    <header class="title">&{'dashboard'}</header>
+    <div>
+        <div id="showRunningVcaDialog" class="dashboard-infobox noHover">
+            <div class="dashboard-infobox-highlight">
+                <span class="dashboard-infobox-icon">
+                    <img src="${CdnPath}/kup/dashboard/images/analytics_icon.png" alt="" />
+                </span>
+            </div>
+            <div class="dashboard-infobox-text">
+                <p id="showAnalytics" class="dashboard-infobox-value">
+                    ...
+                </p>
+                <p class="dashboard-infobox-description">&{'dashboard-active-analytics'}</p>
+            </div>
+        </div>
+        <div id="showActiveNodesDialog" class="dashboard-infobox noHover" style="display:none;">
+            <div class="dashboard-infobox-highlight">
+                <a class="dashboard-infobox-icon">
+                    <img src="${CdnPath}/kup/dashboard/images/ico_active_nodes.png" alt="" />
+                </a>
+            </div>
+            <div class="dashboard-infobox-text">
+                <!-- <a href="#"> -->
+                    <p id="showActiveNodes" class="dashboard-infobox-value">
+                        ...
+                    </p>
+                    <p class="dashboard-infobox-description">&{'dashboard-active-nodes'}</p>
+                <!-- </a> -->
+                <!--<p><a href="#"><a href="#" style="font-size: 30px; line-height: 36px; color: #f6ae40;">343</a><br /><a href="#" style="line-height: 18px;">active nodes</a></a></p>-->
+            </div>
+        </div>
+        <div class="dashboard-infobox noHover">
+            <div class="dashboard-infobox-highlight">
+                <span class="dashboard-infobox-icon">
+                    <img src="${CdnPath}/kup/dashboard/images/ico_camera.png" alt="" />
+                </span>
+            </div>
+            <div class="dashboard-infobox-text">
+                <!--<a href="#">-->
+                <p id="showActiveCamera" class="dashboard-infobox-value">
+                    ...
+                </p>
+                <p class="dashboard-infobox-description">&{'dashboard-active-cameras'}</p>
+                <!--</a>-->
+                <!--<p><a href="#"><a href="#" style="font-size: 30.04px; line-height: 36.05px; color: #f6ae40;">30</a><br /><a href="#" style="line-height: 18.02px;">analytics</a></a></p>-->
+            </div>
+        </div>
+        <div class="dashboard-infobox noHover" id="showPlatformInformationDialog"  style="display:none;">
+            <div class="dashboard-infobox-highlight">
+                <span class="dashboard-infobox-icon">
+                    <img src="${CdnPath}/kup/dashboard/images/clock.png" alt="" />
+                </span>
+            </div>
+            <div class="dashboard-infobox-text">
+                <!--<a href="#">-->
+                <p id="showPlatformInformation" class="dashboard-infobox-value">
+                    ...
+                </p>
+                <p class="dashboard-infobox-description">&{'node-uptime'}</p>
+                <!--</a>-->
+                <!--<p><a href="#"><a href="#" style="font-size: 30.04px; line-height: 36.05px; color: #f6ae40;">30</a><br /><a href="#" style="line-height: 18.02px;">analytics</a></a></p>-->
+            </div>
+        </div>
+        <!-- <div id="showUsersDialog" class="dashboard-infobox">
+            <div class="dashboard-infobox-highlight">
+                <a class="dashboard-infobox-icon">
+                    <img src="${CdnPath}/kup/dashboard/images/ico_loggedin.png" alt="" />
+                </a>
+            </div>
+            <div class="dashboard-infobox-text">
+                <a href="#">
+                    <p id="showloggedInUsers" class="dashboard-infobox-value">
+                        ...
+                    </p>
+                    <p class="dashboard-infobox-description">&{'logged-in-users'}</p>
+                </a>
+            </div>
+        </div> -->
+    </div>
+    <div>
+        <div id="showPeopleCountingChart" class="dashboard-chartbox noData">
+            <div class="dashboard-chartbox-content noData">
+                <p class="dashboard-chartbox-title">
+                    <span style="font-weight: 500;">&{'analytics-people-counting'}</span>
+                    <span style="font-size: 12px; color: #808080;margin:0 0 0 9px">(&{'aggregated-for-last-7-days'})</span>
+                </p>
+                <div class="dashboard-chart-container noData">
+                    <div class="nodata-display">&{'analytics-people-counting'} &{'data-is-not-available'}</div>
+                </div>
+            </div>
+            <div class="dashboard-chartbox-content">
+                <p class="dashboard-chartbox-title">
+                    <span style="font-weight: 500;">&{'analytics-people-counting'}</span>
+                    <span style="font-size: 12px; color: #808080;margin:0 0 0 9px">(&{'aggregated-for-last-7-days'})</span>
+                </p>
+                <div class="dashboard-chart-container">
+                    <!--REPLACE THE CONTENTS INSIDE THIS DIV BY THE KENDO CHART-->
+                    *{<div class="chartTextWrapper peopleCountingWrapper">}*
+                        *{<span class="chartText">}*
+                            *{<span>&{'people-visited'}</span>}*
+                        *{<span></span>}*
+                        *{</span>}*
+                        *{<span class="chartIcon"></span>}*
+                    *{</div>}*
+                    <div id="peopleCountingChart" class="chartSvgWrapper">
+                        <!--<img src="${CdnPath}/kup/dashboard/images/vector_smart_object_2.jpg" alt="" />-->
+                    </div>
+                </div>
+                <div style="clear: both; height: 0;"></div>
+            </div>
+            <div class="chartTextGroup">
+                <div class="chartLeft">
+                    <div class="chartText">
+                        <span id="showPeoleVisite">0</span>
+                        <br>
+                        <span>&{'people-visited-all'}</span>
+                    </div>
+                </div>
+                <div class="chartRight">
+                    <div class="chartText">
+                        <span id="showVisitedToday">0</span>
+                        <br>
+                        <span>&{'visited-today'}</span>
+                    </div>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+        <div id="showSecurityAlertsChart" class="dashboard-chartbox noData">
+            <div class="dashboard-chartbox-content noData">
+                <p class="dashboard-chartbox-title">&{'security-occurrences'}
+                    <span style="font-size: 12px; color: #808080;margin:0 0 0 9px">(&{'aggregated-for-last-7-days'})</span>
+                </p>
+                <div class="dashboard-chart-container noData">
+                    <div class="nodata-display">&{'security-occurrences'} &{'data-is-not-available'}</div>
+                </div>
+            </div>
+            <div class="dashboard-chartbox-content">
+                <p class="dashboard-chartbox-title">
+                    <span style="font-weight: 500;">&{'security-occurrences'}</span>
+                    <span style="font-size: 12px; color: #808080;margin:0 0 0 9px">(&{'aggregated-for-last-7-days'})</span>
+                </p>
+                <div class="dashboard-chart-container">
+                    <!--REPLACE THE CONTENTS INSIDE THIS DIV BY THE KENDO CHART-->
+                    *{<div class="chartTextWrapper securityAlertsWrapper">}*
+                        *{<span class="chartText">}*
+                            *{<span>&{'security-occurrences'}</span>}*
+                        *{<span></span>}*
+                        *{</span>}*
+                        *{<span class="chartIcon"></span>}*
+                    *{</div>}*
+                    <div id="securityAlertsChart" class="chartSvgWrapper">
+                        <!--<img src="${CdnPath}/kup/dashboard/images/vector_smart_object_3.jpg" alt="" />-->
+                    </div>
+                </div>
+                <div style="clear: both; height: 0;"></div>
+            </div>
+            <div class="chartTextGroup">
+                <div class="chartOnly">
+                    <div class="chartText">
+                        <span id="showAlerts">0</span>
+                        <br>
+                        <span>&{'security-occurrences'}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="showGenderProfilingChart" class="dashboard-chartbox noData">
+            <div class="dashboard-chartbox-content noData">
+                <p class="dashboard-chartbox-title">
+                    <span style="font-weight: 500;">&{'gender-profiling'}</span>
+                    <span style="font-size: 12px; color: #808080;margin:0 0 0 9px">(&{'aggregated-for-last-7-days'})</span>
+                </p>
+                <div class="dashboard-chart-container noData">
+                    <div class="nodata-display">&{'gender-profiling'} &{'data-is-not-available'}</div>
+                </div>
+            </div>
+            <div class="dashboard-chartbox-content">
+                <p class="dashboard-chartbox-title">
+                    <span style="font-weight: 500;">&{'gender-profiling'}</span>
+                    <span style="font-size: 12px; color: #808080;margin:0 0 0 9px">(&{'aggregated-for-last-7-days'})</span>
+                </p>
+                <div class="dashboard-chart-container">
+                    <!--REPLACE THE CONTENTS INSIDE THIS DIV BY THE KENDO CHART-->
+                    <div class="chartTextWrapper genderProfilingWrapper female">
+                        <span class="chartText">
+                            <span>&{'female'}</span>
+                        <span>0%</span>
+                        </span>
+                        <span class="chartIcon"></span>
+                    </div>
+                    <div class="chartTextWrapper genderProfilingWrapper male">
+                        <span class="chartText">
+                            <span>&{'male'}</span>
+                        <span>0%</span>
+                        </span>
+                        <span class="chartIcon"></span>
+                    </div>
+                    <div id="genderProfilingChart" class="chartSvgWrapper pieChart">
+                        <!--<img src="${CdnPath}/kup/dashboard/images/chart.png" alt="" />-->
+                    </div>
+                </div>
+                <div style="clear: both; height: 0;"></div>
+            </div>
+            <div class="chartTextGroup">
+                <div class="chartLeft">
+                    <div class="chartText">
+                        <span id="showMale">0</span>
+                        <br>
+                        <span>&{'male-low'}</span>
+                    </div>
+                </div>
+                <div class="chartRight">
+                    <div class="chartText">
+                        <span id="showFemale">0</span>
+                        <br>
+                        <span>&{'female-low'}</span>
+                    </div>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="/public/css/kup/dashboard/dashboard.css" />
+<!-- <script src="/public/javascripts/kup/external/moment.js"></script> -->
+<script src="/public/javascripts/kup/external/moment-range.js"></script>
+<script src="/public/javascripts/kup/widget/kup.widget.dashboard.js"></script>
+<script>
+jQuery(document).ready(function($) {
+    var config = KUP.widget.dashboard.getOpt();
+    config.days = 7;
+    config.timeZone = kupapi.timeZoneOffset;
+    KUP.widget.dashboard.setOpt(config);
+    KUP.widget.dashboard.init();
+});
+</script>

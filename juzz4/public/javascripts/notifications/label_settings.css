@@ -1,0 +1,64 @@
+/* kendo customizations */
+
+.label_setts .tab_strip {
+    background: #333;
+    border: 0px;
+    margin-top: 5px;
+}
+
+.label_setts .tab_strip .k-state-active {
+    background: #F6AE40;
+    border: 0px;
+}
+
+.label_setts .tab_strip ul {
+}
+
+.label_setts .tab_strip li {
+    text-align: center;
+}
+
+.label_setts .tab_strip li .k-link {
+    padding: 8px 20px;
+}
+
+.label_setts .tab_strip .tab_content {
+    padding: 1px 0px 0px 0px;
+    margin: 0px;
+}
+
+.label_setts .k-grid > table > tbody > tr:hover,
+.label_setts .k-grid-content > table > tbody > tr:hover {
+    background: #151515;
+}
+
+.label_setts th.k-header, .k-grid-toolbar, .k-grid-header, .k-pager-wrap, .k-grid-pager {
+    background: #212121;
+}
+
+.label_setts .k-grid {
+    border: 0;
+    border-bottom: 1px solid #000000;
+}
+
+.label_setts .k-tabstrip-items {
+    margin-left: 5px;
+}
+
+.label_setts .k-grid tbody tr {
+    height: 30px;
+}
+
+.label_setts .k-grid td {
+    white-space: nowrap;
+}
+
+/* Page Styling */
+
+.label_setts {
+
+}
+
+.label_setts .tab_strip {
+    display: none;
+}

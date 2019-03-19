@@ -1,0 +1,113 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/x-kendo-template" id="roleToolbarTemplate">
+    <div class="toolbar">
+        <a class="k-button" id="addNewRole"><span class="k-icon k-i-plus"> </span> &{'create-role'}</a>
+    </div>
+</script>
+
+<div id="roleList" class="k-content" style="margin: 5px 10px 5px 5px">
+    <div class="default_title_bar">
+        <span class="title">&{'role-management'}</span>
+    </div>
+    <div id="roleGrid"></div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+                var assignFeatures = function (e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var contentPage = "/role/assignfeature/" + dataItem.id;
+                    utils.openPopup("&{'assign-features'}", contentPage, null, null, true, onPopupClosed);
+                }
+
+                var deleteRole = function (e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+                    utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function (choice) {
+                        if (choice) {
+                            removeRole("", dataItem.id, function (responseData) {
+                                if(responseData.result != "ok")
+                                {
+                                    utils.throwServerError(responseData);
+                                    return;
+                                }
+
+                                utils.slideDownInfo(localizeResource("role-deleted"));
+                                $("#roleGrid").data("kendoGrid").dataSource.read();
+                            }, null);
+                        }
+                    });
+                }
+
+                var editRole = function (e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var contentPage = "/role/edit/" + dataItem.id;
+                    utils.openPopup("&{'role-edit'}", contentPage, null, null, true, onPopupClosed);
+                }
+
+                var grid = $("#roleGrid").kendoGrid({
+                    dataSource: {
+                        transport: {
+                            read: function (options) {
+                                getBucketRoles("", function (responseData) {
+                                    if (responseData.result == "ok" && responseData.roles != null) {
+                                        var roles = [];
+                                        $.each(responseData.roles, function (index, role) {
+                                            if ("${bucket}" === "superadmin" && role.name === "Root") {
+                                            } else {
+                                                roles.push(role);
+                                            }
+                                        });
+                                        options.success(roles);
+                                    } else {
+                                        utils.throwServerError(responseData.reason);
+                                        options.success([]);
+                                    }
+                                }, null);
+                            }
+                        },
+                        pageSize: 15
+                    },
+                    pageable: {
+                        input: true,
+                        numeric: false,
+                        pageSizes: false,
+                        refresh: true
+                    },
+                    sortable: true,
+                    filterable: false,
+                    selectable: true,
+                    resizable: false,
+                    toolbar: kendo.template($("#roleToolbarTemplate").html()),
+                    columns: [
+                        { field: "name", title: "&{'name'}" },
+                        { field: "description", title: "&{'description'}" },
+                        { command: [
+                            { text: "&{'features'}", click: assignFeatures}
+                        ], title: "&{'manage'}", width: "160px"  },
+                        { command: [
+                            { text: "&{'edit'}", click: editRole },
+                            { text: "&{'delete'}", click: deleteRole }
+                        ], title: "&{'actions'}", width: "160px"  }
+                    ]
+                }).data("kendoGrid");
+
+
+                $("#addNewRole").click(function (e) {
+                    var contentPage = "/role/add";
+                    utils.openPopup("&{'create-role'}", contentPage, null, null, true, onPopupClosed);
+                });
+
+                function onPopupClosed() {
+                    $("#featureWin").html("");
+                    $("#roleGrid").data("kendoGrid").dataSource.read();
+                };
+            }
+    );
+
+</script>

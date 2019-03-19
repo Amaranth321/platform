@@ -1,0 +1,75 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/javascript" src="/public/javascripts/accountstatement.js"></script>
+
+<div id="accountList" class="k-content" style="margin: 0px 5px 0px 0px;">
+    <div class="default_title_bar">
+        <span class="title">&{'account-statements'}</span>
+    </div>
+    <div id="tabstrip">
+        <ul>
+            <li class="k-state-active" title="users">
+                <span>&{'users'}</span>
+            </li>
+            <li title="nodes">
+                <span>&{'nodes'}</span>
+            </li>
+            <li title="licenses">
+                <span>&{'licenses'}</span>
+            </li>
+        </ul>
+        <div>
+            <div id="usersGrid" class="remove_default_tab_padding"></div>
+        </div>
+
+        <div>
+            <div id="nodesGrid" class="remove_default_tab_padding"></div>
+        </div>
+
+        <div>
+            <div id="licensesGrid" class="remove_default_tab_padding">
+            #{include HtmlPath + '/license/node_licenses.html'/}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        //make TabStrip
+        $("#tabstrip").kendoTabStrip({
+            select: onSelect,
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        })
+        $("#tabstrip").data('kendoTabStrip').select(0); //don't change
+
+        function onSelect(e) {
+            accountstatement.tabName = e.item.title;
+        }
+
+        var usersColumnList = [
+            { field: "userName", title: localizeResource('user-name') },
+            { field: "name", title: localizeResource('name') },
+            { field: "email", title: localizeResource('email') },
+            { field: "phone", title: localizeResource('phone') }
+        ];
+
+        var nodesColumnList = [
+            { field: "name", title: localizeResource('name') },
+            { field: "deviceKey", title: localizeResource('device-key') },
+            { field: "version", title: localizeResource('version') },
+            { field: "label", title: localizeResource('label') }
+        ];
+
+        accountstatement.initializeUsersGrid(usersColumnList);
+        accountstatement.initializeNodesGrid(nodesColumnList);
+        accountstatement.initializeLicenseGrid();
+
+    })
+</script>

@@ -1,0 +1,243 @@
+<style>
+    .geo_error {
+        font-size: 10px;
+        color: #c20000;
+    }
+
+    #separator {
+        border-bottom: 2px solid #F07230;
+        margin-bottom: -6px;
+        margin-top: 10px;
+        margin-left: -39px;
+    }
+
+    .k-edit-label {
+        width: 19%;
+        padding-right: 18px;
+    }
+
+    .kup-form-box {
+        margin: 7px 52px 10px;
+    }
+
+    .k-edit-field {
+        width: 73%;
+    }
+
+    #cameraListGrid {
+        margin-left: 87px;
+        width: 178px;
+    }
+
+    #cameraListGrid table thead {
+        display: none;
+    }
+
+    #cameraListGrid table td {
+        font-family: "Myriad Pro", Arial, Helvetica, sans-serif;
+    }
+
+    ul.tagit {
+        max-height: 26px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        width: 61%;
+    }
+
+    .ui-corner-all {
+        border-radius: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    ul.tagit input[type="text"] {
+        width: 146%;
+    }
+</style>
+
+<div id="deviceDetailWin" style="font-size: 11px; width: 550px">
+    <div id="deviceEditForm" class="kup-form-box">
+        <div id="separator" style="width: 85px">&{'device-details'}</div>
+        <br>
+
+        <div class="k-edit-label"><label for="model">&{'model'}</label></div>
+        <div class="k-edit-field" data-container-for="model">
+            <input id=modelList name="model" style="width: 210px">
+        </div>
+
+        <div class="k-edit-label"><label for="name">&{'name'}</label></div>
+        <div class="k-edit-field" data-container-for="name">
+            <input type="text" class="k-input k-textbox" name="name" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:name">
+        </div>
+
+        <div class="k-edit-label"><label for="address">&{'address'}</label></div>
+        <div class="k-edit-field" data-container-for="address">
+            <input id="addressEdw" type="text" class="k-input k-textbox" name="address" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:address">
+        </div>
+
+        <div>
+            <label class="k-edit-label">
+                <a id="btnGetLatlng" href="javascript:void(0)" class="k-button"
+                   style="margin-top: -10px;">&{'search'}</a>
+            </label>
+            <input class="k-edit-field progress" id="latitudeEdw" name="latitude" style="width:105px;" required
+                   validationMessage="&{'invalid-value'}" data-bind="value:latitude">
+            <input class="k-edit-field progress" id="longitudeEdw" name="longitude" style="width:105px;" required
+                   validationMessage="&{'invalid-value'}" data-bind="value:longitude">
+            <input name="cloudRecording" type="checkbox" data-bind="checked:cloudRecordingEnabled"
+                   style="display: none">
+            <label for="cloudRecording" style="display: none">&{'cloud-recording-enabled'}</label>
+        </div>
+
+        <div id="separator" style="width: 141px;">&{'authentication-settings'}</div>
+        <br>
+
+
+        <div class="k-edit-label"><label for="host">&{'host'}</label></div>
+        <div class="k-edit-field" data-container-for="host">
+            <input type="text" class="k-input k-textbox" name="host" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:host">
+        </div>
+
+        <div class="k-edit-label"><label for="port">&{'port'}</label></div>
+        <div class="k-edit-field" data-container-for="port">
+            <input type="number" class="k-input k-textbox" name="port" min="1" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:port">
+        </div>
+
+
+        <div class="k-edit-label"><label for="login">&{'login'}</label></div>
+        <div class="k-edit-field" data-container-for="login">
+            <input type="text" class="k-input k-textbox" name="login" style="width: 210px"
+                   data-bind="value:login">
+        </div>
+
+        <div class="k-edit-label"><label for="password">&{'password'}</label></div>
+        <div class="k-edit-field" data-container-for="password">
+            <input type="password" class="k-input k-textbox" name="password" style="width: 210px"
+                   data-bind="value:password">
+        </div>
+
+        <div class="k-edit-label"><label for="deviceKey">&{'device-key'}</label></div>
+        <div class="k-edit-field" data-container-for="deviceKey">
+            <input type="text" class="k-input k-textbox" name="deviceKey" style="width: 210px"
+                   data-bind="value:deviceKey">
+        </div>
+
+        <div class="k-edit-label"><label for="cloudRecording">&{'cloud-recording-enabled'}</label></div>
+        <div class="k-edit-field" data-container-for="cloudRecording">
+            <input name="cloudRecording" type="checkbox" data-bind="checked:cloudRecordingEnabled">
+        </div>
+
+        <div style="color: #ff0000; margin-left: 20px; min-height: 20px">
+            <div id=geocode-error-box-edw style="font-size: 10px;">* &{'msg-address-not-found'}</div>
+        </div>
+
+    </div>
+
+    <div align="center">
+        <a id="submitEdw" href="#" class="k-button" style="margin-right: 10px"></span>&{'submit'}</a>
+        <a id="cancelEdw" href="#" class="k-button"></span>&{'cancel'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#geocode-error-box-edw").hide();
+    $("#cameraDetails").hide();
+
+    var vmEditDvc = kendo.observable({
+    	id: "${targetDevice.id}",
+        name: "${targetDevice.name.raw()}",
+        model: "${targetDevice.model.modelId}",
+        deviceKey: "${targetDevice.deviceKey}",
+        host: "${targetDevice.host}",
+        port: "${targetDevice.port}" == null || "${targetDevice.port}" == "" ? "" : parseInt("${targetDevice.port}"),
+        login: "${targetDevice.login}",
+        password: "${targetDevice.password}",
+        address: "${targetDevice.address.raw()}",
+        latitude: "${targetDevice.latitude}",
+        longitude: "${targetDevice.longitude}",
+        cloudRecordingEnabled: ("${targetDevice.cloudRecordingEnabled}" == 'true')
+    });
+    
+    kendo.bind($("#deviceEditForm"), vmEditDvc);
+    var validator = $("#deviceEditForm").kendoValidator().data("kendoValidator");
+
+    $("#modelList").kendoDropDownList({
+        dataTextField: "name",
+        dataValueField: "modelId",
+        dataSource: {
+            transport: {
+                read: function (options) {
+                    getDeviceModels("", onSuccessGetDeviceModels, null);
+                    function onSuccessGetDeviceModels(responseData) {
+                        if (responseData.result == "ok" && responseData["model-list"] != null) {
+                            options.success(responseData["model-list"]);
+
+                            $("#modelList").data("kendoDropDownList").select(function (dataItem) {
+                                return dataItem.modelId == "${targetDevice.model.modelId}";
+                            });
+                        }
+                    }
+                }
+            }
+        },
+        change: function (e) {
+            var selectedModel = $("#modelList").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+            vmEditDvc.set("model", selectedModel.modelId);
+        }
+    });
+
+    $("#latitudeEdw").kendoNumericTextBox({
+        format: "n3",
+        decimals: 3
+    })
+
+    $("#longitudeEdw").kendoNumericTextBox({
+        format: "n3",
+        decimals: 3
+    })
+
+    $("#submitEdw").click(function () {
+        $("#geocode-error-box-edw").hide();
+
+        if (validator.validate()) {
+            vmEditDvc.latitude = $("#latitudeEdw").val();
+            vmEditDvc.longitude = $("#longitudeEdw").val();
+
+            utils.showLoadingOverlay();
+            updateDevice("", vmEditDvc, function (responseData) {
+                utils.hideLoadingOverlay();
+
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'update-successful'}");
+                    closePopupWindow();
+                }
+                else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        }
+    });
+
+    $("#cancelEdw").click(function () {
+        closePopupWindow();
+    });
+
+    $('#btnGetLatlng').click(function () {
+        deviceManager.devicePageGeocode({'address': $('#addressEdw').val()},
+                {'lat': $('#latitudeEdw'), 'lng': $('#longitudeEdw'), 'errorBox': $('#geocode-error-box-edw')});
+
+    });
+
+    function closePopupWindow() {
+        $("#cancelEdw").closest(".k-window-content").data("kendoWindow").close();
+    }
+
+</script>

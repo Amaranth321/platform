@@ -1,0 +1,131 @@
+<div class="popup_wrapper">
+    <div class="top_box">
+        <div class="enable_drawing">
+            <input id="chbEnable" type="checkbox" onclick="enableEditing(this.checked)">
+            <label for="chbEnable">&{'edit-configuration'}</label>
+        </div>
+    </div>
+
+    <div class="vca_content">
+        <div class="param_selection_box">
+            <div id="paramExpander">
+                <div style="text-align: center;margin-top: 5px">
+                    <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                    <span id="moreParamInfo" class="help_icon"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="right_box" style="margin: 0px 0px 25px 0px;">
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="param_selection_box config_gmask">
+                <div class="param_title ">
+                &{'configure-gmask'}
+                    <span id="gmaskInfo" class="help_icon"></span>
+                    <a href="javascript:configureGmask()" class="btn_gmask"></a>
+                </div>
+                <div>
+                    <span class="regions">&{'none'}</span>
+                </div>
+            </div>
+
+            <div class="submit_btn_box">
+                <a id="btnRestart" href="javascript:restartVca()" class="k-button">&{'restart'}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var targetInstance = null;
+    var gmaskRegions = [];
+
+    function initUiElements()
+    {
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: '&{'additional-params'}',
+            isExpanded: true
+        });
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+        utils.createTooltip("gmaskInfo", "bottom", localizeResource('msg-gmask-info'));
+    }
+
+    function applyCurrentSettings()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+        $("#moreParams").val(vca.convertParamsToString(settings["additional-params"]));
+        scheduler.init("scheduleInfo", targetInstance.recurrenceRule);
+        gmaskRegions = settings["gmask-regions"];
+        VcaMgr.updateGmaskStatus(gmaskRegions);
+    }
+
+    function enableEditing(canEdit)
+    {
+        vca.enableConfigPage([], canEdit);
+    }
+
+    function configureGmask()
+    {
+        VcaMgr.openGmaskTool(gmaskRegions, targetInstance.coreDeviceId, targetInstance.channelId,
+                function (saved, regionsDrawn)
+                {
+                    if (saved)
+                    {
+                        gmaskRegions = regionsDrawn;
+                        VcaMgr.updateGmaskStatus(gmaskRegions);
+                    }
+                })
+    }
+
+    function restartVca()
+    {
+
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "gmask-regions": gmaskRegions,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.updateVca(
+                targetInstance.instanceId,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                vca.onUpdateAnalyticsSuccess
+        );
+    }
+
+    $(function ()
+    {
+        utils.showLoadingOverlay();
+        initUiElements();
+        initTooltips();
+        vca.getInstanceById("${instanceId}", function (instance)
+        {
+            targetInstance = instance;
+            applyCurrentSettings();
+            enableEditing(false);
+            utils.hideLoadingOverlay();
+        })
+    });
+
+</script>

@@ -1,0 +1,211 @@
+<style>
+
+    label {
+        text-align: left;
+        line-height: 35px;
+        width: 130px;
+        margin-left: 5px;
+        display: inline-block;
+        font-size: 12px;
+    }
+
+    input[type=checkbox] {
+        vertical-align: middle;
+    }
+
+    .unlimited_txt {
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+
+    .access_key {
+        height: 160px;
+        width: 100px;
+        margin: auto;
+        font-size: 22px;
+        font-weight: bold;
+        color: #eaac20;
+    }
+
+</style>
+
+<div class="key_gen">
+    <div id="channelForm" class="kup-form-box" class="k-content">
+
+        <label for="bucketList">&{'company-id'}</label>
+
+        <div id="bucketList" style="width:180px"></div>
+        <br/>
+
+        <label for="userList">&{'user-name'}</label>
+
+        <div id="userList" style="width:180px"></div>
+        <br/>
+
+        <label for="ttlSelector">&{'expires-in'}</label>
+        <input id="ttlSelector" style="width:60px;">
+        <input id="dhmChoice" style="width:80px;">
+        <br/>
+
+        <label for="countSelector">&{'max-use-count'}</label>
+
+        <input id="chbUnlimited" type="checkbox">
+        <span for="chbUnlimited" class="unlimited_txt">&{'unlimited'}</span>
+        <input id="countSelector" style="width:60px;">
+
+        <br/>
+        <br/>
+    </div>
+
+    <div align="center">
+        <a id="btnGenerate" href="javascript:generate()" class="k-button">&{'generate'}</a> &nbsp;
+        <a id="btnCancel" href="javascript:closePopupWindow()" class="k-button">&{'close'}</a>
+    </div>
+</div>
+
+<script>
+
+    var periodChoices = [
+        localizeResource("choice-mins"),
+        localizeResource("choice-hours"),
+        localizeResource("choice-days")
+    ];
+
+    function initUiElements() {
+
+        $("#bucketList").kendoDropDownList({
+            optionLabel: "None",
+            dataTextField: "name",
+            height: 120,
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                        getBuckets("", function (responseData) {
+                            if (responseData.result == "ok" && responseData.buckets != null) {
+                                var bList = responseData.buckets;
+                                options.success(bList);
+                            }
+                            else {
+                                utils.throwServerError(responseData.reason);
+                                options.success([]);
+                            }
+                        }, null);
+                    }
+                }
+            },
+            select: function (e) {
+                var bucketItem = this.dataItem(e.item.index());
+                var userList = $("#userList").data("kendoDropDownList");
+
+                if (bucketItem.name != "None") {
+                    userList.dataSource.data(bucketItem.users);
+                    userList.enable(true);
+                }
+                else {
+                    userList.enable(false);
+                }
+
+                userList.select(0);
+            }
+        });
+
+        $("#userList").kendoDropDownList({
+            optionLabel: "None",
+            dataTextField: "login",
+            height: 90,
+            dataSource: []
+        }).data("kendoDropDownList");
+
+        $("#ttlSelector").kendoNumericTextBox({
+            format: "#",
+            min: 1,
+            max: 999,
+            step: 1,
+            value: 24
+        });
+
+        $("#dhmChoice").kendoDropDownList({
+            index: 1,
+            dataSource: periodChoices
+        }).data("kendoDropDownList");
+
+        $("#countSelector").kendoNumericTextBox({
+            format: "#",
+            min: 1,
+            step: 1,
+            value: 1
+        });
+
+        $("#chbUnlimited").click(function () {
+            $("#countSelector").data("kendoNumericTextBox").enable(!this.checked);
+        });
+
+        $("#chbUnlimited").trigger("click");
+        $("#countSelector").data("kendoNumericTextBox").enable(false);
+    }
+
+    function generate() {
+
+        var selectedBucket = $("#bucketList").data("kendoDropDownList").dataItem();
+        if (selectedBucket == null || selectedBucket.name == "None") {
+            utils.popupAlert(localizeResource('msg-select-bucket-user'));
+            return;
+        }
+
+        var selectedUser = $("#userList").data("kendoDropDownList").dataItem();
+        if (selectedUser == null || selectedUser.login == "None") {
+            utils.popupAlert(localizeResource('msg-select-bucket-user'));
+            return;
+        }
+
+        var periodType = $("#dhmChoice").data("kendoDropDownList").value();
+        var ttlString = $("#ttlSelector").data("kendoNumericTextBox").value();
+        if (ttlString == null || ttlString == "") {
+            utils.popupAlert(localizeResource('msg-empty-ttl'));
+            return;
+        }
+
+        var ttl = parseInt(ttlString);
+        if (periodType == periodChoices[1]) {
+            ttl = ttl * 60;
+        }
+        else if (periodType == periodChoices[2]) {
+            ttl = ttl * 60 * 24;
+        }
+
+        var maxUseCount = -1;
+        if (document.getElementById("chbUnlimited").checked == false) {
+            maxUseCount = $("#countSelector").data("kendoNumericTextBox").value();
+        }
+
+        kendo.ui.progress($(".key_gen"), true);
+        generateAccessKey("", selectedUser.id, ttl, maxUseCount,
+                function (responseData) {
+                    kendo.ui.progress($(".key_gen"), false);
+
+                    if (responseData.result == "ok" || responseData.key != null) {
+                        showKey(responseData.key);
+                    }
+                    else {
+                        utils.popupAlert(responseData.reason);
+                    }
+                }, null);
+
+    }
+
+    function showKey(accessKey) {
+        $("#channelForm").html("");
+        $("#channelForm").append('<div class="access_key unambiguous-font">' + accessKey + '</div>');
+        $("#btnGenerate").hide();
+    }
+
+    function closePopupWindow() {
+        $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+
+    }
+
+    $(function () {
+        initUiElements();
+    });
+
+</script>

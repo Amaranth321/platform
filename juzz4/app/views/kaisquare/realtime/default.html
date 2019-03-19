@@ -1,0 +1,58 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/} #{include HtmlPath + '/common/partial/vca_shared.html'/}
+<div id="main-header" class="clearfix">
+    <div class="header-title wrapper">
+        <div class="header-calendar pos-r clearfix">
+            <h1 id="reportTitle" class="left">...</h1>
+        </div>
+        <!-- End of clearfix-->
+        <div class="drag-area">
+            <div class="drop-place">
+                <span class="drop-here">&{'drag-to-here'}</span>
+            </div>
+        </div>
+        <!-- End of drag-area-->
+        <div class="modifyConfirm">
+            <button id="applyBtn" class="applyBtn btn btn-small btn-success">&{'apply'}</button>
+            <button id="cancelBtn" class="cancelBtn btn btn-small btn-default">&{'cancel'}</button>
+        </div>
+    </div>
+    <!-- End of header-title-->
+    <div class="header-body wrapper clearfix">
+    </div>
+    <!-- End of header-body-->
+</div>
+<!-- End of main-header-->
+<div id="main-charts" class="clearfix">
+	#{include HtmlPath + '/realtime/currentoccupancy.html'/}
+</div>
+<!-- End of main-charts-->
+<script src="${CdnRootPath}/public/javascripts/kup/widget/kup.widget.realtime.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/widget/realtime.type/occupancy.js"></script>
+
+<!-- The widget plugins css in here -->
+<link href="${CdnPath}/assets/plugin/bootstrap/bootstrap.custom.min.css" rel="stylesheet" type="text/css">
+<link href="${CdnPath}/assets/plugin/bootstrap/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+<link href="${CdnPath}/assets/plugin/fontawesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<link href="${CdnPath}/kup/common/common.css" rel="stylesheet">
+<link href="${CdnPath}/kup/common/black.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="${CdnPath}/kup/realtime/css/realtime.css" />
+
+<!-- The base plugins in here -->
+<script src="/public/javascripts/jquery-1.11.1.js"></script>
+<script src="/public/javascripts/kup/external/bootstrap/bootstrap.min.js"></script>
+<script src="/public/javascripts/kup/external/bootstrap/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="/public/javascripts/kup/external/moment.js"></script>
+
+<script>
+//higher version of jquery for bootstrap & prevent conflict
+jQuery.noConflict(true);
+
+//compatibility of css from new UI 
+$("link[href*='theme_diff.css']").prop('disabled', true);
+$("link[href*='theme_diff.css']").remove();
+
+jQuery(document).ready(function($) {
+    KUP.widget.realtime.init();
+});
+</script>

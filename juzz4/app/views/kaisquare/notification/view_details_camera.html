@@ -1,0 +1,310 @@
+<script src="/public/javascripts/jwplayer7/jwplayer.js"></script>
+<script src="/public/javascripts/jwplayer7/key.js"></script>
+
+<script src="/public/javascripts/external/ua-parser.min.js"></script>
+
+<style>
+    .evt_details {
+    }
+
+    .evt_details .video {
+        float: left;
+        display: none;
+        width: 560px;
+        height: 420px;
+        margin-right: 7px;
+        background: #151515;
+    }
+
+    .evt_details .info {
+        float: left;
+        width: 400px;
+        padding-left: 7px;
+    }
+    
+     .evt_details .image {
+        float: left;
+        width: 500px;
+        padding-left: 7px;
+    }
+
+    .evt_details .info label {
+        display: inline-block;
+        width: 110px;
+        line-height: 26px;
+    }
+
+    .evt_details .info span {
+        margin-left: 10px;
+        color: #ddd;
+        overflow: hidden;
+    }
+
+    .evt_details .info .download {
+        display: none;
+    }
+
+    .evt_details .info .k-button {
+        color: #ddd;
+    }
+
+    .evt_details .btns {
+        margin-top: 20px;
+    }
+
+    .evt_details .btns span {
+        margin: 0px 10px 0px 0px;
+    }
+
+    .evt_details #jwEvtPlayer:focus {
+        outline: 0;
+    }
+
+    .evt_details .info .acknowledgement {
+        display: none;
+    }
+
+    .jw-icon-rewind {
+        display: none !important;
+    }
+</style>
+
+<div class="evt_details">
+    <div class="video">
+        <div id="jwEvtPlayer"></div>
+    </div>
+    <div class="image">
+    	<img src="" id="eventImage" alt="alert image" />
+    </div>
+    <div class="info">
+        <div>
+            <label>&{'time'}</label>:<span data-bind="text:time"></span>
+        </div>
+
+        <div>
+            <label>&{'event-type'}</label>:<span data-bind="text:type"></span>
+        </div>
+
+        <div>
+            <label>&{'device-name'}</label>:<span data-bind="text:deviceName"></span>
+        </div>
+
+        <div>
+            <label>&{'channel'}</label>:<span data-bind="text:channelName"></span>
+        </div>
+
+        <div>
+            <label>&{'sendVia'}</label>:<span data-bind="text:sendVia"></span>
+        </div>
+
+        <div class="acknowledgement">
+            <label>&{'acknowledged-by'}</label>:<span data-bind="text:acknowledger"></span>
+        </div>
+
+        <div class="btns">
+            <span class="download">
+                <a href="javascript:void(0)" class="k-button">&{'download-video'}</a>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var evtVwr = {
+        eventId: "${eventId}",
+        $main: $(".evt_details"),
+        kendoWin: null,
+        eventDetails: null
+    };
+
+    evtVwr.init = function ()
+    {
+        evtVwr.loading(true);
+        evtVwr.kendoWin = evtVwr.$main.closest(".k-window-content").data("kendoWindow");
+        evtVwr.getEventDetails(function ()
+        {
+            evtVwr.loadPage();
+            evtVwr.loading(false);
+        });
+    };
+
+    evtVwr.getEventDetails = function (onReady)
+    {
+        var details = null;
+        if (typeof securityPage != 'undefined')
+        {
+            details = securityPage.getEventDetails(evtVwr.eventId);
+            if (details)
+            {
+                evtVwr.eventDetails = details;
+                onReady();
+                return;
+            }
+        }
+
+        getAlertDetails(evtVwr.eventId, function (responseData)
+        {
+            if (responseData.result != "ok")
+            {
+                utils.throwServerError(responseData);
+                evtVwr.eventDetails = {};
+            }
+            else
+            {
+                evtVwr.eventDetails = responseData.alert;
+            }
+            onReady();
+        });
+    };
+
+    evtVwr.loadPage = function ()
+    {
+        evtVwr.loadInfo();
+        evtVwr.loadPlayer();
+        /* evtVwr.loadImage(); */
+        evtVwr.kendoWin.center();
+    };
+    
+    /* evtVwr.loadImage = function(){
+    	var imageUrl = evtVwr.eventDetails.eventImageUrl;
+    	if(utils.isNullOrEmpty(imageUrl)){
+    		return;
+    	}
+    	
+    	if (!evtVwr.verifyWin8ForIE())
+        {
+            return;
+        }
+    	evtVwr.$main.find("#eventImage").attr("src",imageUrl)
+    	evtVwr.$main.find("#eventImage").show();
+    } */
+
+    evtVwr.loadPlayer = function ()
+    {
+        var videoUrl = evtVwr.eventDetails.eventVideoUrl;
+        if (utils.isNullOrEmpty(videoUrl))
+        {
+            return;
+        }
+
+        if (!evtVwr.verifyWin8ForIE())
+        {
+            return;
+        }
+
+        //links
+
+        //download
+        var downloadedFilename = kendo.toString(new Date(evtVwr.eventDetails.timeMillis), "yyyyMMdd_HHmmss")
+                                 + "_" + evtVwr.eventDetails.eventType
+                                 + "_" + evtVwr.eventDetails.deviceId
+                                 + "_" + evtVwr.eventDetails.channelId
+                                 + ".mp4";
+
+        var downloadLink = videoUrl + "?action=download&customName=" + utils.sanitizeForURL(downloadedFilename);
+        evtVwr.$main.find(".download").show();
+        evtVwr.$main.find(".download .k-button").attr("href", downloadLink);
+
+        if (!utils.flashSupported(true))
+        {
+            return;
+        }
+
+        //player
+        var playLink = videoUrl + "?action=play";
+        evtVwr.$main.find(".video").show();
+        jwplayer("jwEvtPlayer").setup({
+            file: playLink,
+            width: "100%",
+            height: "100%",
+            autostart: false,
+            mute: true,
+            primary: utils.detectBrowser() == "firefox" ? "flash" : "html5"
+        });
+    };
+	
+    
+    
+    /* evtVwr.loadInfo = function ()
+    {
+        var evt = evtVwr.eventDetails;
+
+        evtVwr.eventDetails.time = kendo.toString(new Date(evt.timeMillis), kupapi.TIME_FORMAT);
+        evtVwr.eventDetails.type = localizeResource(evt.eventType);
+        evtVwr.eventDetails.deviceName = DvcMgr.getDeviceName(evt.deviceId);
+        evtVwr.eventDetails.channelName = DvcMgr.getChannelName(evt.deviceId, evt.channelId);
+
+        if (!utils.isNullOrEmpty(evt.acknowledgedBy))
+        {
+            var acknowledgedTime = kendo.toString(new Date(evt.acknowledgedTime), kupapi.TIME_FORMAT);
+            evtVwr.eventDetails.acknowledger = evt.acknowledgedBy + " (@" + acknowledgedTime + ")";
+            $(".evt_details .info .acknowledgement").show();
+        }
+
+        kendo.bind(evtVwr.$main.find(".info"), evtVwr.eventDetails);
+    }; */
+    
+    evtVwr.loadInfo = function ()
+    {
+        var evt = evtVwr.eventDetails;
+        var imageUrl = evtVwr.eventDetails.eventImageUrl;
+    	if(utils.isNullOrEmpty(imageUrl)){
+    		evtVwr.eventDetails.time = kendo.toString(new Date(evt.timeMillis), kupapi.TIME_FORMAT);
+            evtVwr.eventDetails.type = localizeResource(evt.eventType);
+            evtVwr.eventDetails.deviceName = DvcMgr.getDeviceName(evt.deviceId);
+            evtVwr.eventDetails.channelName = DvcMgr.getChannelName(evt.deviceId, evt.channelId);
+
+            if (!utils.isNullOrEmpty(evt.acknowledgedBy))
+            {
+                var acknowledgedTime = kendo.toString(new Date(evt.acknowledgedTime), kupapi.TIME_FORMAT);
+                evtVwr.eventDetails.acknowledger = evt.acknowledgedBy + " (@" + acknowledgedTime + ")";
+                $(".evt_details .info .acknowledgement").show();
+            }
+
+            kendo.bind(evtVwr.$main.find(".info"), evtVwr.eventDetails);
+    	}else{
+    		evtVwr.$main.find("#eventImage").attr("src",imageUrl)
+        	evtVwr.$main.find("#eventImage").show();
+    	}
+    	
+    	
+    	
+        
+    };
+
+    evtVwr.verifyWin8ForIE = function ()
+    {
+        var parser = new UAParser();
+        var browserInfo = parser.getBrowser();
+        var osInfo = parser.getOS();
+
+        try
+        {
+            if (browserInfo.name == "IE" &&
+                osInfo.name == "Windows" &&
+                parseInt(osInfo.version) < 8)
+            {
+                utils.popupAlert(localizeResource("msg-min-win8-for-ie"));
+                return false;
+            }
+        }
+        catch (e)
+        {
+            console.error(e);
+        }
+
+        return true;
+    };
+
+    evtVwr.loading = function (loading)
+    {
+        kendo.ui.progress(evtVwr.$main, loading);
+    };
+
+    $(function ()
+    {
+        DvcMgr.ready(evtVwr.init);
+    });
+
+</script>

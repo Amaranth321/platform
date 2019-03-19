@@ -1,0 +1,82 @@
+.rec_mgr .filter-sidebar .button .camera {
+    padding-left: 40px;
+    background: url(/public/css/common/images/treeicons/node_cam.png) 3px 50% no-repeat;
+    background-size: 28px 28px;
+}
+
+.rec_mgr .filter-sidebar .button .primary {
+    font-size: 12px;
+    color: #ddd;
+}
+
+.rec_mgr .filter-sidebar .button .secondary {
+    font-size: 11px;
+}
+
+.rec_mgr #movingToolBox .request {
+    width: 25px;
+    height: 25px;
+    background: url(/public/css/common/images/cloud_pull.png) 50% 50% no-repeat;
+    background-size: 16px 16px;
+}
+
+.rec_mgr #movingToolBox .download {
+    width: 25px;
+    height: 25px;
+    background: url(/public/css/common/images/download_blue.png) 50% 50% no-repeat;
+    background-size: 16px 16px;
+}
+
+.rec_mgr #movingToolBox .cancel {
+    width: 25px;
+    height: 25px;
+    background: url(/public/css/common/images/cloud_cancel.png) 50% 50% no-repeat;
+    background-size: 16px 16px;
+}
+
+.rec_mgr .camera_info_box {
+    display: none;
+}
+
+.rec_mgr .camera_info_box .storage_info {
+    width: 100%;
+    display: inline-block;
+    padding: 6px 8px;
+    background: #212121;
+}
+
+.rec_mgr .storage_info .progress-bar {
+    border: 1px solid #444;
+    padding: 2px;
+}
+
+.rec_mgr .storage_info .progress-bar svg {
+    shape-rendering: crispEdges;
+    height: 5px;
+}
+
+.rec_mgr .storage_info .details {
+    margin-top: 7px;
+    text-align: center;
+}
+
+.requester_list {
+    margin-bottom: 10px;
+}
+
+.requester_list ul {
+    padding-left: 20px;
+    padding-bottom: 10px;
+}
+
+.requester_list li {
+    list-style-type: square;
+}
+
+.requester_list .requester {
+    color: #F6AE40;
+}
+
+.with_active_requests {
+    border-bottom: 2px solid #428bca;
+}

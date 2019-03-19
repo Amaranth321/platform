@@ -1,0 +1,53 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#tabstrip").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
+
+        $("#accountSettings").show();
+    });
+
+
+</script>
+
+<div id="accountSettings" class="k-content" style="display:none;">
+    <div id="tabstrip">
+        <ul>
+            <li class="k-state-active">
+                <span>&{'edit-profile'}</span>
+            </li>
+            <li>
+                <span>&{'change-password'}</span>
+            </li>
+            <li>
+                <span>&{'notification'}</span>
+            </li>
+             <li>
+                <span>&{'mobile-devices'}</span>
+            </li>
+        </ul>
+        <div style="padding:20px" align="center">
+        #{include HtmlPath + '/account/edit_profile.html'/}
+        </div>
+        <div style="padding:20px" align="center">
+        #{include HtmlPath + '/account/change_pass.html'/}
+        </div>
+        <div style="padding:20px" align="center">
+        #{include HtmlPath + '/account/preferences.html'/}
+        </div>
+         <div style="padding:20px">
+        #{include HtmlPath + '/account/mobile_devices.html'/}
+        </div>
+    </div>
+</div>
+
+
+

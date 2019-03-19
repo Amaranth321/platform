@@ -1,0 +1,248 @@
+#{extends HtmlPath + '/common/templates/not_logged_in.html'/}
+
+<style>
+
+    .bjqs-next a {
+        top: 32%;
+    }
+
+    .bjqs-prev a {
+        top: 32%;
+    }
+
+    .info_critical img {
+        margin-right: 26px;
+        vertical-align: middle;
+        margin-top: -1px;
+    }
+
+    .btn-close {
+        margin-left: 19px;
+        margin-top: 1px;
+    }
+
+</style>
+
+<div class="top-bar" style="display: none;">
+    <div id="critical_mess" class="critical-msg">
+        <ul class="bjqs"></ul>
+    </div>
+</div>
+
+<div class="wrapper-holder">
+    <div id="body">
+        <aside id="sidebar">
+            <div class="box-form">
+                <h2>Login</h2>
+
+                <form id="loginForm" class="form" action="javascript:void(0);" onsubmit="submitLogin();" method="post">
+                    <fieldset>
+                        <div class="form-box">
+                            <div class="text name">
+                                <div>
+                                    <input type="text" placeholder="&{'username'}" name="username"/>
+                                </div>
+                            </div>
+                            <div class="text password">
+                                <div>
+                                    <input type="password" placeholder="&{'password'}" name="password" autocomplete="off"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-box" style="border: none;">
+                            <div id="acc_lock" class="box-error">
+                                <p>&{'incorrect-user-pass'}</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="err_msg">
+                                <span id='errorMessage' style='color: red'></span>
+                            </div>
+                        </div>
+                        <input class="bttn" type="submit" value="&{'login'}"/>
+                        <span class="forgot">
+                            <a href="javascript:goToSettingsPage()">&{'node-settings'}</a>
+                        </span>
+                        </br>
+                        <span class="forgot"><span id="connection"></span></span>
+                    </fieldset>
+                </form>
+            </div>
+        </aside>
+        <!-- / sidebar -->
+    </div>
+    <!-- / body -->
+</div>
+
+<!-- / wrapper-holder -->
+    <div id="footer-wrapper">
+        #{include HtmlPath + '/common/partial/login_footer_node.html'/}
+    </div>
+    <!-- / footer -->
+<script type="text/javascript">
+
+    function checkAnnouncements() {
+        var critical = 0;
+        var news = 0;
+
+        getAnnouncementList("", function (responseData) {
+            if (responseData.result == "ok" && responseData.announcements != null) {
+                $("#critical_mess ul").html("");
+                $("#news_mess ul").html("");
+                $.each(responseData.announcements, function (index, data) {
+                    if (data.type == "&{'critical'}" || data.type == "&{'news'}") {
+                        critical++;
+                        if (data.type == "&{'critical'}") {
+                            $("#critical_mess ul").append(
+                                            "<li class='info_critical' style='color:#f39c12;margin-top:9px;'>"
+                                            + "<img src='${CdnPath}/common/login/images/ico-speaker.png'></img>"
+                                            + data.description
+                                            + "<a class='btn-close' href='#'></a></li>"
+                            );
+                        } else {
+                            $("#critical_mess ul").append(
+                                            "<li class='info_critical' style='margin-top:9px;'>"
+                                            + "<img src='${CdnPath}/common/login/images/ico-speaker.png'></img>"
+                                            + data.description
+                                            + "<a class='btn-close' href='#'></a></li>"
+                            );
+                        }
+                    }
+                });
+
+                setTimeout(function () {
+                    if (critical > 1) {
+                        $('#critical_mess').bjqs({
+                            height: 39,
+                            nexttext: "",
+                            prevtext: "",
+                            animduration: 1000,
+                            showmarkers: false
+                        });
+
+                        $(".top-bar").slideToggle();
+                    }
+                    else if (critical == 1) {
+                        $(".top-bar").slideToggle();
+                        $("#critical_mess ul").show();
+                    }
+                    if (news > 1) {
+                        $('#news_mess').bjqs({
+                            animtype: 'slide',
+                            height: 25
+                        });
+
+                        $("#news_mess").show();
+                    }
+                    else if (news == 1) {
+                        $("#news_mess").show();
+                        $("#news_mess ul").show();
+                    }
+                    if ((news != 0) && (critical != 0)) {
+                        $(".centered").css({"height": "530px"});
+                    }
+                    else if ((news == 0) && (critical == 0)) {
+                        $(".centered").css({"height": "432px"});
+                    }
+                    else {
+                        $(".centered").css({"height": "490px"});
+                    }
+                }, 200);
+                if(responseData.announcements.length > 0){
+                    $("#body").css("margin-top","-270px");
+                }else{
+                    $("#body").css("margin-top","-290px");
+                }
+            }
+            else {
+                utils.throwServerError(responseData.reason);
+            }
+        }, null);
+    }
+
+    function submitLogin() {
+        var companyId = "${bucket}";
+        var username = $("input[name=username]").val().toLowerCase().trim();
+        var password = $("input[name=password]").val().trim();
+
+        if (utils.isNullOrEmpty(companyId)) {
+            console.log("Node bucket is not found. check logs.");
+            utils.popupAlert(localizeResource("unknown"));
+            return;
+        }
+
+        if (utils.isNullOrEmpty(username)) {
+            $("#errorMessage").html(localizeResource('specify-username'));
+            return;
+        }
+
+        if (utils.isNullOrEmpty(password)) {
+            $("#errorMessage").html(localizeResource('specify-password'));
+            return;
+        }
+
+        kupInit(companyId, utils.throwServerError);
+        login(username, password, null, function (responseData) {
+            if (responseData["result"] == "ok") {
+                window.location.href = "/" + companyId + "/dashboard";
+            }
+            else {
+                $('input').parent().removeClass('active');
+                $(".company").addClass("error");
+                $(".name").addClass("error");
+                $(".password").addClass("error");
+                $('.box-error').show();
+
+                var reason = responseData["reason"];
+                if (reason == "msg-account-locked") {
+                    var remainingLockedTime = responseData["locked-time-remaining"];
+                    var remainingMinutes = remainingLockedTime / (60 * 1000);
+                    $("#acc_lock").html(localizeResource(reason, remainingMinutes.toFixed(0)));
+                    $("#errorMessage").hide();
+
+                } else if (reason == "msg-incorrect-login") {
+                    var remainingAttempts = responseData["login-attempt-remaining"];
+                    $("#errorMessage").html(localizeResource(reason, remainingAttempts));
+
+                } else {
+                    $("#errorMessage").html(localizeResource(reason));
+                }
+            }
+        }, null);
+    }
+	
+    function initNetworkStatus() {
+		getNetworkStatus("", function(responseData) {
+            if (responseData.result == "ok") {
+            	$("#connection").html(localizeResource("network-status")+": "+localizeResource(responseData.status));
+            } else {
+            	$("#connection").html(localizeResource("network-status")+": "+localizeResource("unknown"));
+            }
+        }, null);
+    }
+
+    function goToSettingsPage() {
+        if(!utils.browsingOnNode()) {
+            utils.popupAlert(localizeResource("error-settings-on-node-only"));
+            return;
+        }
+
+        window.location.href = "http://localhost:9000/html/";
+    }
+    
+    $(function () {
+        checkAnnouncements();
+        initNetworkStatus();
+        $("input[name=username]").focus();
+        utils.captureEnterKey("loginForm", submitLogin);
+        $(document).on("click",".btn-close", function(){
+            $(".top-bar").slideUp('slow', function(){
+                $(".top-bar").hide();
+                $("#body").css("margin-top","-322px");
+                $("input[name=companyid]").focus();
+            });
+        })
+    });
+
+</script>

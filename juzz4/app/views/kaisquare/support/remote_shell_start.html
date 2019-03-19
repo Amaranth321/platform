@@ -1,0 +1,67 @@
+<style>
+    .shell_wrapper {
+        margin: 0px 10px;
+    }
+
+    .shell_wrapper label {
+        width: 90px;
+        line-height: 32px;
+        margin: 0px 0px 0px 5px;
+        display: inline-block;
+    }
+</style>
+
+<div class="shell_wrapper">
+    <div>
+
+        <label>&{'host'}</label>
+        <input type="text" class="k-input k-textbox" data-bind="value:host"><br/>
+
+        <label>&{'port'}</label>
+        <input type="text" class="k-input k-textbox" data-bind="value:port"><br/>
+
+        <label>&{'username'}</label>
+        <input type="text" class="k-input k-textbox" data-bind="value:username"><br/>
+
+    </div>
+
+    <div style="text-align: right; margin-top: 10px">
+        <a id="btnStart" href="javascript:remoteShell.start()" class="k-button" style="width: 60px">&{'start'}</a>
+    </div>
+</div>
+
+<script>
+
+    var remoteShell = kendo.observable({
+        nodePlatformDeviceId: "${nodePlatformDeviceId}",
+        host: "${host}",
+        port: "${port}",
+        username: "${user}",
+
+        closePopup: function () {
+            $("#btnStart").closest(".k-window-content").data("kendoWindow").close();
+        },
+
+        start: function () {
+            var dvcId = this.get("nodePlatformDeviceId");
+            var host = this.get("host");
+            var port = this.get("port");
+            var usrName = this.get("username");
+
+            startRemoteShell("", dvcId, host, port, usrName, function (responseData) {
+                if (responseData == null || responseData.result != "ok") {
+                    utils.throwServerError(responseData);
+                    return;
+                }
+
+                utils.slideDownInfo(localizeResource("action-successful"));
+                remoteShell.closePopup();
+            }, null);
+        }
+    });
+
+    $(function () {
+        kendo.bind($(".shell_wrapper"), remoteShell);
+    });
+
+</script>

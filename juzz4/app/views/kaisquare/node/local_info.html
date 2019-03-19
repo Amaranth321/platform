@@ -1,0 +1,134 @@
+<style>
+
+    .node_local {
+        width: 380px;
+        padding: 0px 7px;
+    }
+
+    .node_local label {
+        display: inline-block;
+        line-height: 26px;
+        width: 50%;
+        color: #F6AE40;
+    }
+
+    .node_local span {
+        overflow: hidden;
+    }
+
+</style>
+
+<div class="node_local">
+    <div>
+        <label>&{'registered-to'}</label><span data-bind="text:cloudServer"></span>
+    </div>
+    <div>
+        <label>&{'version'}</label><span data-bind="text:version"></span>
+    </div>
+    <div>
+        <label>&{'ip'}</label><span data-bind="text:ipAddress"></span>
+    </div>
+    <div>
+        <label>&{'maximum-concurrent-vca'}</label><span data-bind="text:maxVcaCount"></span>
+    </div>
+    <div>
+        <label>&{'max-device-count'}</label><span data-bind="text:maxDeviceCount"></span>
+    </div>
+    <div>
+        <label>&{'expires-on'}</label><span data-bind="text:expiryTime"></span>
+    </div>
+    <div>
+        <label>&{'new-update-file'}</label><span data-bind="text:updateFileInfo"></span>
+    </div>
+</div>
+
+<script>
+
+    var nodeLocal = {};
+
+    nodeLocal.init = function (ready)
+    {
+//        //mock
+//        var mockData = {
+//            "result": "ok",
+//            "registered": "true",
+//            "node": {
+//                "name": "Node 202",
+//                "cloudBucketId": "3",
+//                "cloudPlatformDeviceId": "14",
+//                "cloudCoreDeviceId": "49",
+//                "settings": {
+//                    "networkSettings": {
+//                        "type": "static",
+//                        "ipAddress": "10.10.0.202",
+//                        "netmask": 16,
+//                        "gateway": "10.10.0.1",
+//                        "nameservers": ["208.67.222.222", "8.8.8.8"]
+//                    }, "timezone": "Asia/Singapore", "tzOffsetMins": 480
+//                },
+//                "cloudLastContacted": 1451982743422,
+//                "suspended": false,
+//                "_id": "568b6988e4b0d34a08f69914",
+//                "_created": 1451977096406,
+//                "_modified": 1451982743422
+//            },
+//            "bucketName": "amtest",
+//            "cloudServer": "mock cloud",
+//            "license": "4PLVRQ5LRHZFTZS",
+//            "maxVcaCount": 7,
+//            "expiry": 1467707820000,
+//            "maxDeviceCount": 6,
+//            "version": "4.4.0.4",
+//            "updateFile": {"currentVersion": "4.4.0.4", "serverVersion": "4.4.0.8", "status": "available", "percent": 0}
+//        };
+//        ready(mockData);
+//        return;
+
+        getNodeLocalInfo(function (responseData)
+        {
+            if (responseData.result != "ok")
+            {
+                utils.throwServerError(responseData);
+                return;
+            }
+
+            ready(responseData);
+        })
+    };
+
+    nodeLocal.loadInfo = function (dbData)
+    {
+        var updateFile = dbData.updateFile;
+
+        var updateInfoText = localizeResource("update-status-" + updateFile.status) + " ";
+        switch (updateFile.status)
+        {
+            case "pending":
+                updateInfoText += "(" + updateFile.serverVersion + ", " + updateFile.percent + "%)";
+                break;
+
+            case "available":
+                updateInfoText += "(" + updateFile.serverVersion + ")";
+                break;
+        }
+
+        var info = {
+            ipAddress: dbData.node.settings.networkSettings.ipAddress,
+            maxVcaCount: dbData.maxVcaCount,
+            expiryTime: kendo.toString(new Date(dbData.expiry), kupapi.TIME_FORMAT),
+            maxDeviceCount: dbData.maxDeviceCount,
+            version: dbData.version,
+            updateFileInfo: updateInfoText,
+            cloudServer: dbData.cloudServer
+        };
+
+        kendo.bind($(".node_local"), info);
+    };
+
+    $(function ()
+    {
+        nodeLocal.init(nodeLocal.loadInfo);
+    });
+
+</script>
+

@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/public/javascripts/scheduletask/schedule_task_action.css"/>
+<script src="/public/javascripts/scheduletask/schedule_task_action.js"></script>
+
+<div class="schedule_task_container">
+    <div class="sub_container">
+        <label for="scheduleTime">&{'scheduled-time'}:</label>
+        <span id="scheduleTime" class="scheduleTime"></span>
+    </div>
+    <div id="searchNode" style="display: none;"></div>
+    <div id="bucketDvcTree"></div>
+</div>
+
+<div class="button_group">
+    <a href="javascript:addScheduleTaskMng.close()" class="k-button">&{'cancel'}</a>
+</div>
+
+<script>
+    var addScheduleTaskMng = new ScheduleTaskManager("bucketDvcTree", "searchNode");
+    $(function ()
+    {
+        var scheduleID = "${scheduleId}";
+        addScheduleTaskMng.generateReadOnly(scheduleID);
+    });
+</script>

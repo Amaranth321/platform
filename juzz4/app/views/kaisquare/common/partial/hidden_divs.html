@@ -1,0 +1,71 @@
+<div id=notifyBox class="notify_box"></div>
+<div id=popupWin class="confirm_win_wrapper" style="display: none">
+    <div class="confirm_msg">confirmationMessage</div>
+    <div class="button_group" align="center">
+        <a id="btnConfirmOk" href="#" class="k-button">&{'yes'}</a>&nbsp;
+        <a id="btnConfirmCancel" href="#" class="k-button">&{'no'}</a>
+    </div>
+</div>
+
+<div class="darkened-overlay" style="display: none;"></div>
+<div class="loading-icon-overlay" style="display: none;">
+    <img style="margin: 3px;" src="${CdnPath}/common/images/loading.gif">
+</div>
+
+<div class="loading-text-overlay" style="display: none;">
+    <div id="btnLoadingCancel" style="position: absolute; top: 3px; right: 3px; display: none">
+        <a href="javascript:utils.hideLoadingOverlay()">
+            <img src="${CdnPath}/common/images/stop_loading.png"
+                 style="width: 12px; height: 12px; margin: 3px;">
+        </a>
+    </div>
+
+    <img src='${CdnPath}/common/images/loading.gif' style='width:35px;height:35px;margin-right: 10px'/>
+    <span id="loadingText"></span>
+    <span id="loadingTimeSeconds" style="display: none; margin-left: 5px"></span>
+</div>
+
+<div class="input_request_win" style="display: none">
+    <div>
+        <input name="userInput" class="k-input k-textbox">
+    </div>
+    <div class="btn_group">
+        <a class="k-button btn_save">&{'save'}</a>&nbsp;
+        <a class="k-button btn_cancel">&{'cancel'}</a>
+    </div>
+</div>
+
+<script type="text/x-kendo-template" id="taskProgressTmpl">
+    <div class="row">
+        <span class="task">#= localizeResource(data.currentTask) #</span>
+        <span class="percent">#= data.percent #%</span>
+    </div>
+</script>
+
+<div class="task_monitor" style="display: none">
+    <div class="title">
+    &{'tasks-running'}
+    </div>
+    <div class="grid"></div>
+</div>
+
+<div class="install_flash_warning" style="display: none;">
+    <div style="margin-bottom: 20px; color: #FF4040">
+    &{'msg-must-install-flash'}
+    </div>
+    <a href="https://get.adobe.com/flashplayer/" style="text-align: center;" target="_blank"
+       class="k-button">&{'go-to-flash-page'}</a>
+</div>
+
+<div class="text_copier" style="display: none;">
+    <div class="input_box">
+        <input type="text" class="unambiguous-font">
+    </div>
+    <a href="javascript:void(0)" class="k-button btn_copy">&{'copy-to-clipboard'}</a>
+</div>
+
+<div class="ele_busy_overlay">
+    <div class="container">
+        <div class="msg"></div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" type="text/css" href="${CdnRootPath}/public/javascripts/bucket/dvc_vca_tree.css"/>
+
+<script src="/public/javascripts/analyticsType.js"></script>
+<script src="/public/javascripts/bucket/dvcVcaTree.js"></script>
+
+<a href="javascript:dvcVcaTree.remove(containerSelector)" class="k-button">&{'remove'}</a>
+<br>
+<br>
+<div class="dvc_vca_tree"></div>
+
+<script>
+    var targetBucketId = "${bucketId}";
+    var containerSelector = ".dvc_vca_tree";
+
+    function addTree(){
+
+        var options = {
+            bucketId: targetBucketId,
+            bucketName: "root",
+            cssSelector: ".dvc_vca_tree"
+        };
+
+        //get devices
+        getBucketDevicesByBucketId(targetBucketId, function (responseData) {
+            if (responseData.result != "ok" || responseData.devices == null) {
+                utils.throwServerError(responseData);
+                return;
+            }
+            var deviceList = responseData.devices;
+
+            //get analytics
+            listAnalyticsByBucketId("", targetBucketId, analyticsType.ALL, function (responseData) {
+                if (responseData.result != "ok" || responseData.instances == null) {
+                    utils.throwServerError(responseData);
+                    return;
+                }
+
+                var analyticsList = responseData.instances;
+                dvcVcaTree.generate(options, deviceList, analyticsList);
+            }, null);
+        }, null);
+    }
+
+    $(addTree);
+
+</script>

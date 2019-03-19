@@ -1,0 +1,105 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+#{include HtmlPath + '/common/partial/gmap_headers.html'/}
+#{include HtmlPath + '/common/partial/bmap_headers.html'/}
+
+<script type="text/x-kendo-template" id="toolbarTemplate">
+    <div class="toolbar">
+        <a class="k-button" id="addNewPoi"><span class="k-icon k-i-plus"></span> &{'add-poi'}</a>
+    </div>
+</script>
+
+<div id="poiList" class="k-content" style="margin: 5px 10px 5px 5px">
+    <div class="default_title_bar">
+        <span class="title">&{'point-of-interests'}</span>
+    </div>
+    <div id="poiGrid"></div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+                var editPoi = function (e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var contentPage = "/poi/edit/" + dataItem._id;
+                    utils.openPopup("&{'edit-poi'}", contentPage, null, null, true, onPopupClosed);
+                }
+
+                var deletePoi = function (e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+                    utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function (choice) {
+                        if (choice) {
+                            removePoi("", dataItem._id, function (responseData) {
+                                if (responseData.result == "ok") {
+                                    utils.slideDownInfo("&{'poi-deleted'}")
+                                }
+                                $("#poiGrid").data("kendoGrid").dataSource.read();
+                            }, null);
+                        }
+                    });
+                }
+
+                var grid = $("#poiGrid").kendoGrid({
+                    dataSource: {
+                        transport: {
+                            read: function (options) {
+                                getBucketPois("", function (responseData) {
+                                    if (responseData.result == "ok" && responseData.pois != null) {
+                                    	var pois = [];	
+                                    	$.each(responseData.pois, function(index, data){
+                                    		var poi = {};
+                                    		poi._id = data._id;
+                                    		poi.name = data.name;
+                                    		poi.type = localizeResource(data.type);
+                                    		poi.address = data.address;
+                                    		poi.description = data.description;
+                                    		pois.push(poi);
+                                    	});
+                                        options.success(pois);
+                                    }
+                                    else {
+                                        utils.throwServerError(responseData.reason);
+                                        options.success([]);
+                                    }
+                                }, null);
+                            }
+                        },
+                        pageSize: 15
+                    },
+                    pageable: {
+                        input: true,
+                        numeric: false,
+                        pageSizes: [15, 30, 50],
+                        refresh: true
+                    },
+                    sortable: true,
+                    filterable: false,
+                    selectable: true,
+                    resizable: false,
+                    toolbar: kendo.template($("#toolbarTemplate").html()),
+                    columns: [
+                        { field: "name", title: "&{'name'}" },
+                        { field: "type", title: "&{'type'}" },
+                        { field: "address", title: "&{'address'}" },
+                        { field: "description", title: "&{'description'}" },
+                        { command: [
+                            { text: "&{'edit'}", click: editPoi },
+                            { text: "&{'delete'}", click: deletePoi }
+                        ], title: "&{'actions'}", width: "160px" }
+                    ]
+                }).data("kendoGrid");
+
+                $("#addNewPoi").click(function (e) {
+                    var contentPage = "/poi/add";
+                    utils.openPopup("&{'add-poi'}", contentPage, null, null, true, onPopupClosed);
+                });
+
+                function onPopupClosed() {
+                    $("#poiGrid").data("kendoGrid").dataSource.read();
+                };
+            }
+    );
+
+</script>

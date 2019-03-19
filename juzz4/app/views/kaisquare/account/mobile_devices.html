@@ -1,0 +1,127 @@
+<style>
+    .mobile-dvc {
+        margin: -17px;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="notiStatusTemplate">
+    # if(notificationEnabled) { #
+    <div align=center class="entry_status_green">
+        yes
+    </div>
+    # } else {#
+    <div align=center class="entry_status_gray">
+        no
+    </div>
+    # } #
+</script>
+
+<div class="mobile-dvc">
+    <div class="grid"></div>
+</div>
+
+<script>
+
+    var MobDvc = (function ()
+    {
+        var kendoGrid = null;
+
+        var generate = function ()
+        {
+            function unlinkDevice(e)
+            {
+                e.preventDefault();
+                var dvc = this.dataItem($(e.currentTarget).closest("tr"));
+
+                utils.popupConfirm(
+                        localizeResource("confirmation"),
+                        localizeResource("confirm-unlink-mobile-device"),
+                        function (proceed)
+                        {
+                            if (proceed)
+                            {
+                                removeMobileDeviceOfUser("", dvc.identifier, function (responseData)
+                                {
+                                    if (responseData.result != "ok")
+                                    {
+                                        utils.throwServerError(responseData);
+                                        return;
+                                    }
+
+                                    utils.slideDownInfo(localizeResource("update-successful"));
+                                    kendoGrid.dataSource.read();
+                                });
+                            }
+                        });
+            }
+
+            function setName(e)
+            {
+                e.preventDefault();
+                var dvc = this.dataItem($(e.currentTarget).closest("tr"));
+                utils.requestUserInput(localizeResource("mobile-device-name"), function (proceed, updatedName)
+                {
+                    if (proceed)
+                    {
+                        updateMobileDeviceInfo(dvc.identifier, updatedName, function (responseData)
+                        {
+                            if (responseData.result != "ok")
+                            {
+                                utils.throwServerError(responseData);
+                                return;
+                            }
+
+                            utils.slideDownInfo(localizeResource("update-successful"));
+                            kendoGrid.dataSource.read();
+                        });
+                    }
+                });
+            }
+
+            kendoGrid = $(".mobile-dvc .grid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: function (options)
+                        {
+                            getUserMobileDevices("", function (responseData)
+                            {
+                                options.success(responseData.mobileDevices);
+                            });
+                        }
+                    },
+                    pageSize: 15
+                },
+                pageable: {
+                    input: true,
+                    numeric: false,
+                    pageSizes: [15, 30, 50],
+                    refresh: true
+                },
+                sortable: false,
+                filterable: false,
+                selectable: true,
+                resizable: false,
+                columns: [
+                    { field: "name", title: localizeResource("name")},
+                    { field: "model", title: localizeResource("model")},
+                    { field: "location", title: localizeResource("location")},
+                    {field: "notificationEnabled", title: localizeResource("notification-enabled"), width: "140px",
+                        template: kendo.template($("#notiStatusTemplate").html())},
+                    { command: [
+                        { text: localizeResource("rename"), click: setName},
+                        { text: localizeResource("un-link"), click: unlinkDevice}
+                    ], title: "&{'actions'}", width: "160px"}
+                ]
+            }).data("kendoGrid");
+        };
+
+        return {
+            generate: generate
+        }
+    })();
+
+    $(function ()
+    {
+        MobDvc.generate();
+    });
+</script>

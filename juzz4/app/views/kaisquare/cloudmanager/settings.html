@@ -1,0 +1,75 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/server/server.configs.js"></script>
+<link rel="stylesheet" href="/public/javascripts/server/server_configs.css"/>
+
+<script type="text/x-kendo-template" id="serverConfigsTmpl">
+
+    # $.each(data, function(category, configs){ #
+
+    <div class="category #= category #">
+        <div class="title">#= localizeResource("config-" + category) #</div>
+
+        # $.each(configs, function(key, val){ #
+        # var localizedKey = localizeResource(category + "-" + key); #
+
+        <div class="input_grp">
+
+            # if(typeof(val) == "boolean") { #
+            # var checked = (val == true)? "checked" : ""; #
+            <label>#= localizedKey #</label><input type="checkbox" class="#= key #" #= checked #/>
+
+            # } else if(typeof(val) == "number"){ #
+            <label>#= localizedKey #</label><input type="number" class="#= key #" min="1" value="#= val #"/>
+
+            # } else if(typeof(val) == "string"){ #
+            <label>#= localizedKey #</label><input type="text" class="k-input k-textbox #= key #" value="#= val #"/>
+
+            # } else { #
+            <label>Invalid entry!</label>
+            # } #
+
+        </div>
+
+        # }); #
+    </div>
+
+    # }); #
+</script>
+
+<div class="server_configs">
+    <div class="default_title_bar">
+        <span class="title">&{'server-internal-settings'}</span>
+    </div>
+    <div class="header">
+        <div class="info">
+            <ul>
+                <li>The configurations below are at the server level. Hence, all buckets will be affected</li>
+                <li>Nodes are not affected by any of these configurations</li>
+                <li>Make changes only if you are absolutely sure about that configuration</li>
+            </ul>
+        </div>
+
+        <div class="clear_both"></div>
+    </div>
+
+    <div class="main_wrapper">
+        <div class="btn_grp">
+            <a href="javascript:serverConfigs.applyChanges()" class="k-button">&{'apply-changes'}</a>
+            <a href="javascript:serverConfigs.clearChanges()" class="k-button">&{'clear-changes'}</a>
+        </div>
+
+        <div class="body"></div>
+    </div>
+</div>
+
+<script>
+
+    var serverConfigs = new ServerConfigs();
+
+    $(function ()
+    {
+        serverConfigs.generate();
+    });
+
+</script>

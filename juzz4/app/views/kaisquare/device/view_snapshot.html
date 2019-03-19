@@ -1,0 +1,52 @@
+<style>
+    #snapshotBox {
+        width: 400px;
+        height: 300px;
+        margin: -5px;
+    }
+</style>
+
+<div id="snapshotBox"></div>
+
+<script>
+    var coreDeviceId = "${coreDeviceId}";
+    var channelId = "${channelId}";
+    var $snapshotBox = $("#snapshotBox");
+
+    function updateImage(coreDeviceId, channelId) {
+        kendo.ui.progress($snapshotBox, true);
+        getLiveVideoUrl("", coreDeviceId, channelId, "http/jpeg", null, function (responseData) {
+
+
+            if (responseData == null ||
+                    responseData.result != "ok" ||
+                    responseData.url == null ||
+                    responseData.url.length == 0) {
+                kendo.ui.progress($snapshotBox, false);
+                utils.popupAlert(localizeResource('error-loading-image'));
+                return;
+            }
+
+            var jpegUrl = responseData.url[0] + "?rand=" + utils.getRandomInteger(1000, 9999);
+            utils.preloadImage(jpegUrl,
+                    function () {
+                        $snapshotBox.css({"background": "url(" + jpegUrl + ") no-repeat center center"});
+                        $snapshotBox.css({"background-size": "100% 100%"});
+                        kendo.ui.progress($snapshotBox, false);
+                    },
+                    function () {
+                        utils.popupAlert(localizeResource('error-loading-image'));
+                        kendo.ui.progress($snapshotBox, false);
+                        emptyBackground();
+                    });
+        }, null);
+    }
+
+    function emptyBackground() {
+        $snapshotBox.css({"background": "#212121 url(${CdnPath}/common/images/error_loading.png) center center no-repeat"});
+    }
+
+    $(function () {
+        updateImage(coreDeviceId, channelId);
+    });
+</script>

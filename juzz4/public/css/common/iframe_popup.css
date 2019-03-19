@@ -1,0 +1,233 @@
+.kup-form-box {
+    min-height: 35px;
+    padding: 0px 0px 5px 0px;
+    border-bottom: 2px #f07230 solid;
+    margin: 7px;
+}
+.k-ie .k-ie8{
+    background-color: #212A33;
+}
+@font-face {
+font-family: Muli;
+font-style: normal;
+font-weight: 400;
+src: url(/public/files/fonts/Muli.ttf);
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+    color: #f5f5f5;
+    background-color: #212A33;
+    font-family: Muli, sans-serif;
+}
+
+a img {
+    border: none;
+}
+
+button {
+    border: 0px;
+    background-color: #000000;
+}
+
+label {
+    color: #eaac00;
+}
+
+/* vca */
+
+.vca_device_box {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 3px 10px 3px 3px;
+}
+
+.vca_readonly_msg {
+    font-size: 11px;
+    text-align: center;
+    background: #000000;
+    width: 99%;
+    padding: 3px;
+    margin: 0px 0px 3px 1px;
+}
+
+#drawingArea {
+    width: 400px;
+    height: 300px;
+    border: 0px;
+    margin-bottom: -3px;
+}
+
+.mask_box_btn_imgbg {
+    width: 16px;
+    height: 16px;
+    margin: 1px 0px -3px 0px;
+}
+
+.vca_slider_box {
+    height: 24px;
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 7px 20px 7px 20px;
+    margin: 1px;
+}
+
+.vca_config_info_text {
+    color: #eaac00;
+    font-size: 11px;
+    margin: 15px 0px 5px 3px;
+}
+
+.help_guide_error_msg {
+    width: 100%;
+    text-align: center;
+    margin: 150px auto 0px auto;
+    font-size: 17px;
+    color: #eaac00;
+}
+
+.vca_span_object_size {
+    color: #eaac20;
+    margin-right: 5px;
+}
+
+/* people counting */
+.people_counting_left_box {
+    float: left;
+    width: 404px;
+    margin-left: 5px;
+}
+
+.people_counting_right_box {
+    float: right;
+    width: 280px;
+    margin-top: 10px;
+}
+
+.people_counting_mask_box {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 2px;
+    margin: 1px;
+    width: 400px;
+    height: 300px;
+}
+
+.people_counting_device_box {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 3px 10px 3px 3px;
+}
+
+/* perimeter defense */
+
+.pdefense_deviceBox {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 3px 10px 3px 3px;
+}
+
+.pdefense_right_box {
+    float: right;
+    width: 280px;
+    margin: 3px;
+}
+
+.pdefense_left_box {
+    float: left;
+    width: 451px;
+}
+
+.pdefense_mask_box {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 2px;
+    margin: 1px;
+    width: 443px;
+    height: 305px;
+}
+
+.pdefense_draw_box {
+    float: right;
+    border: 1px solid #565656;
+    border-radius: 0px;
+    margin: 1px;
+}
+
+/* area loitering */
+
+.loitering_deviceBox {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 3px 10px 3px 3px;
+}
+
+.loitering_right_box {
+    float: right;
+    width: 280px;
+    margin: 3px;
+}
+
+.loitering_left_box {
+    float: left;
+    width: 451px;
+}
+
+.loitering_mask_box {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 2px;
+    margin: 1px;
+    width: 443px;
+    height: 305px;
+}
+
+.loitering_draw_box {
+    float: right;
+    border: 1px solid #565656;
+    border-radius: 0px;
+    margin: 1px;
+}
+
+/* object counting */
+
+.counting_deviceBox {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 3px 10px 3px 3px;
+}
+
+.counting_right_box {
+    float: right;
+    width: 280px;
+    margin: 3px;
+}
+
+.counting_left_box {
+    float: left;
+    width: 410px;
+}
+
+.counting_mask_box {
+    border: 1px solid #565656;
+    border-radius: 4px;
+    padding: 2px;
+    margin: 1px;
+    width: 400px;
+    height: 300px;
+}
+
+.counting_draw_box {
+    float: left;
+    border: 1px solid #565656;
+    border-radius: 0px;
+    margin: 1px;
+}
+
+.imgbg_btn {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-bottom: 3px;
+}

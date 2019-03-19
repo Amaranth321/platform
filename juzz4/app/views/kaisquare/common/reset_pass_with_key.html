@@ -1,0 +1,101 @@
+#{extends HtmlPath + '/common/templates/not_logged_in.html'/}
+
+<style type="text/css">
+    #body{
+        margin-top: -260px !important;
+    }
+    .box-form h2{
+        font-size: 29px !important;
+    }
+    .form .bttn {
+        margin: 17px auto 3px !important;
+    }
+</style>
+
+
+<script type="text/javascript">
+
+    var authKey = '${key}';
+    if (authKey == "") {
+        utils.popupAlert("&{'msg-invalid-authKey'}", function () {
+            window.location.href = "/login/forgotpass";
+        });
+
+    }
+</script>
+<div class="wrapper-holder">
+    <div id="body">
+        <aside id="sidebar">
+            <div class="box-form">
+                <h2>&{'change-password'}</h2>
+                <form class="form" action="javascript:void(0);" method="post">
+                    <fieldset>
+                        <div class="form-box">
+                            <div id="newPassPage">
+                                <div class="text password">
+                                    <div class="controls">
+                                        <input type="password" name="password1"
+                                               data-bind="value:password1" placeholder="&{'new-password'}" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="text password">
+                                    <div class="controls">
+                                        <input type="password" name="password2"
+                                               data-bind="value:password2" placeholder="&{'confirm-password'}" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="btnSubmit" class="bttn" type="button" value="&{'submit'}"/>
+                    </fieldset>
+                </form>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var viewModel = kendo.observable({
+            password1: "",
+            password2: ""
+        });
+
+        kendo.bind($("#newPassPage"), viewModel);
+
+        $("#btnSubmit").click(function () {
+            if (viewModel.password1 != "") {
+            	if(viewModel.password1.length < 8){
+               	 	utils.popupAlert("&{'password-min-length'}!");
+               	 	viewModel.set("password1", "");
+                 	viewModel.set("password2", "");
+     			}else if (viewModel.password1 == viewModel.password2) {
+                    resetPasswordWithKey(authKey, viewModel.password1, onResetPasswordWithKeySuccess, null);
+                }
+                else {
+                    utils.popupAlert("&{'pass-dont-match'}!")
+                    viewModel.set("password1", "");
+                    viewModel.set("password2", "");
+                }
+            }
+            else {
+                utils.popupAlert("&{'new-password-empty'}");
+            }
+        });
+
+        function onResetPasswordWithKeySuccess(responseData) {
+            if (responseData.result == "ok") {
+                utils.popupAlert("&{'msg-password-success'}", function () {
+                    window.location.href = "/";
+                });
+            }
+            else {
+                utils.popupAlert(localizeResource(responseData.reason), function () {
+                    //window.location.href = "/";
+                	viewModel.set("password1", "");
+                    viewModel.set("password2", "");
+                });
+            }
+        }
+    });
+</script>

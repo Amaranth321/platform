@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>&{'company-product-title'}</title>
+    <meta name="description" content="&{'company-product-title'}"/>
+    <meta name="keywords" content="KAI square,KUP,Platform"/>
+    <link rel="icon" type="image/png" href="/favicon.ico">
+
+#{include HtmlPath + '/common/partial/kup_headers.html'/}
+#{include HtmlPath + '/common/partial/kendo_headers.html'/}
+#{include HtmlPath + '/common/partial/hidden_divs.html'/}
+
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/style_all.css"/>
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/default/theme_diff.css"/>
+
+    <script type="text/javascript" src="/public/javascripts/ui_scripts.js"></script>
+    
+    <script type="text/javascript">
+    	var companyId = "";
+
+        $(function(){
+	 	   kupInit('${bucket}', utils.throwServerError);
+	    });
+ 
+        function onFieldFocused(fieldName) {
+            document.getElementsByName(fieldName)[0].value = "";
+        }
+
+        function onFieldLostFocus(fieldName) {
+            var element = document.getElementsByName(fieldName)[0];
+            switch (fieldName) {
+                case "companyid":
+                    var defaultValue = kupBucket == "" ? 'Company ID' : kupBucket;
+                    element.value = element.value == "" ? defaultValue : element.value;
+                    break;
+                case "username":
+                    element.value = element.value == "" ? "Username" : element.value;
+                    break;
+                case "password":
+                    element.value = element.value == "" ? "password" : element.value;
+                    break;
+                case "email":
+                    element.value = element.value == "" ? "Email" : element.value;
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <style>
+        .k-block > .k-header, .k-window-titlebar{
+            height: 0px;
+        }
+        .row-fluid .span6{
+            width: 19%;
+        }
+    </style>
+<div id="content_black">
+    #{doLayout /}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<script src="/public/javascripts/jquery.tagit.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/common/jquery.tagit.css"/>
+
+<div class="edit_node">
+    <div id="deviceEditForm">
+
+        <div class="group_box">
+            <div class="group_title_wrapper">
+                <span class="group_title">&{'device-details'}</span>
+            </div>
+
+            <div class="input_line">
+                <label for="name">&{'name'}</label>
+                <input name="name" class="k-input k-textbox" style="width: 170px"
+                       required validationMessage="&{'required'}"
+                       data-bind="value:name">
+            </div>
+
+            <div class="input_line">
+                <label for="address">&{'address'}</label>
+                <input id="address" name="address" class="k-input k-textbox" style="width: 170px"
+                       validationMessage="&{'required'}"
+                       data-bind="value:address">
+            </div>
+
+            <div class="input_line">
+                <label for="latitude">&{'latitude'}</label>
+                <input id="latitude" class="progress" name="latitude" style="width:170px;"
+                       required validationMessage="&{'invalid-value'}"
+                       data-bind="value:latitude">
+            </div>
+
+            <div class="input_line">
+                <label for="longitude">&{'longitude'}</label>
+                <input id="longitude" class="progress" name="longitude" style="width:170px;"
+                       required validationMessage="&{'invalid-value'}"
+                       data-bind="value:longitude">
+            </div>
+        </div>
+
+        <div class="separator1"></div>
+
+        <div class="group_box">
+            <div class="group_title_wrapper">
+                <span class="group_title">&{'authentication-settings'}</span>
+            </div>
+
+            <div class="input_line">
+                <label for="host">&{'host'}</label>
+                <input name="host" style="width: 170px" class="k-input k-textbox"
+                       data-bind="value:host">
+            </div>
+
+            <div class="input_line">
+                <label for="port">&{'port'}</label>
+                <input id="port" name="port" style="width:170px;"
+                       validationMessage="&{'invalid-value'}"
+                       data-bind="value:port">
+            </div>
+
+            <div class="input_line">
+                <label for="login">&{'login'}</label>
+                <input name="login" style="width: 170px" class="k-input k-textbox"
+                       data-bind="value:login">
+            </div>
+
+            <div class="input_line">
+                <label for="password">&{'password'}</label>
+                <input name="password" style="width: 170px" class="k-input k-textbox" type="password"
+                       data-bind="value:password">
+            </div>
+
+            <div class="input_line">
+                <label for="deviceKey">&{'device-key'}</label>
+                <input name="deviceKey" style="width: 170px" class="k-input k-textbox"
+                       data-bind="value:deviceKey">
+            </div>
+
+            <div class="input_line">
+                <label for="cloudRecordingEnabled">&{'cloud-recording-enabled'}</label>
+                <input name="cloudRecordingEnabled" type="checkbox" style="vertical-align: middle"
+                       data-bind="checked:cloudRecordingEnabled">
+            </div>
+        </div>
+
+        <div class="separator2"></div>
+
+        <div class="input_line" style="display: none;">
+            <input id="labels" name="labels" data-bind="value:labels">
+        </div>
+    </div>
+
+    <div class="error_box">
+        <div id=deviceKey-host-msg class="error_msg_line">* &{'msg-input-devicekey-host'}</div>
+        <div id=geocode-error-msg class="error_msg_line">* &{'msg-address-not-found'}</div>
+    </div>
+
+    <div style="text-align: center;">
+        <a id="btnEdit" href="javascript:deviceViewModel.submit()" style="margin-right: 10px"
+           class="k-button">&{'update'}</a>
+        <a id="btnClose" href="javascript:deviceViewModel.close()" class="k-button">&{'close'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var nodeId = "${nodeId}";
+    var nodeCameraId = "${nodeCameraId}";
+
+    var deviceViewModel = kendo.observable({
+        nodePlatformDeviceId: "",
+        name: "",
+        deviceKey: "",
+        host: "",
+        port: 0,
+        login: "",
+        password: "",
+        address: "",
+        latitude: 0,
+        longitude: 0,
+        cloudRecordingEnabled: false,
+        labels: "",
+        validator: null,
+
+        init: function (targetDevice) {
+            this.set("nodePlatformDeviceId", targetDevice.nodePlatformDeviceId);
+            this.set("name", targetDevice.name);
+            this.set("deviceKey", targetDevice.deviceKey);
+            this.set("host", targetDevice.host);
+            this.set("port", utils.isNullOrEmpty(targetDevice.port) ? 0 : targetDevice.port);
+            this.set("login", targetDevice.login);
+            this.set("password", targetDevice.password);
+            this.set("address", targetDevice.address);
+            this.set("latitude", utils.isNullOrEmpty(targetDevice.latitude) ? 0 : targetDevice.latitude);
+            this.set("longitude", utils.isNullOrEmpty(targetDevice.longitude) ? 0 : targetDevice.longitude);
+            this.set("cloudRecordingEnabled", targetDevice.cloudRecordingEnabled);
+            this.set("labels", utils.isNullOrEmpty(targetDevice.labels) ? "" : targetDevice.labels.join(","));
+
+            //populate the form
+            kendo.bind($("#deviceEditForm"), this);
+            this.validator = $("#deviceEditForm").kendoValidator().data("kendoValidator");
+
+            $("#latitude").kendoNumericTextBox({
+                format: "n3",
+                decimals: 3,
+                min: 0,
+                value: 0
+            });
+
+            $("#longitude").kendoNumericTextBox({
+                format: "n3",
+                decimals: 3,
+                min: 0,
+                value: 0
+            });
+
+            $("#port").kendoNumericTextBox({
+                format: "######",
+                decimals: 0,
+                min: 0,
+                value: 80
+            });
+
+            //update lat lng after address is changed
+            $("#address").blur(function () {
+                deviceViewModel.updateLatLng();
+            });
+
+            //get list of label from backend for auto suggestions
+            deviceManager.WaitForReady(function () {
+                $("#labels").tagit({
+                    placeholderText: localizeResource('label-info'),
+                    availableTags: deviceManager.userDevicesLabels,
+                    autocomplete: {autoFocus: true}
+                });
+            });
+
+        },
+
+        updateLatLng: function () {
+            deviceManager.devicePageGeocode(
+                    {'address': $('#address').val()},
+                    {
+                        'lat': $('#latitude'),
+                        'lng': $('#longitude'),
+                        'errorBox': $('#geocode-error-msg')
+                    }
+            );
+        },
+
+        parseLabels: function () {
+            return this.get("labels").split(",");
+        },
+
+        hideErrorLines: function () {
+            $("#geocode-error-msg").hide();
+            $("#deviceKey-host-msg").hide();
+        },
+
+        submit: function () {
+            this.hideErrorLines();
+            deviceViewModel.labels = deviceViewModel.parseLabels();
+
+            if (this.validator.validate()) {
+                if (utils.isNullOrEmpty(this.get("deviceKey")) &&
+                        (utils.isNullOrEmpty(this.get("host")) || utils.isNullOrEmpty(this.get("port")))) {
+                    $("#deviceKey-host-msg").show();
+                    return;
+                }
+
+                //update latlng
+                deviceViewModel.latitude = $("#latitude").val();
+                deviceViewModel.longitude = $("#longitude").val();
+
+                utils.showLoadingOverlay();
+                editNodeCamera("", nodeId, deviceViewModel, function (responseData) {
+                    if (responseData == null || responseData.result != "ok") {
+                        utils.throwServerError(responseData);
+                        return;
+                    }
+
+                    setTimeout(function () {
+                        utils.hideLoadingOverlay();
+                        deviceViewModel.close();
+                    }, 5000);
+                }, null);
+            }
+        },
+
+        close: function () {
+            $("#btnClose").closest(".k-window-content").data("kendoWindow").close();
+            utils.hideLoadingOverlay();
+        }
+    });
+
+    function findNodeCamera(callback) {
+        var targetCamera = null;
+
+        utils.showLoadingOverlay();
+        getNodeCameraList("", nodeId, function (responseData) {
+            if (responseData == null || responseData.result != "ok") {
+                utils.throwServerError(responseData);
+                deviceViewModel.close();
+                return;
+            }
+
+            $.each(responseData.cameras, function (idx, camera) {
+                if (nodeCameraId == camera.nodePlatformDeviceId) {
+                    targetCamera = camera;
+                    return false; //break
+                }
+            });
+
+            if (targetCamera == null) {
+                utils.popupAlert(localizeResource("node-camera-not-found"));
+                deviceViewModel.close();
+                return;
+            }
+
+            utils.hideLoadingOverlay();
+            callback(targetCamera);
+        }, null);
+    }
+
+    $(function () {
+
+        findNodeCamera(function (targetCamera) {
+            deviceViewModel.init(targetCamera);
+        });
+
+    });
+
+</script>

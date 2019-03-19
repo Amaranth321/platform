@@ -1,0 +1,2 @@
+# Bash script should maintain 'lf' regardless of the OS
+*.sh text eol=lf

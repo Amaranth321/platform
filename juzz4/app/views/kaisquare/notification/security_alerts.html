@@ -1,0 +1,139 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/notifications/securityAlerts.js"></script>
+
+<style>
+    .security_alerts {
+    }
+
+    .security_alerts input[type=checkbox] {
+        margin: 0px 2px 0px 0px;
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
+
+    .security_alerts .filter_box {
+        border-top: 1px solid #000000;
+        background: #282828 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    }
+
+    .security_alerts .filters {
+        padding: 10px 15px;
+    }
+
+    .security_alerts .filters .row {
+        margin-bottom: 3px;
+    }
+
+    .security_alerts .filters label {
+        margin-right: 10px;
+    }
+
+    .security_alerts .filters .device_list, .channel_list, .event_types, .period_from, .period_to {
+        margin-right: 35px;
+        width: 180px;
+    }
+
+    .security_alerts .filters .hide_resolved {
+        margin-right: 5px;
+    }
+
+    .security_alerts .fixed_w {
+        display: inline-block;
+        width: 80px;
+    }
+
+    .security_alerts .btn_group {
+        border-top: 1px solid #000000;
+        padding: 5px 10px;
+    }
+
+    .security_alerts .btn_group .k-button {
+        text-align: center;
+        width: 70px;
+        line-height: 21px;
+        margin-right: 5px;
+    }
+
+    .security_alerts .btn_group .right {
+        float: right;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="setResolvedColTmpl">
+    <div style="text-align: center">
+        # if(ackStatus == "ACKNOWLEDGED") { #
+        <span style="display: inline-block;padding: 2px 0px">&{'resolved'}</span>
+        # } else { #
+        <a href="javascript:securityPage.acknowledgeEvent('#= eventId #')" class="k-button">&{'acknowledge'}</a>
+        # } #
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="securityAlertActionsTmpl">
+    <div class="action_btn_group">
+        <a href="javascript:utils.viewEventDetails('#= eventId #', 'camera');" class="k-button">&{'details'}</a>
+    </div>
+</script>
+
+<div class="security_alerts">
+    <div class="default_title_bar">
+        <span class="title">&{'security-alerts'}</span>
+    </div>
+
+    <div class="filter_box">
+        <div class="filters">
+            <div class="row">
+                <label class="fixed_w">&{'device-name'}</label>
+                <input class="device_list" autocomplete="off"/>
+                <label class="fixed_w">&{'channel'}</label>
+                <input class="channel_list" autocomplete="off"/>
+            </div>
+            <div class="row">
+                <label class="fixed_w">&{'event-type'}</label>
+                <input class="event_types" autocomplete="off"/>
+                <label class="fixed_w">&{'from'}</label>
+                <input class="period_from" autocomplete="off" title="&{'msg-choose-timerange'}"/>
+                <label>&{'to'}</label>
+                <input class="period_to" autocomplete="off" title="&{'msg-choose-timerange'}"/>
+            </div>
+
+        #{if applicationType == "cloud"}
+            <div class="row" style="margin-top: 10px">
+                <label><input class="hide_resolved" type="checkbox"/>&{'hide-resolved-events'}</label>
+            </div>
+        #{/if}
+
+        </div>
+
+        <div class="btn_group">
+            <div class="left">
+                <a href="javascript:securityPage.search()" class="k-button">&{'filter'}</a>
+                <a href="javascript:securityPage.resetFilters()" class="k-button">&{'reset'}</a>
+            </div>
+            <div class="right">
+                <a href="javascript:securityPage.exportFilteredList('pdf')" class="k-button">
+                    <span class="pdf">&{'pdf'}</span>
+                </a>
+                <a href="javascript:securityPage.exportFilteredList('csv')" class="k-button">
+                    <span class="csv">&{'csv'}</span>
+                </a>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+    </div>
+
+    <div class="grid"></div>
+</div>
+
+<script>
+
+    var securityPage = new SecurityAlertsPage();
+
+    $(function ()
+    {
+        securityPage.generate();
+    });
+
+</script>

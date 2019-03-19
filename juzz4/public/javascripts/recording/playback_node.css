@@ -1,0 +1,53 @@
+.rec_mgr .filter-sidebar .camera_list {
+    width: 100%;
+    padding-left: 40px;
+    background: url(/public/css/common/images/treeicons/node_cam.png) 5px 50% no-repeat;
+    background-size: 28px 28px;
+}
+
+.rec_mgr #movingToolBox .stream {
+    width: 25px;
+    height: 25px;
+    background: url(/public/css/common/images/stream.png) 50% 50% no-repeat;
+    background-size: 16px 16px;
+}
+
+.rec_mgr #movingToolBox .zip {
+    width: 25px;
+    height: 25px;
+    background: url(/public/css/common/images/zip_download.png) 50% 50% no-repeat;
+    background-size: 16px 16px;
+}
+
+.rec_mgr #movingToolBox .usb {
+    width: 25px;
+    height: 25px;
+    background: url(/public/css/common/images/usb_export.png) 50% 50% no-repeat;
+    background-size: 18px 18px;
+}
+
+/*
+    Kendo elements
+*/
+
+.rec_mgr .k-dropdown {
+    background: transparent;
+}
+
+.rec_mgr .k-dropdown .k-dropdown-wrap {
+    background: transparent;
+    border: 0px;
+    padding: 0px;
+}
+
+.rec_mgr .k-dropdown .k-input {
+    background: transparent;
+    line-height: 28px;
+    height: 32px;
+    color: #F6AE40;
+    font-size: 12px;
+}
+
+.rec_mgr .k-dropdown .k-select {
+    display: none;
+}

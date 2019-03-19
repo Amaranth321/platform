@@ -1,0 +1,92 @@
+<div id="existInventoryList" class="k-content" style="width: 890px; margin: 5px;">
+    <div class="duplicate-inv-info">
+        <span class="k-icon k-i-note"></span>
+        <label id="importInfo">&{'import-inventory-info'}</label>
+    </div>
+    <div id="existInvGrid"></div>
+    <div align="center" style="margin-top: 10px;">
+        <a id="btnCancel" href="#" class="k-button">&{'close'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var columnList = [];
+        if (showErrorColumn) {
+            $("#importInfo").html("&{'invalid-inventory-info'}");
+            columnList.push({
+                field: "rowNumber",
+                title: "&{'row-no'}",
+                width: "70px"
+            });
+            columnList.push({
+                field: "columnName",
+                title: "&{'column-name'}",
+                width: "100px"
+            });
+            columnList.push({
+                field: "inventoryData",
+                title: "&{'data'}",
+                width: "100px"
+            });
+            columnList.push({
+                field: "error",
+                title: "&{'reason'}",
+                width: "350px"
+            });
+        } else {
+            columnList.push({
+                field: "registrationNumber",
+                title: "&{'registration-number'}",
+                width: "200px"
+            });
+            columnList.push({
+                field: "modelNumber",
+                title: "&{'model-id'}",
+                width: "100px"
+            });
+            columnList.push({
+                field: "macAddress",
+                title: "&{'mac-address'}",
+                width: "130px"
+            });
+        }
+        var grid = $("#existInvGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function(options) {
+                        var inventoryDataList = [];
+                        $.each(existingItems, function(index, list) {
+                            var inventoryData = {};
+                            inventoryData.rowNumber = list.rowNumber;
+                            inventoryData.registrationNumber = list.registrationNumber;
+                            inventoryData.modelNumber = list.modelNumber;
+                            inventoryData.macAddress = list.macAddress;
+                            inventoryData.columnName = list.columnName? localizeResource(list.columnName) : "";
+                            inventoryData.inventoryData = list.data;
+                            inventoryData.error = list.error ? localizeResource(list.error) : "";
+
+                            inventoryDataList.push(inventoryData);
+                        });
+                        options.success(inventoryDataList);
+                    }
+                },
+                pageSize: 15
+            },
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: false
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            columns: columnList
+        }).data("kendoGrid");
+    });
+
+    $("#btnCancel").click(function() {
+        $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+    });
+</script>

@@ -1,0 +1,84 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+#{include HtmlPath + '/common/partial/gmap_headers.html'/}
+<style>
+    #summaryBox {
+        display: none;
+        font-size: 11px;
+        position: absolute;
+        left: 0px;
+        bottom: 0px;
+    }
+
+    #chbFollow {
+        margin-bottom: 2px;
+        margin-right: 5px;
+    }
+
+    .summary_toolbar {
+        background: #4d4d4d;
+        font-weight: bold;
+        color: #F2F2F2;
+        /*color: #0c51a2;*/
+        margin: -1px -6px;
+        padding: 4px 10px;
+        border: 1px #565656 solid;
+    }
+
+</style>
+<div class="map_box" style="margin: 0px;">
+
+    <div id="map_canvas"></div>
+    <div id="immoWin" style="overflow:hidden;"></div>
+
+    <div class="map_btns map_btns2">
+        <a href="#" class="btn_display">&{'display'}</a>
+    </div>
+
+    <div class="display_box">
+        <a href="#" class="btn_close">close</a>
+
+        <div class="box_title">&{'display'}</div>
+        <div class="box_block">
+            <div class="option">
+                <input id="chbPoi" type="checkbox" checked="true" autocomplete="off"/>
+                <label for="chbPoi">&{'poi'}</label>
+            </div>
+            <div class="option">
+                <input id="chbCameras" type="checkbox" checked="true" autocomplete="off"/>
+                <label for="chbCameras">&{'cameras'}</label>
+            </div>
+        </div>
+        <!-- /box_block -->
+    </div>
+
+</div>
+<script>
+    $(function () {
+        document.getElementById("map_canvas").style.height = $(window).height() - 140 + "px";
+
+		if(typeof mapManager != 'undefined'){
+	        mapManager.initialize("map_canvas", MAP_CENTER_LAT, MAP_CENTER_LNG, MAP_ZOOM, true, true, true, function () {
+	            mapManager.prepareUserMapItems();
+	        });
+		}
+
+        $("#chbPoi").click(function () {
+        	if(typeof mapManager == "undefined")
+        		return;
+            mapManager.setVisibilityByType(0, document.getElementById("chbPoi").checked);
+        })
+
+        $("#chbCameras").click(function () {
+        	if(typeof mapManager == "undefined")
+        		return;
+            mapManager.setVisibilityByType(1, document.getElementById("chbCameras").checked);
+        })
+    });
+
+    function onPopupClosed() {
+        $("#immoWin").html("");
+    }
+
+
+</script>

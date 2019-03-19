@@ -1,0 +1,7 @@
+<script id="camSelectorItemTmpl" type="text/kendo-ui-template"># var itemClass = item.isRoot? "root_item" : "child_item"; #
+    # itemClass += item.selectable? "" : " non_selectable"; #
+    # itemClass += item.disabled? " disabled_item non_selectable" : ""; #
+
+    <span id="#= item.id #" class="tree_item #= itemClass #">
+        <span class="name">#= item.name #</span>
+    </span></script><div class="cam_selector"><div class="camera_tree top_box"><div class="search_bar"><input class="input" type="text" class="k-textbox"></div><a href="javascript:camsltr.collapseFullTree()" class="k-button collapse" title="Collapse All"></a><div id="camSelectorTree"></div></div><div class="button_group"><a href="javascript:camsltr.close(false)" class="k-button select" id="camSelect">Select</a> <a href="javascript:camsltr.close(true)" class="k-button cancel" id="camCancel">Cancel</a></div></div><script>$(function(){camsltr.generateTree("camSelectorTree")})</script>

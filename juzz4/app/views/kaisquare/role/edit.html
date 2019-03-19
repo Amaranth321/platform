@@ -1,0 +1,84 @@
+<div style="font-size: 12px;font-family: verdana; width: 451px;">
+    <div id="roleForm" class="kup-form-box" class="k-content">
+        <div class="k-edit-label"><label for="name">&{'name'} :</label></div>
+        <div class="k-edit-field" data-container-for="name">
+            <input type="text" class="k-input k-textbox" name="name" style="width: 170px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:name" maxlength='100'>
+        </div>
+
+        <div class="k-edit-label"><label for="description">&{'description'} :</label></div>
+        <div class="k-edit-field" data-container-for="description">
+            <textarea type="text" class="k-textbox" name="description"
+                      style="width: 170px;height: 100px; vertical-align: top; margin-top: -4px"
+                      data-bind="value:description"></textarea>
+        </div>
+    </div>
+
+    <div align="center">
+        <a id="btnUpdate" href="#" class="k-button" style="margin-right: 10px">&{'update'}</a>
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var roleId = "${roleId}";
+    var viewModel = null;
+    var validator = null;
+
+    $(function () {
+
+        getBucketRoles("", function (responseData) {
+            if (responseData.result != "ok" || responseData.roles == null) {
+                utils.throwServerError(responseData);
+                return;
+            }
+
+            $.each(responseData.roles, function (idx, role) {
+                if (role.id == roleId) {
+                    viewModel = kendo.observable({
+                        "roleId": role.id,
+                        "name": role.name,
+                        "description": role.description
+                    });
+
+                    kendo.bind($("#roleForm"), viewModel);
+                    validator = $("#roleForm").kendoValidator().data("kendoValidator");
+                }
+            });
+
+        }, null);
+
+
+        $("#btnUpdate").click(function () {
+
+            if (!validator.validate()) {
+                return;
+            }
+
+            if ($("#name").val() == "") {
+                utils.popupAlert("empty name");
+                return;
+            }
+            editBucketRole("", viewModel.roleId, viewModel.name, viewModel.description, function (responseData) {
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'update-successful'}");
+                    closePopupWindow();
+                }
+                else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+    });
+</script>

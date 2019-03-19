@@ -1,0 +1,252 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" type="text/css" href="/public/javascripts/timecard/timecard.css"/>
+<script src="/public/javascripts/timecard/timecard.js"></script>
+<script src="/public/javascripts/vca.js"></script>
+
+<style>
+
+
+</style>
+
+<div style="margin: 10px">
+    <a href="javascript:start()" class="k-button">Start</a>
+    <a href="javascript:timeCard.removeCard()" class="k-button">Remove</a>
+    <a href="javascript:testAnimation()" class="k-button">test</a>
+    <a href="javascript:flip()" class="k-button">flip</a>
+    <a href="javascript:exportSvg('timeCardBox')" class="k-button">export svg list</a>
+</div>
+
+<div id="testArea" style="float: left;background: white"></div>
+<div id="timeCardWrapper" style="float: left"></div>
+
+<script>
+
+var containerId = "timeCardWrapper";
+var currentCardType = timeCard.cardType.COUNTING;
+var currentPeriodType = timeCard.periodType.WEEKLY;
+
+function testAnimation() {
+
+}
+
+function start() {
+    timeCard.generateCard(containerId, currentCardType, currentPeriodType, analyticsJson.data, posJson.sales);
+}
+
+function flip() {
+    d3.select("#" + timeCard.cardBoxId)
+            .select("g")
+            .transition()
+            .duration(500)
+            .attr("transform", "translate(" + timeCard.cardWidth / 2 + ", 0) scale(0, 1)")
+            .transition()
+            .duration(300)
+            .attr("transform", "translate(0, 0) scale(1, 1)");
+}
+
+function exportSvg() {
+    var svgList = timeCard.getSvgList(containerId);
+    var win = window.open();
+    var svgStr = svgList.join(" ");
+    $(win.document.body).html(svgStr);
+}
+
+var analyticsJson = {"result": "ok", "data": [
+    {"in": 5, "out": 2, "_id": "53a8e2163f25a5a3988bf21f", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 30, "out": 20, "_id": "53a8ea373f25a5a3988bf233", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 65, "out": 29, "_id": "53a8f7f43f25a5a3988bf237", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 81, "out": 86, "_id": "53a906143f25a5a3988bf249", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 105, "out": 94, "_id": "53a9145f3f25a5a3988bf25a", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 106, "out": 122, "_id": "53a9222b3f25a5a3988bf265", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 98, "out": 111, "_id": "53a930233f25a5a3988bf270", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 111, "out": 99, "_id": "53a93e243f25a5a3988bf278", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 111, "out": 106, "_id": "53a94c813f25a5a3988bf28f", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 123, "out": 103, "_id": "53a95a423f25a5a3988bf298", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 92, "out": 96, "_id": "53a968593f25a5a3988bf2a5", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 36, "out": 59, "_id": "53a9766d3f25a5a3988bf2ad", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 4, "_id": "53a985033f25a5a3988bf2bf", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "1", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 2, "out": 1, "_id": "53a853723f25a5a3988bf215", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/23 16:00:00", "time": 1403539200000, "hour": 0},
+    {"in": 1, "out": 1, "_id": "53a866703f25a5a3988bf219", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/23 17:00:00", "time": 1403542800000, "hour": 0},
+    {"in": 3, "out": 9, "_id": "53a8e26d3f25a5a3988bf221", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 17, "out": 9, "_id": "53a8e9bd3f25a5a3988bf22a", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 17, "out": 21, "_id": "53a8f80a3f25a5a3988bf23c", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 52, "out": 40, "_id": "53a9064a3f25a5a3988bf24d", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 51, "out": 30, "_id": "53a914783f25a5a3988bf25d", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 43, "out": 42, "_id": "53a922023f25a5a3988bf25f", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 43, "out": 29, "_id": "53a9300f3f25a5a3988bf26d", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 47, "out": 27, "_id": "53a93e4e3f25a5a3988bf283", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 53, "out": 34, "_id": "53a94c2f3f25a5a3988bf286", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 48, "out": 31, "_id": "53a95a413f25a5a3988bf297", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 36, "out": 33, "_id": "53a968a33f25a5a3988bf2aa", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 13, "out": 30, "_id": "53a976a83f25a5a3988bf2b2", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 6, "_id": "53a984b03f25a5a3988bf2bd", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "2", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 5, "out": 1, "_id": "53a84f593f25a5a3988bf214", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/23 16:00:00", "time": 1403539200000, "hour": 0},
+    {"in": 5, "out": 6, "_id": "53a8e2793f25a5a3988bf222", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 16, "out": 4, "_id": "53a8e9c53f25a5a3988bf22b", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 27, "out": 27, "_id": "53a8f8ac3f25a5a3988bf23f", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 53, "out": 38, "_id": "53a906463f25a5a3988bf24c", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 57, "out": 52, "_id": "53a913ed3f25a5a3988bf251", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 78, "out": 39, "_id": "53a922503f25a5a3988bf269", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 68, "out": 39, "_id": "53a930233f25a5a3988bf271", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 51, "out": 40, "_id": "53a93e4e3f25a5a3988bf281", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 53, "out": 34, "_id": "53a94c813f25a5a3988bf28d", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 55, "out": 33, "_id": "53a95a393f25a5a3988bf293", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 51, "out": 55, "_id": "53a968513f25a5a3988bf2a1", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 26, "out": 39, "_id": "53a976763f25a5a3988bf2ae", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 4, "_id": "53a9847d3f25a5a3988bf2bb", "_created": 0, "_modified": 0, "deviceId": "13", "channelId": "3", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 0, "out": 2, "_id": "53a856a53f25a5a3988bf216", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/23 16:00:00", "time": 1403539200000, "hour": 0},
+    {"in": 0, "out": 1, "_id": "53a85d893f25a5a3988bf218", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/23 17:00:00", "time": 1403542800000, "hour": 0},
+    {"in": 9, "out": 12, "_id": "53a8e2fe3f25a5a3988bf223", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 92, "out": 86, "_id": "53a8e9fa3f25a5a3988bf22f", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 93, "out": 107, "_id": "53a8f7f53f25a5a3988bf239", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 123, "out": 135, "_id": "53a906163f25a5a3988bf24a", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 175, "out": 156, "_id": "53a913f23f25a5a3988bf252", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 129, "out": 139, "_id": "53a922023f25a5a3988bf25e", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 143, "out": 150, "_id": "53a930113f25a5a3988bf26f", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 119, "out": 141, "_id": "53a93e313f25a5a3988bf27c", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 135, "out": 142, "_id": "53a94c2f3f25a5a3988bf285", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 105, "out": 143, "_id": "53a95a3e3f25a5a3988bf296", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 131, "out": 163, "_id": "53a968593f25a5a3988bf2a6", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 58, "out": 79, "_id": "53a9765f3f25a5a3988bf2ac", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 5, "out": 10, "_id": "53a984b33f25a5a3988bf2be", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "1", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 2, "out": 2, "_id": "53a8e6063f25a5a3988bf226", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 14, "out": 20, "_id": "53a8ea0c3f25a5a3988bf230", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 26, "out": 20, "_id": "53a8f8c03f25a5a3988bf240", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 49, "out": 26, "_id": "53a905f83f25a5a3988bf247", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 56, "out": 38, "_id": "53a913f33f25a5a3988bf253", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 58, "out": 36, "_id": "53a922163f25a5a3988bf261", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 48, "out": 41, "_id": "53a930113f25a5a3988bf26e", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 53, "out": 35, "_id": "53a93e463f25a5a3988bf27f", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 44, "out": 24, "_id": "53a94c2f3f25a5a3988bf288", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 50, "out": 32, "_id": "53a95a3e3f25a5a3988bf295", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 50, "out": 35, "_id": "53a968583f25a5a3988bf2a4", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 16, "out": 20, "_id": "53a977013f25a5a3988bf2b5", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 1, "_id": "53a9855d3f25a5a3988bf2c2", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "2", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 9, "out": 3, "_id": "53a8e59c3f25a5a3988bf225", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 16, "out": 27, "_id": "53a8ea123f25a5a3988bf231", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 21, "out": 17, "_id": "53a8f9263f25a5a3988bf243", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 39, "out": 24, "_id": "53a905df3f25a5a3988bf245", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 37, "out": 37, "_id": "53a914043f25a5a3988bf254", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 49, "out": 29, "_id": "53a9224f3f25a5a3988bf268", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 47, "out": 27, "_id": "53a930603f25a5a3988bf276", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 45, "out": 36, "_id": "53a93e4e3f25a5a3988bf282", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 31, "out": 28, "_id": "53a94c6d3f25a5a3988bf28c", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 59, "out": 32, "_id": "53a95a343f25a5a3988bf292", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 43, "out": 34, "_id": "53a9685b3f25a5a3988bf2a7", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 22, "out": 22, "_id": "53a977003f25a5a3988bf2b4", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 0, "out": 1, "_id": "53a985613f25a5a3988bf2c3", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "3", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 4, "out": 2, "_id": "53a8e8e63f25a5a3988bf228", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 17, "out": 13, "_id": "53a8e9df3f25a5a3988bf22e", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 34, "out": 24, "_id": "53a8f86f3f25a5a3988bf23e", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 26, "out": 35, "_id": "53a905f23f25a5a3988bf246", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 40, "out": 44, "_id": "53a914413f25a5a3988bf257", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 25, "out": 41, "_id": "53a922163f25a5a3988bf262", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 42, "out": 58, "_id": "53a9303d3f25a5a3988bf272", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 30, "out": 52, "_id": "53a93e3a3f25a5a3988bf27e", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 36, "out": 33, "_id": "53a94c2f3f25a5a3988bf289", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 37, "out": 55, "_id": "53a95a473f25a5a3988bf299", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 23, "out": 46, "_id": "53a968733f25a5a3988bf2a8", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 7, "out": 32, "_id": "53a976803f25a5a3988bf2b1", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 4, "_id": "53a984723f25a5a3988bf2ba", "_created": 0, "_modified": 0, "deviceId": "14", "channelId": "4", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 4, "out": 4, "_id": "53a8e8253f25a5a3988bf227", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 13, "out": 19, "_id": "53a8e9c53f25a5a3988bf22c", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 33, "out": 28, "_id": "53a8f8093f25a5a3988bf23a", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 39, "out": 36, "_id": "53a9061f3f25a5a3988bf24b", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 61, "out": 50, "_id": "53a9145e3f25a5a3988bf259", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 50, "out": 49, "_id": "53a922273f25a5a3988bf263", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 46, "out": 65, "_id": "53a930753f25a5a3988bf277", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 43, "out": 43, "_id": "53a93e253f25a5a3988bf27a", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 36, "out": 52, "_id": "53a94caa3f25a5a3988bf291", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 42, "out": 47, "_id": "53a95a5d3f25a5a3988bf29b", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 32, "out": 39, "_id": "53a968463f25a5a3988bf29f", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 19, "out": 27, "_id": "53a976793f25a5a3988bf2af", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 1, "_id": "53a985053f25a5a3988bf2c0", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "1", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 0, "out": 1, "_id": "53a8e9653f25a5a3988bf229", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 23, "out": 32, "_id": "53a8ea313f25a5a3988bf232", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 55, "out": 36, "_id": "53a8f8e93f25a5a3988bf241", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 67, "out": 26, "_id": "53a9065f3f25a5a3988bf24e", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 82, "out": 51, "_id": "53a9145f3f25a5a3988bf25b", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 73, "out": 71, "_id": "53a922403f25a5a3988bf267", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 75, "out": 64, "_id": "53a9303d3f25a5a3988bf273", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 81, "out": 57, "_id": "53a93e393f25a5a3988bf27d", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 78, "out": 55, "_id": "53a94c583f25a5a3988bf28a", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 72, "out": 42, "_id": "53a95a3d3f25a5a3988bf294", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 70, "out": 57, "_id": "53a968473f25a5a3988bf2a0", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 24, "out": 27, "_id": "53a976803f25a5a3988bf2b0", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 4, "out": 3, "_id": "53a9848c3f25a5a3988bf2bc", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "2", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 1, "out": 4, "_id": "53a8ddd33f25a5a3988bf21d", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 5, "out": 11, "_id": "53a8eab93f25a5a3988bf236", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 20, "out": 19, "_id": "53a8f8093f25a5a3988bf23b", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 22, "out": 31, "_id": "53a9065f3f25a5a3988bf24f", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 23, "out": 38, "_id": "53a9142d3f25a5a3988bf256", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 33, "out": 24, "_id": "53a9227e3f25a5a3988bf26a", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 41, "out": 34, "_id": "53a9300f3f25a5a3988bf26b", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 32, "out": 40, "_id": "53a93e463f25a5a3988bf280", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 35, "out": 28, "_id": "53a94c6c3f25a5a3988bf28b", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 33, "out": 43, "_id": "53a95a5b3f25a5a3988bf29a", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 25, "out": 29, "_id": "53a968523f25a5a3988bf2a2", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 10, "out": 18, "_id": "53a976e73f25a5a3988bf2b3", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 1, "out": 0, "_id": "53a985223f25a5a3988bf2c1", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 1, "out": 0, "_id": "53a997d43f25a5a3988bf2c6", "_created": 0, "_modified": 0, "deviceId": "15", "channelId": "3", "count": 0, "date": "2014/06/24 15:00:00", "time": 1403622000000, "hour": 0},
+    {"in": 1, "out": 0, "_id": "53a85c223f25a5a3988bf217", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/23 16:00:00", "time": 1403539200000, "hour": 0},
+    {"in": 0, "out": 1, "_id": "53a8c2053f25a5a3988bf21b", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 00:00:00", "time": 1403568000000, "hour": 0},
+    {"in": 1, "out": 1, "_id": "53a8e2343f25a5a3988bf220", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 1, "out": 8, "_id": "53a8ea823f25a5a3988bf235", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 1, "out": 34, "_id": "53a8f8fe3f25a5a3988bf242", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 1, "out": 45, "_id": "53a905db3f25a5a3988bf244", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 3, "out": 56, "_id": "53a9145e3f25a5a3988bf258", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 5, "out": 64, "_id": "53a9222b3f25a5a3988bf266", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 2, "out": 55, "_id": "53a9304c3f25a5a3988bf274", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 2, "out": 47, "_id": "53a93e253f25a5a3988bf27b", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 4, "out": 59, "_id": "53a94c813f25a5a3988bf290", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 4, "out": 67, "_id": "53a95a913f25a5a3988bf29e", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 1, "out": 47, "_id": "53a968ee3f25a5a3988bf2ab", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 5, "out": 23, "_id": "53a9773b3f25a5a3988bf2b8", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 3, "out": 3, "_id": "53a985a93f25a5a3988bf2c5", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "1", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 1, "out": 0, "_id": "53a8be0b3f25a5a3988bf21a", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/23 23:00:00", "time": 1403564400000, "hour": 0},
+    {"in": 2, "out": 3, "_id": "53a8de973f25a5a3988bf21e", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 15, "out": 5, "_id": "53a8e9cb3f25a5a3988bf22d", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 25, "out": 3, "_id": "53a8f7f53f25a5a3988bf238", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 39, "out": 4, "_id": "53a906fe3f25a5a3988bf250", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 55, "out": 4, "_id": "53a914043f25a5a3988bf255", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 50, "out": 7, "_id": "53a922133f25a5a3988bf260", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 41, "out": 2, "_id": "53a9304c3f25a5a3988bf275", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 31, "out": 2, "_id": "53a93ea03f25a5a3988bf284", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 48, "out": 1, "_id": "53a94c2f3f25a5a3988bf287", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 70, "out": 5, "_id": "53a95a823f25a5a3988bf29d", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 55, "out": 6, "_id": "53a9688e3f25a5a3988bf2a9", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 35, "out": 2, "_id": "53a977093f25a5a3988bf2b6", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 2, "out": 2, "_id": "53a9846b3f25a5a3988bf2b9", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "2", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0},
+    {"in": 1, "out": 2, "_id": "53a8d49d3f25a5a3988bf21c", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 01:00:00", "time": 1403571600000, "hour": 0},
+    {"in": 8, "out": 9, "_id": "53a8e4df3f25a5a3988bf224", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 02:00:00", "time": 1403575200000, "hour": 0},
+    {"in": 12, "out": 7, "_id": "53a8ea563f25a5a3988bf234", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 03:00:00", "time": 1403578800000, "hour": 0},
+    {"in": 28, "out": 21, "_id": "53a8f81e3f25a5a3988bf23d", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 04:00:00", "time": 1403582400000, "hour": 0},
+    {"in": 32, "out": 26, "_id": "53a906053f25a5a3988bf248", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 05:00:00", "time": 1403586000000, "hour": 0},
+    {"in": 23, "out": 37, "_id": "53a914603f25a5a3988bf25c", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 06:00:00", "time": 1403589600000, "hour": 0},
+    {"in": 30, "out": 51, "_id": "53a9222b3f25a5a3988bf264", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 07:00:00", "time": 1403593200000, "hour": 0},
+    {"in": 26, "out": 40, "_id": "53a9300f3f25a5a3988bf26c", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 08:00:00", "time": 1403596800000, "hour": 0},
+    {"in": 37, "out": 42, "_id": "53a93e253f25a5a3988bf279", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 09:00:00", "time": 1403600400000, "hour": 0},
+    {"in": 32, "out": 45, "_id": "53a94c813f25a5a3988bf28e", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 10:00:00", "time": 1403604000000, "hour": 0},
+    {"in": 16, "out": 37, "_id": "53a95a6a3f25a5a3988bf29c", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 11:00:00", "time": 1403607600000, "hour": 0},
+    {"in": 16, "out": 28, "_id": "53a968533f25a5a3988bf2a3", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 12:00:00", "time": 1403611200000, "hour": 0},
+    {"in": 12, "out": 25, "_id": "53a9770e3f25a5a3988bf2b7", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 13:00:00", "time": 1403614800000, "hour": 0},
+    {"in": 2, "out": 0, "_id": "53a985673f25a5a3988bf2c4", "_created": 0, "_modified": 0, "deviceId": "16", "channelId": "3", "count": 0, "date": "2014/06/24 14:00:00", "time": 1403618400000, "hour": 0}
+]};
+
+var posJson = {"result": "ok", "sales": [
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 03:00:00", "count": 27, "amount": 36153.0}, "_id": "53a7d7603f25a5a3988bf192", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 04:00:00", "count": 82, "amount": 103894.0}, "_id": "53a7d7603f25a5a3988bf193", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 05:00:00", "count": 122, "amount": 143350.0}, "_id": "53a7d7613f25a5a3988bf194", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 06:00:00", "count": 199, "amount": 396209.0}, "_id": "53a7d7613f25a5a3988bf195", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 07:00:00", "count": 226, "amount": 383748.0}, "_id": "53a7d7613f25a5a3988bf196", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 08:00:00", "count": 505, "amount": 520150.0}, "_id": "53a7d7613f25a5a3988bf197", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 09:00:00", "count": 150, "amount": 213450.0}, "_id": "53a7d7613f25a5a3988bf198", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 10:00:00", "count": 191, "amount": 193292.0}, "_id": "53a7d7613f25a5a3988bf199", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 11:00:00", "count": 161, "amount": 295918.0}, "_id": "53a7d7613f25a5a3988bf19a", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 12:00:00", "count": 227, "amount": 299867.0}, "_id": "53a7d7613f25a5a3988bf19b", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 13:00:00", "count": 49, "amount": 62769.0}, "_id": "53a7d7613f25a5a3988bf19c", "_created": 0, "_modified": 0},
+    {"bucket": "4", "name": "Total", "parserType": "robinson", "sales": {"time": "24/06/2014 14:00:00", "count": 20, "amount": 43280.0}, "_id": "53a7d7613f25a5a3988bf19d", "_created": 0, "_modified": 0}
+]};
+
+</script>

@@ -1,0 +1,171 @@
+<section class="container-fluid">
+	<h1 class="page-header">{{ 'dashboard' | translate }}</h1>
+	<div class="content" id="dashboard">
+		<div class="row">
+			<div class="col-lg-4 analytics">
+				<div class="dashboard-icon">
+					<i class="kup-analytic"></i>
+				</div>
+				<div class="inner">
+					<h3>{{ dashboardCtrl.data.countTextData.analyticsCount }}</h3>
+					<p>{{ 'analytics' | translate }}</p>
+				</div>
+			</div>
+			<div class="col-lg-4 nodesOnline"
+				ng-click="dashboardCtrl.data.setEvent.showActiveNodesDialog()">
+				<div class="dashboard-icon">
+					<i class="kup-node"></i>
+				</div>
+				<div class="inner">
+					<h3>{{ dashboardCtrl.data.countTextData.activeNodesCount }}</h3>
+					<p>{{ 'nodes-online' | translate }}</p>
+				</div>
+			</div>
+			<div class="col-lg-4 users"
+				ng-click="dashboardCtrl.data.setEvent.showUsersDialog()">
+				<div class="dashboard-icon">
+					<i class="fa fa-video-camera"></i>
+				</div>
+				<div class="inner">
+					<h3>{{ dashboardCtrl.data.countTextData.activeCamerasCount }}</h3>
+					<p>{{ 'cameras-online' | translate }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="panel panel-default"
+					ng-show="!dashboardCtrl.data.isEmptyChartData.peopleCounting">
+					<div class="chartData">
+						<h4 class="panel-heading">
+							{{ 'analytics-people-counting' | translate }} <span class="small">({{
+								'aggregated-for-last-7-days' | translate }})</span>
+						</h4>
+						<p class="chartText text-right">
+							<i></i>{{ 'people-visited' | translate }}
+						</p>
+						<div class="panel-body">
+							<div id="peopleCountingChart" ui-kendo-chart
+								ui-kendo-chart-options="dashboardCtrl.data.chartConfig.peopleCounting"
+								style="width: 100%; height: 90%"></div>
+						</div>
+					</div>
+					<div class="row charts">
+						<div class="col-sm-6">
+							<h3>{{ dashboardCtrl.data.chartTextData['showPeoleVisite']
+								}}</h3>
+							<p>{{ 'people-visited-all' | translate }}</p>
+						</div>
+						<div class="col-sm-6">
+							<h3>{{ dashboardCtrl.data.chartTextData['showVisitedToday']
+								}}</h3>
+							<p>{{ 'visited-today' | translate }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-empty"
+					ng-show="dashboardCtrl.data.isEmptyChartData.peopleCounting">
+					<div class="chartData">
+						<h4 class="panel-heading">
+							{{ 'analytics-people-counting' | translate }} <span class="small">({{
+								'aggregated-for-last-7-days' | translate }})</span>
+						</h4>
+					</div>
+					<div class="chartInfo">
+						<p>{{'PCOUNTING' | translate}} {{'data-is-not-available' |
+							translate}}</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default"
+					ng-show="!dashboardCtrl.data.isEmptyChartData.securityAlerts">
+					<div class="chartData">
+						<h4 class="panel-heading">
+							{{ 'security-occurrences' | translate}} <span class="small">({{
+								'aggregated-for-last-7-days' | translate }})</span>
+						</h4>
+						<p class="chartText text-right">
+							<i></i>{{ 'alerts-low' | translate }}
+						</p>
+						<div class="panel-body">
+							<div id="securityAlertsChart" ui-kendo-chart
+								ui-kendo-chart-options="dashboardCtrl.data.chartConfig.securityAlerts"
+								style="width: 100%; height: 90%"></div>
+						</div>
+					</div>
+					<div class="row charts">
+						<div class="col-sm-12">
+							<h3>{{ dashboardCtrl.data.chartTextData['showAlerts'] }}</h3>
+							<p>{{ 'alerts-low' | translate }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-empty"
+					ng-show="dashboardCtrl.data.isEmptyChartData.securityAlerts">
+					<div class="chartData">
+						<h4 class="panel-heading">
+							{{ 'security-occurrences' | translate }} <span class="small">({{
+								'aggregated-for-last-7-days' | translate }})</span>
+						</h4>
+					</div>
+					<div class="chartInfo">
+						<p>{{'security-alerts' | translate}} {{'data-is-not-available'
+							| translate}}</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default"
+					ng-show="!dashboardCtrl.data.isEmptyChartData.genderProfiling">
+					<div class="chartData">
+						<h4 class="panel-heading">
+							{{ 'gender-profiling' | translate }} <span class="small">({{
+								'aggregated-for-last-7-days' | translate }})</span>
+						</h4>
+						<div class="chartTextWrapper">
+							<p class="chartText female">
+								<i></i>{{ 'female' | translate }}<span>{{
+									dashboardCtrl.data.chartTextData['showFemalePercentage'] }}</span>
+							</p>
+							<p class="chartText male">
+								<i></i>{{ 'male' | translate }}<span>{{
+									dashboardCtrl.data.chartTextData['showMalePercentage'] }}</span>
+							</p>
+						</div>
+						<div class="panel-body">
+							<div id="genderProfilingChart" ui-morris-donut
+								ui-morris-donut-options="dashboardCtrl.data.chartConfig.genderProfiling"
+								style="width: 100%; height: 95%"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">
+							<h3 class="female">{{
+								dashboardCtrl.data.chartTextData['showFemale'] }}</h3>
+							<p>{{ 'female-low' | translate }}</p>
+						</div>
+						<div class="col-sm-6">
+							<h3 class="male">{{
+								dashboardCtrl.data.chartTextData['showMale'] }}</h3>
+							<p>{{ 'male-low' | translate }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-empty"
+					ng-show="dashboardCtrl.data.isEmptyChartData.genderProfiling">
+					<div class="chartData">
+						<h4 class="panel-heading">
+							{{ 'gender-profiling' | translate }} <span class="small">({{
+								'aggregated-for-last-7-days' | translate }})</span>
+						</h4>
+					</div>
+					<div class="chartInfo">
+						<p>{{'gender-profiling' | translate}}
+							{{'data-is-not-available' | translate}}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,168 @@
+<script src="/public/javascripts/jquery.tagit.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/common/jquery.tagit.css"/>
+
+<style>
+    ul.tagit {
+        max-height: 2.12em;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        width: 67%;
+    }
+
+    .ui-corner-all {
+        border-radius: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    ul.tagit input[type="text"] {
+        width: 146%;
+    }
+
+    .k-edit-field, .k-edit-form-container .editor-field {
+        width: 64%;
+    }
+</style>
+
+<div id="editUserWin" style="width:550px">
+    <div id="editFormEuw" class="kup-form-box">
+
+        <div class="k-edit-label"><label for="username">&{'username'} :</label></div>
+        <div class="k-edit-field" data-container-for="username">
+            <input type="text" class="k-input k-textbox" name="username" style="width: 215px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:username" maxlength='100'>
+        </div>
+
+        <div class="k-edit-label"><label for="fullname">&{'full-name'} :</label></div>
+        <div class="k-edit-field" data-container-for="fullname">
+            <input type="text" class="k-input k-textbox" name="fullname" style="width: 215px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:name" maxlength='100'>
+        </div>
+
+        <div class="k-edit-label"><label for="email">&{'email'} :</label></div>
+        <div class="k-edit-field" data-container-for="email">
+            <input type="email" class="k-input k-textbox" name="email" style="width: 215px"
+                   required data-email-msg="&{'invalid-email'}"
+                   required validationMessage="&{'required'}" data-bind="value:email">
+        </div>
+
+        <div class="k-edit-label label"><label for="fullname">&{'phone'} :</label></div>
+        <div class="k-edit-field" data-container-for="phone">
+            <input type="text" class="k-input k-textbox" name="phone" id="phn"
+                   style="width: 215px" placeholder="+11234567891" pattern="^[0-9\-\+]\d{7,15}$"
+                   data-pattern-msg="&{'validation.phone'}" data-bind="value:phone">
+        </div>
+
+        <div class="k-edit-label"><label for="password">&{'new-password'} :</label></div>
+        <div class="k-edit-field" data-container-for="password">
+            <input type="password" class="k-input k-textbox" name="password" style="width: 215px"
+                   placeholder="&{'leave-empty'}" data-bind="value:password">
+        </div>
+
+        <div class="k-edit-label" style="float: left"><label for="label">&{'label'} :</label></div>
+        <div class="k-edit-field" data-container-for="label">
+            <input id="labels" type="text" class="k-input k-textbox" name="label" style="width: 215px"
+                   data-bind="value:label">
+        </div>
+
+    </div>
+
+    <div align="center">
+        <a id="btnUpdate" href="#" class="k-button" style="margin-right: 10px">&{'update'}</a>
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+
+        var viewModel = kendo.observable({
+            "userId": "${userDetails.userId}",
+            "username": "${userDetails.login}",
+            "name": "${userDetails.name}",
+            "email": "${userDetails.email}",
+            "phone": "${userDetails.phone}",
+            "label": "${userDetails.joinedLabels}",
+            "password": "",
+            refresh: function () {
+                this.name = this.name.trim();
+                this.phone = this.phone.trim();
+                kendo.bind($("#editFormEuw"), this);
+            }
+        });
+
+        kendo.bind($("#editFormEuw"), viewModel);
+        var validator = $("#editFormEuw").kendoValidator().data("kendoValidator");
+
+        //get list of label from backend for auto suggestions
+        var label_array = null;
+        getBucketUserLabels("", onSuccess, null);
+        function onSuccess(responseData) {
+            if (responseData.result == "ok" && responseData.labels != null) {
+                label_array = responseData.labels;
+                $("#labels").tagit({
+                    placeholderText: localizeResource('label-info'),
+                    availableTags: label_array,
+                    autocomplete: {autoFocus: true}
+                });
+            }
+        }
+
+        $("#phn").focus(function () {
+            $("#phn").val(viewModel.phone);
+        });
+        $("#phn").blur(function () {
+            viewModel.refresh();
+            if (utils.isNullOrEmpty(viewModel.phone)) {
+                viewModel.set("phone", "${userDetails.phone}");
+                $("#phn").siblings("span.k-invalid-msg").hide();
+            }
+        });
+        $("#btnUpdate").click(function () {
+            viewModel.label = $("#labels").val();
+            viewModel.refresh();
+            if (viewModel.password.indexOf(" ") != -1) {
+                utils.popupAlert(localizeResource('password-space'));
+                return;
+            }
+
+            if (utils.isNullOrEmpty(viewModel.phone)) {
+                utils.popupAlert(localizeResource("phone-missing"));
+                return;
+            }
+            if (validator.validate()) {
+
+                updateUser("",
+                        viewModel.userId,
+                        viewModel.name,
+                        viewModel.username,
+                        viewModel.email,
+                        viewModel.phone,
+                        viewModel.label,
+                        viewModel.password,
+                        function (responseData) {
+                            if (responseData.result == "ok") {
+                                utils.slideDownInfo("&{'update-successful'}");
+                                closePopupWindow();
+                            }
+                            else {
+                                updateResult = false;
+                                utils.throwServerError(responseData);
+                            }
+                        },
+                        null);
+            }
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        }
+    });
+</script>

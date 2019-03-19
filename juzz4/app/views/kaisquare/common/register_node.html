@@ -1,0 +1,295 @@
+#{extends HtmlPath + '/common/templates/not_logged_in_node.html'/}
+
+<style>
+
+    .register_form_custom {
+        border: 1px #fea204 solid;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 100;
+        min-height: 320px;
+        width: 484px;
+        height: 485px;
+        margin-top: -300px;
+        margin-left: -260px;
+    }
+
+    .form-horizontal.form-login .control-label {
+        width: 110px;
+    }
+
+    .k-invalid-msg {
+        width: 114px;
+        height: 18px;
+        overflow: hidden;
+        margin-left: 3px;
+        margin-bottom: -3px;
+    }
+
+    .text-right {
+        width: 70.5%;
+    }
+
+    #registerPage .cloud_link {
+        color: whitesmoke;
+        line-height: 25px;
+        display: inline-block;
+        min-width: 150px;
+    }
+
+    #registerPage .cloud_update {
+        color: #0da9ee;
+    }
+
+</style>
+
+<div id="registerPage">
+    <form class="form-login form-horizontal register_form_custom" action="javascript:void(0);">
+
+        <div class="container-fluid box-header">
+            <div class="row-fluid">
+                <div class="span4">
+                    <img src="${CdnPath}/common/images/logo.png"  height="40" border="0"/>
+                </div>
+                <div class="span4"></div>
+                <div class="span4 text-right title">&{'registration'}</div>
+            </div>
+        </div>
+
+        <div class="container-fluid box-body">
+            <div class="row-fluid">
+
+                <div class="control-group">
+                    <label class="control-label">&{'kaiup-server'}</label>
+
+                    <div class="controls">
+                        <span class="cloud_link" data-bind="text:cloudServer"></span>
+                        <a class="cloud_update" href="javascript:goToSettingsPage()">&{'update'}</a>
+                    </div>
+                </div>
+
+
+                <div class="control-group">
+                    <label class="control-label">&{'one-time-pass'}</label>
+
+                    <div class="controls">
+                        <input type="text" name="otp" data-bind="value:otp" required
+                               validationMessage="&{'required'}">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">&{'license-no'}</label>
+
+                    <div class="controls">
+                        <input type="text" name="licenseNumber" data-bind="value:licenseNumber" required
+                               validationMessage="&{'required'}">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">&{'registration-no'}</label>
+
+                    <div class="controls">
+                        <input type="text" name="registrationNumber" data-bind="value:registrationNumber" required
+                               validationMessage="&{'required'}">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">&{'node-name'}</label>
+
+                    <div class="controls">
+                        <input type="text" name="deviceName" data-bind="value:deviceName" required
+                               validationMessage="&{'required'}">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">&{'address'}</label>
+
+                    <div class="controls">
+                        <input type="text" name="address" data-bind="value:address"
+                               required validationMessage="&{'required'}">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">&{'version'}</label>
+
+                    <div class="controls">
+                        <span style="color:white; line-height: 25px">${nodeVersion}</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">&{'network-status'}</label>
+
+                    <div class="controls">
+                        <span id="connection" style="color:white; line-height: 25px"></span>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="text-right">
+                        <input class="btn btn-success" name="bnttest" type="button" value="&{'register'}"
+                               onClick="btnRegister()"/>
+                    </div>
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span6" style="margin-left: 10px; margin-bottom: 5px">
+                        <a href="javascript:goToSettingsPage()">&{'node-settings'}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+
+
+    var vmReg = kendo.observable({
+        cloudServer: "${cloudServerHost}",
+        otp: "",
+        licenseNumber: "",
+        registrationNumber: "",
+        deviceName: "",
+        address: "",
+        latitude: 0,
+        longitude: 0,
+        updateLatLng: function () {
+            utils.getLatLngByAddress(this.get("address"),
+                    function (latlng) {
+                        vmReg.set("latitude", latlng.lat);
+                        vmReg.set("longitude", latlng.lng);
+                    },
+                    function (error) {
+                        console.log(error);
+                        vmReg.set("latitude", 0);
+                        vmReg.set("longitude", 0);
+                    });
+        },
+        reset: function () {
+            this.set("otp", "");
+            this.set("licenseNumber", "");
+            this.set("registrationNumber", "");
+            this.set("deviceName", "");
+            this.set("address", "");
+            this.set("latitude", 0);
+            this.set("longitude", 0);
+        }
+    });
+
+    function btnRegister() {
+        utils.showLoadingOverlay();
+
+        vmReg.updateLatLng();
+        var validator = $("#registerPage").kendoValidator().data("kendoValidator");
+        if (validator.validate() == false) {
+            utils.hideLoadingOverlay();
+            return;
+        }
+
+        utils.showLoadingOverlay();
+        kainode.checkLicenseStatus(vmReg.get("otp"), vmReg.get("licenseNumber"), function (responseData) {
+            utils.hideLoadingOverlay();
+
+            if (responseData.result != "ok") {
+                utils.throwServerError(responseData);
+                return;
+            }
+
+            var licenseStatus = responseData.status;
+            console.log("licenseStatus:" + licenseStatus);
+
+            switch (licenseStatus) {
+                case "UNUSED":
+                    startRegistration();
+                    break;
+
+                case "ACTIVE":
+                case "SUSPENDED":
+                    utils.popupConfirm(localizeResource("confirmation"),
+                            localizeResource("msg-confirm-node-replacement"),
+                            function (choice) {
+                                if (choice) {
+                                    startReplacement();
+                                }
+                            });
+                    break;
+
+                case "EXPIRED":
+                    utils.popupAlert(localizeResource("expired-license-number"));
+                    break;
+
+                default :
+                    utils.popupAlert(localizeResource("unknown-license-status"));
+            }
+
+        }, null);
+
+    }
+
+    function startRegistration() {
+        utils.showLoadingOverlay();
+        kainode.register(vmReg, function (responseData) {
+            utils.hideLoadingOverlay();
+            if (responseData.result != "ok") {
+                utils.throwServerError(responseData);
+                return;
+            }
+
+            utils.popupAlert(localizeResource('kainode-register-success'), function () {
+                utils.showLoadingOverlay();
+                vmReg.reset();
+                window.location.reload(true);
+            });
+        }, null);
+    }
+
+    function startReplacement() {
+        utils.showLoadingOverlay();
+        kainode.replaceNode(vmReg, function (responseData) {
+            utils.hideLoadingOverlay();
+            if (responseData.result != "ok") {
+                utils.throwServerError(responseData);
+                return;
+            }
+
+            utils.popupAlert(localizeResource('kainode-replacement-success'), function () {
+                utils.showLoadingOverlay();
+                vmReg.reset();
+                window.location.reload(true);
+            });
+        }, null);
+    }
+
+    function initNetworkStatus() {
+        getNetworkStatus("", function (responseData) {
+            if (responseData.result == "ok") {
+                $("#connection").html(localizeResource(responseData.status));
+            } else {
+                $("#connection").html(localizeResource("unknown"));
+            }
+        }, null);
+    }
+
+    function goToSettingsPage() {
+        if(!utils.browsingOnNode()) {
+            utils.popupAlert(localizeResource("error-settings-on-node-only"));
+            return;
+        }
+
+        window.location.href = "http://localhost:9000/html/";
+    }
+
+    $(function () {
+        initNetworkStatus();
+        kendo.bind($("#registerPage"), vmReg);
+    });
+
+</script>

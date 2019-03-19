@@ -1,0 +1,963 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style type="text/css">
+    @font-face {
+        font-family: 'Muli';
+        src: url('https://fonts.googleapis.com/css?family=Muli');
+    }
+    .muli {
+        font-family: 'Muli', Arial, sans-serif !important;
+    }
+    html {
+        -webkit-text-size-adjust: none;
+        -webkit-background-size: 100%;
+    }
+    body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+    a {
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    table {
+        border-collapse: collapse;
+    }
+    td {
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        hyphens: auto;
+        border-collapse: collapse !important;
+    }
+    table,
+    tr,
+    td {
+        padding: 0;
+        text-align: left;
+    }
+    img {
+        display: block;
+    }
+    .main {
+        width: 100%;
+        background: #dddddd;
+    }
+    .container {
+        width: 645px;
+        margin: 0 auto;
+        border: 1px solid #bfbfbf;
+        background: #ffffff;
+    }
+
+    /* Header  */
+    .header {
+        width: 100%;
+    }
+    .header .wrapper {}
+    .header .link {
+        text-align: right !important;
+        vertical-align: bottom !important;
+    }
+    .header .link a {
+        color: #6d6e70;
+        font-size: 14px;
+    }
+
+    /* Report Content */
+    .content {width:465px;}
+    .weekly h1 {font-size:30px; color:#4c4c4c; padding:0; margin:0;}
+    .date {font-size:14px; color:#808080; text-align: right; vertical-align: bottom; line-height: 25px;}
+    .info p {font-size:13px; color:#666666; margin:0;}
+    .line {border-bottom:1px solid #e5e5e5;}
+    .overview {width:100%;}
+    .overview h2 {margin:0; padding:0; font-size:14px; font-weight: normal; color:#b2b2b2;}
+    .overview .row {
+        background:#f7f7f7; width:100%;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+    }
+    .row .fix {text-align: center !important; vertical-align: middle !important;}
+    .count {font-size:30px; color:#f6ae40;}
+    .des, .lastweek td.des {font-size:13px; color:#b2b2b2; line-height: 15px;}
+    .lastweek td {font-size:30px; color:#666666;}
+    .lastweek table td img {width:auto !important;}
+
+    /* Visited_week */
+    .visited_week {}
+    .visited_week img {width:auto !important;}
+    .visited_week th {
+    font-size: 10px;
+    letter-spacing: -0.05em;
+    color: #B2B2B2;
+    text-align: left;
+    }
+    .visited_week td {
+    font-size: 14px;
+    color: #666;
+    }
+    .rank_up {
+    color: #4CCD4F !important;
+    }
+    .rank_down {
+    color: #FF5E5E !important;
+    }
+
+    .know_more {width:100%;}
+    .know_more ul {
+        margin: 0 0 0 22px;
+        padding: 0px;
+        list-style: decimal;
+    }
+
+    .know_more img {width:auto !important; display:inline !important;}
+    .for_customer img {width:auto !important; display:inline-block !important;}
+
+    /* row with */
+    .half {width:5%;}
+    .one {width:10%;}
+    .one_half {width:15%;}
+    .two {width:20%;}
+    .two_half {width:25%;}
+    .three {width:30%;}
+    .three_half {width:35%;}
+    .four {width:40%;}
+    .four_half {width:45%;}
+    .five {width:50%;}
+    .five_half {width:55%;}
+    .six {width:60%;}
+    .six_half {width:65%;}
+    .seven {width:70%;}
+    .seven_half {width:75%;}
+    .eight {width:80%;}
+    .eight_half {width:85%;}
+    .nine {width:90%;}
+    .nine_half {width:95%;}
+    .ten {width:100%;}
+
+    /* mobile device */
+    @media screen and (max-width: 480px) {
+        .main {width:100%;}
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 auto;
+        }
+        .wrapper {
+            display: block !important;
+            width: 100% !important;
+        }
+        .empty, .empty.wrapper {
+            display: none !important;
+        }
+        img {
+            width: 100% !important;
+            height: auto !important;
+        }
+        img.img-max {
+            width:100% !important;
+            display: inline;
+        }
+        .logo {
+            padding:10px 0 10px 20px;
+        }
+        .logo .img-max {
+            width:70% !important;
+        }
+        .link {
+            padding:0 0 20px 20px;
+        }
+        .sub_header {margin-top:20px;}
+        .content {width:90% !important;}
+        .date {text-align: left !important; padding:5% 0;}
+        .thumbs img {width:80% !important;}
+        .find_us {text-align: left !important;}
+        .footer {margin-bottom:10px;}
+        .social {width:60% !important;}
+        .social img {width:auto !important;}
+    }
+    </style>
+</head>
+
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" class="main" width="100%" style="background-color:#dddddd">
+        <tbody>
+            <tr>
+                <td align="center" style="padding:35px 0 80px 0;">
+
+
+
+                    <center>
+
+                        <table width="645" border="0" cellpadding="0" cellspacing="0">
+                        <tbody>
+                          <tr><td height="30" style="font-size:12px; color:#666666; text-align:right; font-family: 'Muli', Arial, sans-serif !important;" align="right">Unable to view this email properly? Please enable loading of images in your email client.</td></tr>
+                        </tbody>
+                      </table>
+
+
+                        <table cellpadding="0" cellspacing="0" class="container" width="645" style="background-color:#ffffff; border: 1px solid #BFBFBF;">
+                            <tbody>
+                                <tr>
+                                    <td height="15" class="empty">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>
+
+
+
+
+
+                                        <center>
+                                            <table border="0" cellpadding="0" cellspacing="0" class="header">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="empty wrapper" width="30">&nbsp;</td>
+                                                        <td width="435" class="wrapper logo"><img class="img-max" src="http://vaaas.kaisquare.com/UAT/edm/report/images/VideoAnalytics_logo.png" width="182" height="28" alt="VIDEO ANALYTICS AS-A-SERVICE" />
+                                                        </td>
+                                                        <td width="165" class="wrapper">
+                                                            <table cellpadding="0" cellspacing="0">
+                                                                <tr>
+                                                                    <td height="10" class="empty"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="link muli" align="right"><a href="http://vaaas.kaisquare.com" target="_blank" style="text-align:right; vertical-align:bottom; color:#6d6e70; font-size:14px; position:relative; bottom:0; text-decoration:none;font-family: 'Muli', Arial, sans-serif !important;">vaaas.kaisquare.com</a>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </center>
+
+
+
+
+
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td height="15" class="empty">&nbsp;</td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td class="top_photo">
+
+
+                                        <table border="0" cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td><img class="img-max" src="http://vaaas.kaisquare.com/UAT/edm/report/images/report_header.jpg" height="110" width="645">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+
+
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td height="40" class="empty"></td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td>
+
+
+
+
+                                        <center>
+                                            <table class="content report" cellpadding="0" cellspacing="0" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+
+
+
+
+                                                            <table class="sub_header" cellpadding="0" cellspacing="0" border="0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td class="wrapper weekly" width="300" height="25"><h1 class="muli" style="font-family: 'Muli', Arial, sans-serif !important;font-size:30px;color:#4C4C4C; margin:0;">WEEKLY REPORT</h1></td>
+                                                                        <td class="wrapper date" width="220" height="25" align="right" valign="bottom" style="text-align:right; vertical-align:bottom; color:#808080; font-size:13px;font-family: 'Muli', Arial, sans-serif !important; line-height:26px;"><time class="muli">${date}</time></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+
+                                                            </td>
+                                                            </tr>
+
+                                                            <tr><td height="30" class="empty"></td></tr>
+
+                                                            <tr><td>
+
+
+
+                                                            <table class="info" cellpadding="0" cellspacing="0" border="0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td class="muli" style="font-family: 'Muli', Arial, sans-serif !important; color:#666666; font-size:13px;">Dear <b>${userName}</b>,</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="10"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="muli" style="font-family: 'Muli', Arial, sans-serif !important; color:#666666; font-size:13px;">Here are your weekly in-store statistics.</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="25"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                                <td style="font-family: 'Muli', Arial, sans-serif !important; color:#666666; font-size:13px;">Company: <strong style="font-family:Arial, sans-serif !important;">${bucket}</strong></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                                <td  style="font-family: 'Muli', Arial, sans-serif !important; color:#666666; font-size:13px;">Username: <strong style="font-family:Arial, sans-serif !important;">${userLogin}</strong></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+
+
+
+
+                                                        </td>
+                                                    </tr>
+
+
+
+
+                                                    <tr>
+                                                        <td height="30" class="line" style="border-bottom: 1px solid #E5E5E5;"></td>
+                                                    </tr>
+
+
+
+
+                                                    <tr>
+                                                        <td height="30"></td>
+                                                    </tr>
+
+
+
+                                                    <tr>
+                                                        <td>
+
+
+
+                                                        <table class="overview" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                            <tbody>
+                                                            
+                                                                #{if pepCountPermission || audiProfilingPermission}
+                                                                    <tr><td><h2 class="muli" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2; font-size:14px; font-weight:normal;">OVERVIEW</h2></td></tr>
+                                                                #{/if}
+
+                                                                <tr>
+                                                                    <td height="20"></td>
+                                                                </tr>
+
+                                                                #{if pepCountPermission}
+	                                                                <tr>
+	                                                                <td>
+	                                                                    <table class="row" cellpadding="0" cellspacing="0" border="0" style="background-color:#f7f7f7;" width="100%">
+	                                                                        <tbody>
+	                                                                            <tr>
+	
+	
+	
+	                                                                            <td width="35" height="80" valign="middle" class="half"></td>
+	
+	
+	
+	
+	                                                                                <td class="thumbs fix two" width="80" height="80" align="center" valign="middle" styl="vertical-align:middle !important;"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/peopleIN.png" alt="PEOPLE IN" width="60" height="42"></td>
+	
+	
+	
+	
+	                                                                                <td width="150" height="80" align="center" valign="middle" class="fix two_half">
+	                                                                                    <table cellpadding="0" cellspacing="0" border="0">
+	                                                                                        <tbody>
+	                                                                                            <tr>
+	                                                                                                <td class="count" style="font-size:30px;font-family: 'Muli', Arial, sans-serif !important; color:#f6ae40;" height="30">${totalPeopleIn}</td>
+	                                                                                            </tr>
+	                                                                                            <tr>
+	                                                                                                <td class="des" style="font-size:13px;font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2;">PEOPLE IN</td>
+	                                                                                            </tr>
+	                                                                                        </tbody>
+	                                                                                    </table>
+	                                                                                </td>
+	
+	
+	
+	
+	                                                                                <td width="200" height="80" align="center" valign="middle" class="fix three_half">
+	                                                                                    <table class="lastweek" cellpadding="0" cellspacing="0" border="0" width="100%">
+	                                                                                        <tbody>
+	                                                                                            <tr>
+	                                                                                                <td class="one" width="10%">
+	
+	
+	
+	                                                                                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+	                                                                                                        <tbody>
+	                                                                                                            <tr>
+	                                                                                                                <td class="two" width="20%" style="line-height:0; font-size:0;" align="left" valign="middle">
+		                                                                                                                #{if growthRatePeoIN > 0}
+		                                                                                                                    <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/lastweek_up.png" width="25" height="25">
+		                                                                                                                #{/if}
+		                                                                                                                #{elseif growthRatePeoIN < 0}
+		                                                                                                                    <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/lastweek_down.png" width="25" height="25">
+		                                                                                                                #{/elseif}
+	                                                                                                                </td>
+	                                                                                                                <td align="left" class="eight" width="80%" height="30" style="font-size:30px; font-family: 'Muli', Arial, sans-serif !important; color:#666666;">
+	                                                                                                                    #{if sameData.contains("peoIn")}
+	                                                                                                                       ${growthRatePeoIN}% <!-- should be 0% -->
+	                                                                                                                    #{/if}
+	                                                                                                                    #{elseif growthRatePeoIN == 0}
+	                                                                                                                        N/A
+	                                                                                                                    #{/elseif}
+	                                                                                                                    #{elseif growthRatePeoIN < 0}
+	                                                                                                                        ${growthRatePeoIN * -1}%
+	                                                                                                                    #{/elseif}
+	                                                                                                                    #{else}
+	                                                                                                                        ${growthRatePeoIN}%
+	                                                                                                                    #{/else}
+	                                                                                                                </td>
+	                                                                                                            </tr>
+	                                                                                                        </tbody>
+	                                                                                                    </table>
+	
+	                                                                                                </td>
+	
+	                                                                                                </tr>
+	                                                                                                <tr>
+	                                                                                                <td class="des" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2;">CHANGE FROM LAST WEEK</td>
+	                                                                                            </tr>
+	                                                                                        </tbody>
+	                                                                                    </table>
+	
+	
+	
+	                                                                                </td>
+	                                                                            </tr>
+	                                                                        </tbody>
+	                                                                    </table>
+	
+	
+	
+	
+	
+	                                                                </td>
+	                                                                </tr>
+                                                                #{/if}
+
+
+                                                                <tr><td height="7"></td></tr>
+
+
+                                                                #{if audiProfilingPermission}
+	                                                                <tr>
+	                                                                <td>
+	
+	
+	
+	                                                                    <table class="row" cellpadding="0" cellspacing="0" border="0" style="background-color:#f7f7f7;" width="100%">
+	                                                                        <tbody>
+	                                                                            <tr>
+	
+	
+	
+	                                                                            <td width="35" height="80" valign="middle" class="half"></td>
+	
+	
+	
+	
+	                                                                                <td class="thumbs fix two" height="80" align="center" valign="middle" width="80" styl="vertical-align:middle !important;">
+	                                                                                    <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/male.png" width="60" height="41" alt="MALE">
+	                                                                                </td>
+	
+	
+	
+	
+	                                                                                <td width="150" height="80" align="center" valign="middle" class="fix two_half">
+	                                                                                    <table cellpadding="0" cellspacing="0" border="0">
+	                                                                                        <tbody>
+	                                                                                            <tr>
+	                                                                                                <td class="count" style="font-size:30px;font-family: 'Muli', Arial, sans-serif !important; color:#f6ae40;" height="30">${malePercent}%</td>
+	                                                                                            </tr>
+	                                                                                            <tr>
+	                                                                                                <td class="des" style="font-size:13px;font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2;">MALE</td>
+	                                                                                            </tr>
+	                                                                                        </tbody>
+	                                                                                    </table>
+	                                                                                </td>
+	
+	
+	
+	
+	                                                                                <td width="200" height="80" align="center" valign="middle" class="fix three_half">
+	                                                                                    <table class="lastweek" cellpadding="0" cellspacing="0" border="0" width="100%">
+	                                                                                        <tbody>
+	                                                                                            <tr>
+	                                                                                                <td class="one first" width="10%">
+	
+	
+	
+	                                                                                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+	                                                                                                        <tbody>
+	                                                                                                            <tr>
+	                                                                                                                <td class="two" width="20%" style="line-height:0; font-size:0;" align="left" valign="middle">
+	                                                                                                                    #{if growthRateMale > 0}
+	                                                                                                                        <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/lastweek_up.png" width="25" height="25">
+	                                                                                                                    #{/if}
+	                                                                                                                    #{elseif growthRateMale < 0}
+	                                                                                                                        <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/lastweek_down.png" width="25" height="25">
+	                                                                                                                    #{/elseif}
+	                                                                                                                </td>
+	                                                                                                                <td align="left" class="eight" width="80%" height="30" style="font-size:30px; font-family: 'Muli', Arial, sans-serif !important; color:#666666;">
+	                                                                                                                    #{if sameData.contains("males")}
+                                                                                                                           ${growthRateMale}% <!-- should be 0% -->
+                                                                                                                        #{/if}
+	                                                                                                                    #{elseif growthRateMale == 0}
+	                                                                                                                        N/A
+	                                                                                                                    #{/elseif}
+	                                                                                                                    #{elseif growthRateMale < 0}
+	                                                                                                                        ${growthRateMale * -1}%
+	                                                                                                                    #{/elseif}
+	                                                                                                                    #{else}
+	                                                                                                                        ${growthRateMale}%
+	                                                                                                                    #{/else}
+	                                                                                                                </td>
+	                                                                                                            </tr>
+	                                                                                                        </tbody>
+	                                                                                                    </table>
+	
+	                                                                                                </td>
+	
+	                                                                                                </tr>
+	                                                                                                <tr>
+	                                                                                                <td class="des" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2;">CHANGE FROM LAST WEEK</td>
+	                                                                                            </tr>
+	                                                                                        </tbody>
+	                                                                                    </table>
+	                                                                                </td>
+	                                                                            </tr>
+	                                                                        </tbody>
+	                                                                    </table>
+	
+	
+	
+	
+	                                                                </td>
+	                                                                </tr>
+                                                                #{/if}
+
+
+
+
+
+
+                                                                <tr><td height="7"></td></tr>
+
+
+                                                                #{if audiProfilingPermission}
+	                                                                <tr>
+	                                                                <td>
+	
+	
+	
+	                                                                    <table class="row" cellpadding="0" cellspacing="0" border="0" style="background-color:#f7f7f7;" width="100%">
+	                                                                        <tbody>
+	                                                                            <tr>
+	
+	
+	
+	                                                                            <td width="35" height="80" valign="middle" class="half"></td>
+	
+	
+	
+	
+	                                                                                <td class="thumbs fix two" width="80" height="80" align="center" valign="middle" styl="vertical-align:middle !important;">
+	                                                                                    <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/female.png" width="60" height="41" alt="FEMALE">
+	                                                                                </td>
+	
+	
+	
+	
+	                                                                                <td width="150" height="80" align="center" valign="middle" class="fix two_half">
+	                                                                                    <table cellpadding="0" cellspacing="0" border="0">
+	                                                                                        <tbody>
+	                                                                                            <tr>
+	                                                                                                <td class="count" style="font-size:30px;font-family: 'Muli', Arial, sans-serif !important; color:#f6ae40;" height="30">${femalePercent}%</td>
+	                                                                                            </tr>
+	                                                                                            <tr>
+	                                                                                                <td class="des" style="font-size:13px;font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2;">FEMALE</td>
+	                                                                                            </tr>
+	                                                                                        </tbody>
+	                                                                                    </table>
+	                                                                                </td>
+	
+	
+	
+	
+	                                                                                <td width="200" height="80" align="center" valign="middle" class="fix three_half">
+	                                                                                    <table class="lastweek" cellpadding="0" cellspacing="0" border="0" width="100%">
+	                                                                                        <tbody>
+	                                                                                            <tr>
+	                                                                                                <td class="one first">
+	
+	
+	
+	                                                                                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+	                                                                                                        <tbody>
+	                                                                                                            <tr>
+	                                                                                                                <td class="two" width="20%" style="line-height:0; font-size:0;" align="left" valign="middle">
+	                                                                                                                    #{if growthRateFemale > 0}
+	                                                                                                                        <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/lastweek_up.png" width="25" height="25">
+	                                                                                                                    #{/if}
+	                                                                                                                    #{elseif growthRateFemale < 0}
+	                                                                                                                        <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/lastweek_down.png" width="25" height="25">
+	                                                                                                                    #{/elseif}
+	                                                                                                                </td>
+	                                                                                                                <td align="left" class="eight" width="80%" height="30" style="font-size:30px; font-family: 'Muli', Arial, sans-serif !important; color:#666666;">
+	                                                                                                                    #{if sameData.contains("females")}
+                                                                                                                           ${growthRateFemale}% <!-- should be 0% -->
+                                                                                                                        #{/if}
+	                                                                                                                    #{elseif growthRateFemale == 0}
+	                                                                                                                        N/A
+	                                                                                                                    #{/elseif}
+	                                                                                                                    #{elseif growthRateFemale < 0}
+	                                                                                                                        ${growthRateFemale * -1}%
+	                                                                                                                    #{/elseif}
+	                                                                                                                    #{else}
+	                                                                                                                        ${growthRateFemale}%
+	                                                                                                                    #{/else}
+	                                                                                                                </td>
+	                                                                                                            </tr>
+	                                                                                                        </tbody>
+	                                                                                                    </table>
+	
+	                                                                                                </td>
+	
+	                                                                                                </tr>
+	                                                                                                <tr>
+	                                                                                                <td class="des" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2;">CHANGE FROM LAST WEEK</td>
+	                                                                                            </tr>
+	                                                                                        </tbody>
+	                                                                                    </table>
+	                                                                                </td>
+	                                                                            </tr>
+	                                                                        </tbody>
+	                                                                    </table>
+	
+	
+	
+	
+	                                                                </td>
+	                                                                </tr>
+                                                                #{/if}
+
+
+
+
+
+                                                            </tbody>
+                                                        </table>
+
+
+
+
+                                                        </td>
+                                                    </tr>
+
+
+
+
+                                                    <tr><td height="30"></td></tr>
+
+
+                                                    <tr>
+                                                        <td>
+
+
+
+
+
+                                                    #{if pepCountPermission && rankLabels.size() > 0}
+                                                    <!--  /// top_stores  /// start -->
+                                                    <table class="top_stores" width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                    <tbody>
+                                                    <tr>
+                                                    <td class="title" style="font-size:14px; color:#b2b2b2; font-family: 'Muli', Arial, sans-serif;">TOP 5 MOST VISITED STORES</td>
+                                                                    </tr>
+
+                                                                    <tr><td>
+
+
+                                                    <!--  /// visited_week  /// start -->
+
+                                                    <table width="100%" class="visited_week" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th width="25" height="30" align="left" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2; font-size:12px;"></th>
+                                                                <th width="20" align="left" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2; font-size:12px;"></th>
+                                                                <th width="220" align="left" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2; font-size:12px;">STORE</th>
+                                                                <th width="100" align="left" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2; font-size:12px;">PEOPLE IN</th>
+                                                                <th width="100" align="left" style="font-family: 'Muli', Arial, sans-serif !important; color:#b2b2b2; font-size:12px;">TREND</th>
+                                                          </tr>
+                                                            
+                                                          #{list items:rankLabels, as:'rLabel'}
+                                                            #{if rLabel.rank <= 5}
+                                                                #{if rLabel.rank % 2 > 0}
+	                                                               <tr style="background-color:#f7f7f7;">
+	                                                            #{/if}
+	                                                            #{else}
+	                                                               <tr>
+	                                                            #{/else}
+	                                                                <td height="30" align="center">
+	                                                                    #{if rLabel.rankStatus == "new"}
+	                                                                       <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/rank_new.png" width="20" height="13">
+	                                                                    #{/if}
+	                                                                    #{elseif rLabel.rankStatus == "top"}
+	                                                                       <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/rank_up.png" width="11" height="13">
+                                                                        #{/elseif}
+	                                                                    #{elseif rLabel.rankStatus == "normal"}
+	                                                                       <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/rank_fixedness.png" width="11" height="13">
+	                                                                    #{/elseif}
+	                                                                    #{elseif rLabel.rankStatus == "down"}
+	                                                                       <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/rank_down.png" width="11" height="13">
+	                                                                    #{/elseif}
+	                                                                </td>
+	                                                                <td class="ranking_num" align="center" style="font-family: 'Muli', Arial, sans-serif !important; font-size:14px; color:#666666">${rLabel.rank}</td>
+	                                                                <td class="sotre_name" align="left" style="font-family: 'Muli', Arial, sans-serif !important; font-size:14px; color:#666666">${rLabel.name}</td>
+	                                                                <td align="left" style="font-family: 'Muli', Arial, sans-serif !important; font-size:14px; color:#666666">${rLabel.totalPeopleIn}</td>
+                                                                    #{if rLabel.growthRate == 0}
+                                                                        <td class="rank_new" align="left" style="font-family: 'Muli', Arial, sans-serif !important; font-size:14px; color:#666666">--%</td>
+                                                                    #{/if}
+                                                                    #{elseif rLabel.growthRate > 0}
+                                                                        <td class="rank_up" align="left" style="font-family: 'Muli', Arial, sans-serif !important; font-size:14px; color:#4ccd4f;">${rLabel.growthRate}%</td>
+                                                                    #{/elseif}
+                                                                    #{else}
+                                                                        <td class="rank_down" align="left" style="font-family: 'Muli', Arial, sans-serif !important; font-size:14px; color:#ff5e5e;">${rLabel.growthRate}%</td>
+                                                                    #{/else}
+	                                                            </tr>
+                                                            #{/if}
+                                                          #{/list}
+                                                        </tbody>
+                                                    </table>
+
+                                                    <!--  /// visited_week  /// end -->
+
+
+
+                                                    </td>
+                                                    </tr>
+                                                    </tbody>
+                                                    </table>
+                                                    <!--  /// top_stores  /// end -->
+                                                    #{/if}
+
+
+                                                      </td>
+                                                    </tr>
+
+
+                                                     <tr><td height="25" class="line"></td></tr>
+
+                                                     <tr><td height="35"></td></tr>
+
+
+
+
+                                                     <tr>
+
+
+                                                         <td>
+
+
+
+                                                        <!--  ///  Know more info /// start -->
+                                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="know_more">
+                                                         <tbody>
+                                                             <tr>
+                                                                 <td><h3 style="font-family: 'Muli', Arial, sans-serif !important; font-size:13px; color:#666666;">Want to know more? Here are some useful links:</h3></td>
+                                                             </tr>
+
+                                                             <tr>
+                                                                <td>
+
+                                                                    <ul style="list-style: decimal;margin:0 0 0 22px; padding:0;">
+                                                                    <li style="font-size:13px; color:#666666;font-family: 'Muli', Arial, sans-serif !important;"><a href="${baseUrl}/${bucket}/report#profiling" target="_target" style="font-style: italic; color:#f6ae40;">Are my customers happy</a> when they leave the store?</li>
+                                                                    <li style="font-size:13px; color:#666666;font-family: 'Muli', Arial, sans-serif !important;">What's <a href="${baseUrl}/${bucket}/report#peoplecounting" target="_target" style="font-style: italic; color:#f6ae40;">my conversion rate</a>?</li>
+                                                                    <li style="font-size:13px; color:#666666;font-family: 'Muli', Arial, sans-serif !important;"><a href="${baseUrl}/${bucket}/report#crowd" target="_target" style="font-style: italic; color:#f6ae40;">How much attention</a> are my products getting?</li>
+                                                                    </ul>
+
+                                                                </td>
+                                                            </tr>
+
+
+                                                             <tr><td height="30"></td></tr>
+
+
+                                                             <tr>
+                                                             <td align="center" valign="middle" style="line-height:0; font-size:0; text-align:center;" width="200">
+                                                                 <a href="${baseUrl}/${bucket}/dashboard" target="_blank"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/button.png" style="border:none;"></a>
+                                                            </td>
+                                                            </tr>
+
+
+
+                                                         </tbody>
+                                                    </table>
+                                                    <!--  ///  Know more info /// end -->
+
+
+
+
+                                                    </td>
+                                                     </tr>
+
+
+
+
+                                                </tbody>
+                                            </table>
+                                        </center>
+
+
+
+
+                                    </td>
+                                </tr>
+
+
+
+                                <tr><td height="50"></td></tr>
+
+
+
+
+
+                                <tr>
+                                  <td style="background-color:#f7f7f7;" align="center" valign="middle" height="100">
+                                  <center>
+
+
+                <!-- /// for customer /// start -->
+				<table width="100%" border="0" cellpadding="0" cellspacing="0" class="for_customer" with="60%">
+                      <tbody>
+                          <tr>
+                             <td width="20%" align="center" valign="middle" style="font-size:0; line-height:0; text-align:center; vertical-align:middle;">
+                             <img src="http://vaaas.kaisquare.com/UAT/edm/report/images/whatcanwedo.png" width="56" height="51">
+                             </td>
+                             <td width="80%" align="left">
+
+                                 <p style="font-family: 'Muli', Arial, sans-serif !important;font-size:14px; color:#b2b2b2; margin:0 0 5px 0;">WHAT CAN WE DO?</p>
+                                 <p style="font-family: 'Muli', Arial, sans-serif !important;font-size:11px; color:#b2b2b2; margin:0;">Sharpen your knowledge of customer buying behavior and manage security threats.  <br>The insights empower you to sell more effectively,leading to higher profitability. <a href="http://vaaas.kaisquare.com" target="_blank" style="color:#ff622e;">more...</a>
+                                 </p>
+
+                          </td>
+                      </tr>
+                  </tbody>
+                 </table>
+                <!-- /// for customer /// end -->
+
+
+
+                </center>
+                </td></tr>
+
+
+
+
+                <tr>
+                    <td style="background-color:#0056a0;" align="center" valign="middle">
+
+
+	                    <!-- /// footer /// start -->
+	                    <table width="96%" border="0" align="center" cellpadding="0" cellspacing="0" class="footer">
+	                        <tbody>
+	                        <tr>
+	                        <td height="8"></td>
+	                        </tr>
+	                        <tr>
+	
+	
+	                            <td class="wrapper" width="62%" style="font-size:11px; color:#ffffff; font-family: 'Muli', Arial, sans-serif; text-align:left; padding:8px 0;">You are receiving this because you are a registered user of our service.<br> Copyright &copy; <b>KAI Square</b>. All rights reserved. </td>
+	
+	
+	
+	                            <td class="wrapper" width="38%">
+	                            <table style="padding-top:4px;" cellpadding="0" cellspacing="0" border="0" align="left" width="100%" class="social">
+	                                        <tr>
+	                                            <td style="font-size:11px; color:#ffffff; font-family: 'Muli', Arial, sans-serif;" width="25%">follow us :</td>
+	                                            <td style="font-size: 0; line-height: 0;" widt="15%" align="center">
+	                                                <a href="https://twitter.com/KAISquareVA" target="_blank"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/twitter.png" alt="Twitter"> </a>
+	                                            </td>
+	                                            <td style="font-size: 0; line-height: 0;" widt="15%" align="center">
+	                                                <a href="http://blog.kaisquare.com/" target="_blank"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/blogger.png" alt="Blogger"> </a>
+	                                            </td>
+	                                            <td style="font-size: 0; line-height: 0;" widt="15%" align="center">
+	                                                <a href="https://www.facebook.com/kaisquare?fref=ts" target="_blank"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/facebook.png" alt="Faceboook"> </a>
+	                                            </td>
+	                                            <td style="font-size: 0; line-height: 0;"  width="15%" align="center">
+	                                                <a href="https://www.youtube.com/channel/UCITc_6NxWV-JfTECXVccnVg" target="_blank"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/youtube.png" alt="Youtube"> </a>
+	                                            </td>
+	                                            <td style="font-size: 0; line-height: 0;"  width="15%" align="center">
+	                                                <a href="https://www.linkedin.com/company/kai-square" target="_blank"><img src="http://vaaas.kaisquare.com/UAT/edm/report/images/linkedin.png" alt="LinkedIn"> </a>
+	                                            </td>
+	                                        </tr>
+	                                    </table>
+	                                    </td>
+	                        </tr>
+	                        <tr><td height="8"></td></tr>
+	                        </tbody>
+	                    </table>
+	                    <!-- /// footer /// end -->
+                    </td>
+                </tr>
+
+
+
+
+                            </tbody>
+                        </table>
+
+
+                    </center>
+
+
+
+                </td>
+            </tr>
+            
+            
+            
+            
+        </tbody>
+    </table>
+</body>
+
+</html>

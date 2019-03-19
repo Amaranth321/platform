@@ -1,0 +1,251 @@
+<script type="text/x-kendo-template" id="serviceItemTemplate">
+    <div class="service_api">
+        <img src="${CdnPath}/common/images/action.png" style="margin-bottom: -3px; height:14px">
+        #= name #
+    </div>
+</script>
+<style>
+	#pure_label {
+	    width: 0px; 
+	    color: #ffffff;
+	}
+</style>
+<div class="license_popup_bg">
+    <div class="license_settings_wrapper">
+        <div class="license_setting_box1">
+            <label for="bucketList">&{'customer-id'}</label>
+            <span id="companyId"></span>
+        </div>
+
+        <div class="license_setting_box2">
+            <label for="storageLimit">&{'cloud-storage'}</label>
+            <input id="storageLimit" style="width: 60px"> GB<br/>
+
+            <label for="duration">&{'validity-period'}</label>
+            <input id="duration" style="width: 60px"> &{'months'}&nbsp;&nbsp;
+            <input id="chbPerpetual" type="checkbox">
+            <label id="pure_label" for="chbPerpetual">&{'perpetual'}</label><br/>
+            
+			<label for="maxCameraLimit">&{'maximum-camera-limit'}</label>
+            <input id="maxCameraLimit" style="width: 60px"><br/>
+            
+            <label for="maxVcaCount">&{'maximum-concurrent-vca'}</label>
+            <input id="maxVcaCount" style="width: 60px"><br/>
+        </div>
+    </div>
+
+    <div class="license_feature_wrapper">
+        <div class="left_pane">
+            <label for="featureTree">&{'select-features'}</label>
+
+            <div id="featureTree" class="tree_box"></div>
+        </div>
+        <div class="right_pane">
+            <label for="serviceList">&{'service-apis-used'}</label>
+
+            <div id="serviceList" class="tree_box"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a id="btnSubmit" href="javascript:void(0)" class="k-button">&{'submit'}</a> &nbsp;
+        <a id="btnCancel" href="javascript:void(0)" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+<script>
+    var licenseDetails = utils.getJSonObject("${jsonLicenseDetails}");
+    var treeItems = [];
+    var orgList = [];
+
+    function initUiElements(onLoaded) {
+        utils.showLoadingOverlay();
+
+        $("#companyId").text(licenseDetails.bucketName);
+
+        $("#storageLimit").kendoNumericTextBox({
+            format: "#",
+            min: 0,
+            max: 20,
+            step: 1,
+            value: licenseDetails.cloudStorageGb
+        });
+
+        $("#duration").kendoNumericTextBox({
+            format: "#",
+            min: 1,
+            max: 100,
+            step: 1,
+            value: licenseDetails.durationMonths == -1?12:licenseDetails.durationMonths
+        });
+
+        $("#maxCameraLimit").kendoNumericTextBox({
+            format: "#",
+            min: 1,
+            max: 50,
+            step: 1,
+            value: licenseDetails.maxCameraLimit
+        });
+        
+        $("#maxVcaCount").kendoNumericTextBox({
+            format: "#",
+            min: 1,
+            max: 100,
+            step: 1,
+            value: licenseDetails.maxVcaCount
+        });
+        
+        if(licenseDetails.durationMonths == "-1"){
+        	$('#chbPerpetual').prop('checked', true);
+            $("#duration").data("kendoNumericTextBox").enable(false);
+        }
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        $("#btnSubmit").click(function () {
+
+            var storageLimitGb = $("#storageLimit").data("kendoNumericTextBox").value();
+            var durationMonths = $("#duration").data("kendoNumericTextBox").value();
+            var maxCameraLimit = $("#maxCameraLimit").data("kendoNumericTextBox").value();
+            var maxVcaCount = $("#maxVcaCount").data("kendoNumericTextBox").value();
+            var isperpetual = $('#chbPerpetual').prop('checked');
+
+            var featureNameList = [];
+            $.each(orgList, function (index, fItem) {
+                if (document.getElementById(fItem.name).checked == true) {
+                    featureNameList.push(fItem.name);
+                }
+            });
+
+            if (featureNameList.length == 0) {
+                utils.popupAlert(localizeResource("msg-no-feature-selected"));
+                return;
+            }
+            
+            if(isperpetual == true)
+            	durationMonths = "-1";
+
+            utils.showLoadingOverlay();
+            updateNodeLicense("",
+                    licenseDetails.licenseNumber,
+                    durationMonths,
+                    storageLimitGb,
+                    maxCameraLimit,
+                    maxVcaCount,
+                    featureNameList,
+                    function (responseData) {
+                        if (responseData == null || responseData.result != "ok") {
+                            utils.throwServerError(responseData);
+                            return;
+                        }
+
+                        utils.slideDownInfo(localizeResource("license-updated"));
+                        closePopupWindow();
+                        utils.hideLoadingOverlay();
+                    }, null);
+        });
+
+        generateTreeItems(licenseDetails.cloudBucketId, function () {
+            $("#featureTree").kendoTreeView({
+                checkboxes: {
+                    checkChildren: true,
+                    template: "<input type='checkbox' id='#= item.id #' />"
+                },
+                dataSource: treeItems,
+                select: function (e) {
+                    var treeview = $("#featureTree").data("kendoTreeView");
+                    var dataItem = treeview.dataItem(e.node);
+
+                    $("#serviceList").kendoListView({
+                        template: kendo.template($("#serviceItemTemplate").html()),
+                        selectable: false,
+                        dataSource: dataItem.services
+                    });
+                }
+            });
+
+            setTimeout(function () {
+                setCurrentFeatures();
+                onLoaded();
+            }, 200);
+
+        })
+        
+        $("#chbPerpetual").click(function () {
+            $("#duration").data("kendoNumericTextBox").enable(!this.checked);
+        });
+    }
+
+    function generateTreeItems(bucketId, callback) {
+        orgList = [];
+        treeItems = [];
+
+        getAssignableNodeFeatures(bucketId, function (responseData) {
+            if (responseData.result == "ok" && responseData.features != null) {
+
+                orgList = responseData.features;
+                var featureGroups = {};
+                var svcGroups = {};
+
+                $.each(responseData.features, function (index, fItem) {
+
+                    if (featureGroups[fItem.type] == null) {
+                        featureGroups[fItem.type] = [];
+                    }
+
+                    featureGroups[fItem.type].push({
+                        id: fItem.name,
+                        text: localizeResource(fItem.name),
+                        services: fItem.services,
+                        imageUrl: "${CdnPath}/common/images/feature.png"
+                    });
+
+                    //compile services for this type
+                    if (svcGroups[fItem.type] == null) {
+                        svcGroups[fItem.type] = [];
+                    }
+
+                    $.each(fItem.services, function (index, sItem) {
+                        svcGroups[fItem.type].push(sItem);
+                    });
+                });
+
+                $.each(featureGroups, function (index, fgroup) {
+                    treeItems.push({
+                        id: index,
+                        text: localizeResource(index),
+                        imageUrl: "${CdnPath}/common/images/featuregroup.png",
+                        services: svcGroups[index],
+                        items: fgroup
+                    });
+                });
+
+                callback();
+            }
+            else {
+                callback();
+                utils.throwServerError(responseData.reason);
+            }
+        }, null);
+    }
+
+    function setCurrentFeatures() {
+        $.each(licenseDetails.featureNameList, function (index, fName) {
+            $("#" + fName).trigger("click");
+        });
+    }
+
+    function closePopupWindow() {
+        $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        $("#licenseGrid").data("kendoGrid").dataSource.read();
+    }
+
+    $(function () {
+        initUiElements(function () {
+            utils.hideLoadingOverlay();
+        });
+    });
+
+</script>

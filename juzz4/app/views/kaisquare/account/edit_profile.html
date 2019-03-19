@@ -1,0 +1,175 @@
+<div id="editProfileWin" style="width: 565px">
+	<div id=editFormEpw class="account_shadow_box">
+		<div class="k-edit-label label">
+			<label for="login">&{'login'} :</label>
+		</div>
+		<div class="k-edit-field" data-container-for="login">
+			<input type="text" class="k-input k-textbox" name="login"
+				style="width: 200px; background: #EAEAEA" required
+				validationMessage="&{'required'}" disabled="true"
+				data-bind="value:login">
+		</div>
+
+		<div class="k-edit-label label">
+			<label for="fullname">&{'full-name'} :</label>
+		</div>
+		<div class="k-edit-field" data-container-for="fullname">
+			<input id="fname" type="text" class="k-input k-textbox" name="fullname"
+				style="width: 200px" required validationMessage="&{'required'}"
+				data-bind="value:name" maxlength='100'>
+		</div>
+
+		<div class="k-edit-label label">
+			<label for="email">&{'email'} :</label>
+		</div>
+		<div class="k-edit-field" data-container-for="email">
+                    <input type="email" class="k-input k-textbox" name="email" id="email"
+				style="width: 200px" required data-email-msg="&{'invalid-email'}"
+				required validationMessage="&{'required'}" data-bind="value:email">
+		</div>
+
+		<div class="k-edit-label label">
+			<label for="fullname">&{'phone'} :</label>
+		</div>
+		<div class="k-edit-field" data-container-for="phone" style="width: 62%;">
+			<input id="phn" type="text" class="k-input k-textbox" name="phone"
+				style="width: 200px" 
+				placeholder="+9779849094463" pattern="^[0-9\-\+]\d{7,15}$"
+				requried data-pattern-msg="&{'validation.phone'}" data-bind="value:phone">
+		</div>
+
+		<div class="k-edit-label label">
+			<label for="language">&{'language'} :</label>
+		</div>
+		<div class="k-edit-field" data-container-for="LanguageList">
+			<input id="LanguageList" type="text" name="LanguageList"
+			data-bind="value:language"
+				style="width: 200px">
+		</div>
+	</div>
+
+	<div align="center">
+		<a id="updateEpw" href="#" class="k-button"><span
+			class="k-icon k-update"></span>&{'update'}</a> <a id="cancelEpw" href="#"
+			class="k-button"><span class="k-icon k-cancel"></span>&{'cancel-changes'}</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+    var dbProfile = new Object();
+    dbProfile.login = "${login}";
+    dbProfile.name = "${name}";
+    dbProfile.email = "${email}";
+    dbProfile.phone = "${phone}";
+    dbProfile.language = "${language}";
+
+    var vmProfile = kendo.observable({
+        "login": dbProfile.login,
+        "name": dbProfile.name,
+        "email": dbProfile.email,
+        "phone": dbProfile.phone,
+        "language": dbProfile.language,
+        "reset": function () {
+            this.set("login", dbProfile.login);
+            this.set("name", dbProfile.name);
+            this.set("email", dbProfile.email);
+            this.set("phone", dbProfile.phone);
+            this.set("language", dbProfile.language);
+        },
+        "trim": function () {
+            this.login = this.login.trim();
+            this.name = this.name.trim();
+            this.email = this.email.trim();
+            this.phone = this.phone.trim();
+            this.refresh();
+        },
+        refresh: function () {
+            kendo.bind($("#editFormEpw"), this);
+        }
+    });
+    
+    vmProfile.refresh();
+    var profileValidator = $("#editFormEpw").kendoValidator().data("kendoValidator");
+    $("#fname").focus(function(){
+        $("#fname").val(vmProfile.name);
+    });
+    $("#phn").focus(function(){
+        $("#phn").val(vmProfile.phone);
+    });
+    $("#fname").blur(function(){
+        vmProfile.trim();
+        vmProfile.refresh();
+        if(!utils.isNullOrEmpty(vmProfile.name)){
+            $("#fname").siblings("span.k-invalid-msg").hide();
+        }else{
+            vmProfile.set("name",dbProfile.name);
+            $("#fname").siblings("span.k-invalid-msg").hide();
+        }
+    });
+    $("#phn").blur(function(){
+        vmProfile.trim();
+        vmProfile.refresh();
+        if(utils.isNullOrEmpty(vmProfile.phone)){
+            vmProfile.set("phone",dbProfile.phone);
+            $("#phn").siblings("span.k-invalid-msg").hide();
+        }
+    });
+    $("#updateEpw").click(function(){
+    	if (profileValidator.validate()) {
+        	
+       	 if (vmProfile.language == "" || vmProfile.language == "None") {
+                utils.popupAlert(localizeResource("language-not-selected"));
+                return;
+            }
+
+           utils.showLoadingOverlay();
+           updateUserProfile("", vmProfile.name, vmProfile.login, vmProfile.email, vmProfile.phone, vmProfile.language, function (responseData) {
+
+                       if (responseData.result == "ok") {
+                           utils.slideDownInfo("&{'update-successful'}!");
+                           dbProfile.login = vmProfile.login;
+                           dbProfile.name = vmProfile.name;
+                           dbProfile.email = vmProfile.email;
+                           dbProfile.phone = vmProfile.phone;
+                           setTimeout(function(){
+                        	   window.location.reload(true);                        	   
+                           },600);
+                       }
+                       else {
+                           utils.hideLoadingOverlay();
+                           utils.throwServerError(responseData);
+                       }
+                   },
+                   null);
+       }
+    });
+    
+    var language = [
+                { text: "&{'english'}", value: "en" },
+                { text: "&{'chinese-traditional'}", value: "zh-tw" },
+                { text: "&{'chinese-simplified'}", value: "zh-cn" }
+            ];
+
+
+    
+    $("#LanguageList").kendoDropDownList({
+        optionLabel: "None",
+		dataTextField: "text",
+		dataValueField: "value",
+		dataSource: language,
+		index: 0,
+		change: function(e){
+         	var dataItem = $("#LanguageList").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+     		if (dataItem.name == "None") {
+     			vmProfile.set("language", "");
+         		return;
+     		}
+     		vmProfile.set("language", dataItem.value);
+}
+});
+	$("#cancelEpw").click(function() {
+		vmProfile.reset();
+                $("#phn").siblings("span.k-invalid-msg").hide();
+                $("#email").siblings("span.k-invalid-msg").hide();
+	});
+</script>

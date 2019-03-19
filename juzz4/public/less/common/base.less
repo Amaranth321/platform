@@ -1,0 +1,187 @@
+@imgsrc: "../../../images";
+@white: rgb(255,255,255);
+@black: rgb(0,0,0);
+@yellow: #f6ae40;
+@gray1a: #1a1a1a;
+@gray28: #282828;
+@gray3d: #3d3d3d;
+@gray33: #333333;
+@gray4b: #4b4b4b;
+@grayd9: #d9d9d9;
+@gray99: #999999;
+@gray80: #808080;
+@colorD9:#d9d9d9;
+@clolorCC:#cccccc;
+@gray28:#282828;
+@bk21:#212121;
+@bk33:#333;
+@slotHover:#7b7b7b;
+@notifyBg:rgba(76,76,76,0.8);
+@searchHover:#f29f1f;
+@notifyBorderSuccess:#f6ad40;
+@notifyBorderError:#b00707;
+* {margin:0;}
+
+    body {
+        height:100%;
+        background:@gray33;
+        
+        #main {
+        /*height: 660px;*/
+        min-height:100%;
+        min-width:1265px;
+        width: 100%;
+        color: #ccc;
+        margin-top: 40px;
+        margin-bottom:-30px; /* equal to footer height */
+        padding: 10px 0 0 250px;
+        position: relative;
+        z-index: 2;
+        -webkit-transition: all 0.3s ease 0s;
+        transition: all 0.3s ease 0s;
+            &:after {
+                content:"";
+                display:block;
+                height:61px;
+            }
+            
+            .feature_main_header {
+            font-size: 15px;
+            color: #0da9ee;
+            font-weight: bold;
+            font-style: normal;
+            padding: 20px 25px 14px 25px;
+            text-align: center;
+            background-color: @bk21;
+            }
+            
+            .k-tabstrip {
+                padding:25px;
+                .k-widget {
+                    &.k-header {
+                        &.k-tabstrip {
+                            background:none; 
+                            border:none;
+                        }
+                    }
+                }
+            }
+
+        }
+        
+        #footer {
+            width:100%;
+            height:61px;
+            position:absolute;
+            left:0;
+            bottom:0;
+            padding-left:250px;
+        }
+        
+        
+        .email-export {
+            #exportOutput {
+            &.export-options {
+                &.pos-r {
+                 position:absolute;
+                 right:30px;
+                 top:25px;
+                }
+                
+                a {
+                    color:@colorD9;
+                    opacity:0.8;
+                    cursor:pointer;
+                    &:hover{opacity:1;}
+                      &.parent {
+                        background: url("@{imgsrc}/sysico.png") 40px -188px no-repeat;
+                        padding: 0 15px 0 0;
+                      }
+                  }
+                  
+                ul {
+                    margin:0;
+                    padding:0;
+                    &.inner {
+                        display:none;
+                        width:auto;
+                        z-index:99999;
+                        position:absolute;
+                        top:25px;
+                        left:0;
+                        background:@bk21;
+                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.49);
+                        li {
+                            a {
+                                &:hover {
+                                    /*color:@white;*/
+                                    background-color:@bk33;
+                                }
+                                display: block;
+                                color:@clolorCC;
+                                background-image: url("@{imgsrc}/sysico.png"); 
+                                background-repeat: no-repeat;
+                                line-height: 38px;
+                                padding: 0px 11px 0px 40px;
+                            }
+                            &#pdfOutput {
+                                &.pdf {
+                                    a {background-position: 10px -204px;}
+                                    }
+                                }
+                            &#excelOutput {
+                                &.excel {
+                                    a {background-position: 10px -240px;}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            
+            }
+        }
+               
+        
+        
+        .notifyjs-bootstrap-success {
+            padding:15px 20px 15px 48px;
+            background:@notifyBg url("@{imgsrc}/sysico.png") 15px -61px no-repeat;
+            border:1px solid @notifyBorderSuccess;
+        }
+         .notifyjs-bootstrap-error {
+            padding:15px 20px 15px 48px;
+            background:@notifyBg url("@{imgsrc}/sysico.png") 15px 10px no-repeat;
+            border:1px solid @notifyBorderError;
+        }
+        .notifyjs-bootstrap-base {
+            color:@colorD9;
+            font-size:13px;
+            font-weight: normal;
+            text-shadow:none;
+        }
+        
+        .remove_default_tab_padding {
+            margin:0;
+            &.k-grid {
+                &.k-widget {
+                    border:none;
+                    background:none;
+                }
+            }
+        }
+        
+        .k-tabstrip .k-content, .k-panelbar .k-tabstrip .k-content {
+         width:100%;
+         padding:0;
+         margin:0;
+        }
+        
+      
+        
+        
+         
+       
+    
+    }
+

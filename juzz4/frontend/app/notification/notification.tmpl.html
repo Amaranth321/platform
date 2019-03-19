@@ -1,0 +1,34 @@
+<section class="container-fluid" cg-busy="notificationCtrl.data.uiTableBlock.options"><h1 class="page-header">{{'notification' | translate}}</h1><div class="content" id="events"><div class="kupActionsGroup"><div class="btn-group dataExport pull-right" uib-dropdown><a type="button" class="btn btn-link dropdown-toggle export" uib-dropdown-toggle>{{'export' | translate}}<i class="fa fa-caret-down iconRight"></i></a><ul class="dropdown-menu angle angleCenter" role="menu"><li ng-click="notificationCtrl.fn.exportReport('pdf')"><a href=""><i class="fa fa-file-pdf-o iconLeft"></i>{{'pdf' | translate}}</a></li><li class="divider"></li><li ng-click="notificationCtrl.fn.exportReport('csv')"><a href=""><i class="kup-csv csv iconLeft"></i>{{'csv' | translate}}</a></li></ul></div></div><div class="subContainer" style="margin-top:10px"><div class="selectBottom kupSpaceRight kupType"><label>{{'type' | translate}}</label><ol class="nya-bs-select selectpicker" ng-model="notificationCtrl.data.searchInfo.type"><li nya-bs-option="type in notificationCtrl.data.uiType"><a>{{type.text | translate}}</a></li></ol></div><div class="dataSubmit col-md-6 col-sm-12"><div id="datetimepicker"><div class="input-group col-xs-12"><label>{{'period' | translate}}</label><div id="kupDaterange" style="position:relative;top:0;left:0"><i class="fa fa-calendar"></i> <span></span> <b class="caret"></b></div></div></div><span class="input-group-btn"><a type="button" class="btn btn-link" data-toggle="collapse" data-target="#searchCollapse" aria-expanded="false"><label>{{'advanced' | translate}}</label><i class="fa fa-caret-down advanced"></i> </a><span>{{'advanced' | translate}}</span></span></div><div class="dataSearch"><div class="collapse" id="searchCollapse" aria-expanded="false"><div class="condition"><div class="row"><div id="NodeType" class="col-xs-12 selectBottom"><div class="input-group col-xs-12 col-sm-5 col-md-5 pull-left groupOffset kupType"><label>{{'node-name' | translate}}</label><ol class="nya-bs-select selectpicker" ng-model="notificationCtrl.data.searchInfo.device"><li nya-bs-option="device in notificationCtrl.data.deviceDataSource"><a>{{device.deviceName}}</a></li></ol></div><div class="input-group col-xs-12 col-sm-5 col-md-5 pull-left kupType"><label>{{'camera' | translate}}</label><ol class="nya-bs-select selectpicker" ng-model="notificationCtrl.data.searchInfo.camera"><li nya-bs-option="camera in notificationCtrl.data.searchInfo.device.cameraData"><a>{{camera.cameraName}}</a></li></ol></div></div></div><div class="btn-group col-xs-12 col"><button class="btn btn-default clear" ng-click="notificationCtrl.fn.clearSearch()">{{'clear' | translate}}</button></div></div></div></div><div id="eventResult" class="dataList" role="tablist" aria-multiselectable="true"><div class="row"><table datatable="" dt-options="notificationCtrl.data.uiTable.options" dt-columns="notificationCtrl.data.uiTable.columnDefs" dt-instance="notificationCtrl.data.uiTable.dtInstance" class="table table-bordered table-hover display nowrap dataTable responsive" cellspacing="0" width="100%"></table></div></div></div></div></section><script type="text/ng-template" id="notificationModal.tmpl.html"><!-- //mdal widget start -->
+    <div class="modal-header">
+        <button type="button" ng-click="notificationModalCtrl.fn.closeModal()" class="close">×</button>
+        <h4 class="modal-title"><i class="navIcons" ng-show="notificationModalCtrl.fn.getEventInfoByType(notificationModalCtrl.selectTableData.eventType).class" ng-class="notificationModalCtrl.fn.getEventInfoByType(notificationModalCtrl.selectTableData.eventType).class"></i>{{ notificationModalCtrl.fn.getEventInfoByType(notificationModalCtrl.selectTableData.eventType).text | translate}}</h4>
+    </div>
+    <div class="kupLoading" ng-show="!notificationModalCtrl.data.isLoadVideo" style="height:320px;">
+        <div class="la-ball-beat la-sm kupLoadItem">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="kupVideo" ng-show="notificationModalCtrl.selectTableData.eventVideoUrl && notificationModalCtrl.data.isLoadVideo" style="height:320px;">
+        <div id="kupPlayer"></div>
+    </div>
+    <div class="modal-body">
+        <div class="kupAlertContent">
+            <!-- <h5>Here is the alert name title</h5> -->
+            <div class="pull-left kupAlertInfo" ng-show="notificationModalCtrl.selectTableData.isMapping">
+                <span><i class="kup-node"></i>{{notificationModalCtrl.selectTableData.deviceInfo.name}}</span>
+                <span><i class="fa fa-video-camera"></i>{{notificationModalCtrl.selectTableData.cameraInfo.name}}</span>
+                <span><i class="fa fa-map-marker"></i>{{notificationModalCtrl.selectTableData.deviceInfo.address}}</span>
+            </div>
+            <div class="pull-left kupAlertInfo" ng-show="!notificationModalCtrl.selectTableData.isMapping">
+                <span>{{'there-is-no-matching-device' | translate}}</span>
+            </div>
+            <span class="pull-right kupTime">{{notificationModalCtrl.selectTableData.timeLocal}} ({{notificationModalCtrl.selectTableData.timeLocalShortText}})</span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn-warning" ng-show="notificationModalCtrl.selectTableData.eventVideoUrl" ng-click="notificationModalCtrl.fn.downloadVideo()"><i class="fa fa-cloud-download"></i>{{'download-video' | translate}}</a>
+        <a class="btn btn-default cancel" ng-click="notificationModalCtrl.fn.closeModal()">{{'close' | translate}}</a>
+    </div>
+    <!-- // end mdal widget --></script>

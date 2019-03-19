@@ -1,0 +1,167 @@
+/* CSS crunched with Crunch - http://crunchapp.net/ */
+#header .logo {
+  color: #575757;
+  font-size: 19px;
+  width: 221px;
+  height: 34px;
+  background-size: contain !important;
+  margin: 8px 0 8px 19px;
+  padding: 12px 0 0 72px;
+  text-decoration: none;
+}
+#header ul.profile-error {
+  padding: 0;
+  margin: 14px 25px 0 0;
+  list-style-type: none;
+}
+#header ul.profile-error li {
+  float: right;
+  padding-bottom: 12px;
+  font-size: 11px;
+  line-height: 22px;
+}
+#header ul.profile-error li ul.inner.setting li a {
+  line-height: 23px !important;
+}
+#header ul.profile-error li.profile {
+  margin-left: 34px;
+}
+#header ul.profile-error li.errors a#headerAlert span#countBubble.badge-error {
+  min-width: auto !important;
+  height: auto !important;
+  line-height: 15px;
+  position: relative !important;
+  top: -8px;
+  left: -8px;
+  right: 0;
+  display: none;
+  border-radius: 2px !important;
+  -webkit-border-radius: 2px !important;
+  -moz-border-radius: 2px !important;
+  padding: 1px 5px;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner {
+  width: 236px;
+  left: -192px;
+  max-height: 296px;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li {
+  padding: 10px 8px 7px 14px;
+  cursor: pointer;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.triangle {
+  margin-left: 0;
+  left: 195px;
+  width: 14px !important;
+  height: 10px !important;
+  border: none !important;
+  padding: 0 !important;
+  position: absolute;
+  top: -9px;
+  background: url(@{imgsrc}/triangle.png) 0 0 no-repeat;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.toggle-more {
+  padding: 0;
+  height: 29px;
+  line-height: 29px;
+  background: #333333;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.toggle-more a {
+  color: #ffffff;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info {
+  line-height: 1.33em;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info.clearfix:before,
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info.clearfix:after {
+  content: " ";
+  display: table;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info i.meida {
+  width: 30px;
+  height: 30px;
+  margin-right: 12px;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info div.info p {
+  margin-bottom: 0;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info div.info a {
+  display: inline-block;
+}
+#header ul.profile-error li.errors ul#eventNotification.inner li.media-info div.info span.device_name {
+  display: block;
+  float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 171px;
+}
+#header ul.profile-error li.alertSound {
+  margin-right: 25px;
+  margin-top: -2px;
+}
+#header ul.profile-error li.header_liveView_seperator {
+  border-right: 1px solid #c6c6c6;
+  color: #c6c6c6;
+  display: block;
+  height: 39px !important;
+  margin-right: 29px;
+  margin-top: -9px;
+  width: 1px;
+}
+#header ul.profile-error li.is_active a i.icon.alert-icon {
+  background: url("../../common/images/alert_active_standalone.png") 0 0 no-repeat;
+}
+#header ul.profile-error li.is_active a i.icon.account-icon {
+  background: url("../../common/images/account_active_standalone.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a i.icon {
+  display: block;
+}
+#header ul.profile-error li a i.icon.header-liveView-img {
+  width: 22px;
+  height: 23px;
+  background: url("../../common/images/header_liveView.png") no-repeat -36px -8px;
+}
+#header ul.profile-error li a i.icon.header-liveView-img:hover {
+  background: url("../../common/images/header_liveView.png") no-repeat -9px -8px;
+}
+#header ul.profile-error li a i.icon.alert-sound-icon-on-unclick {
+  width: 36px;
+  height: 27px;
+  background: url("../../common/images/speaker_on_unclick.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a i.icon.alert-sound-icon-on-mouseover {
+  width: 36px;
+  height: 27px;
+  background: url("../../common/images/speaker_on_mouseover.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a i.icon.alert-sound-icon-off-unclick {
+  width: 36px;
+  height: 27px;
+  background: url("../../common/images/speaker_off_unclick.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a i.icon.alert-sound-icon-off-mouseover {
+  width: 36px;
+  height: 27px;
+  background: url("../../common/images/speaker_off_mouseover.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a i.icon.alert-icon {
+  width: 22px;
+  height: 22px;
+  background: url("../../common/images/alert-header.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a i.icon.account-icon {
+  width: 18px;
+  height: 22px;
+  background: url("../../common/images/account.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a:hover i.icon.header-liveView-img {
+  background: url("../../common/images/header_liveView.png") no-repeat -9px -8px;
+}
+#header ul.profile-error li a:hover i.icon.alert-icon {
+  background: url("../../common/images/alert_active_standalone.png") 0 0 no-repeat;
+}
+#header ul.profile-error li a:hover i.icon.account-icon {
+  background: url("../../common/images/account_active_standalone.png") 0 0 no-repeat;
+}

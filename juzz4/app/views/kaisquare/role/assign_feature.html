@@ -1,0 +1,230 @@
+<style>
+    .role_features {
+        width: 700px;
+    }
+
+    #hSplitter {
+        height: 435px;
+        margin: 10px 5px 10px 5px;
+        border: 1px #444 solid;
+    }
+
+    label {
+        margin-left: 10px;
+        margin-right: 0px;
+    }
+
+    input[type=checkbox] {
+        margin-top: 0px;
+        height: 23px;
+    }
+
+    #featureTree {
+        padding: 5px;
+        height: 100%;
+    }
+
+    #right-pane {
+        padding: 5px;
+    }
+
+    .service_list_title {
+        color: #F6AE40;
+        font-weight: bold;
+        border-bottom: 2px #444 solid;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+        display: inline-block;
+        width: 100%;
+    }
+
+</style>
+
+
+<script type="text/x-kendo-template" id="serviceItemTemplate">
+    <div style="padding-left:5px; line-height:22px;">
+        <img src="${CdnPath}/common/images/action.png" style="width: 12px; height: 12px">
+        <span>
+        #= name #
+        </span>
+    </div>
+</script>
+
+<div class="role_features">
+    <div id="hSplitter">
+        <div id="left-pane">
+            <div id="featureTree"></div>
+        </div>
+        <div>
+            <div id="right-pane">
+                <span class="service_list_title">&{'service-apis-used'}</span>
+
+                <div id="serviceList" style="border: 0px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div align="center">
+    <a id="btnUpdate" href="#" class="k-button">&{'update'}</a> &nbsp;
+    <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+</div>
+
+<script>
+    var roleId = "${roleId}";
+    var treeItems = [];
+    var orgList = [];
+
+    $(function ()
+    {
+
+        $("#hSplitter").kendoSplitter({
+            panes: [
+                { collapsible: false, resizable: false},
+                { collapsible: false, resizable: false, size: "300px" }
+            ]
+        });
+
+        $("#btnUpdate").click(function ()
+        {
+
+            var toUpdate = [];
+            $.each(orgList, function (index, fItem)
+            {
+                if (document.getElementById(fItem.name).checked == true)
+                {
+                    toUpdate.push(fItem.name);
+                }
+            });
+
+            updateRoleFeatures("", roleId, JSON.stringify(toUpdate), function (responseData)
+            {
+                if (responseData.result == "ok")
+                {
+                    utils.slideDownInfo("&{'update-successful'}");
+                    closePopupWindow();
+                }
+                else
+                {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        });
+
+        $("#btnCancel").click(function ()
+        {
+            closePopupWindow();
+        });
+
+        generateTreeItems(function ()
+        {
+            $("#featureTree").kendoTreeView({
+                checkboxes: {
+                    checkChildren: true,
+                    template: "<input type='checkbox' id='#= item.id #' />"
+                },
+                dataSource: treeItems,
+                select: function (e)
+                {
+                    var treeview = $("#featureTree").data("kendoTreeView");
+                    var dataItem = treeview.dataItem(e.node);
+
+                    $("#serviceList").kendoListView({
+                        template: kendo.template($("#serviceItemTemplate").html()),
+                        selectable: false,
+                        dataSource: dataItem.services
+                    });
+                }
+            });
+
+            setTimeout(function ()
+            {
+                getCurrentFeatures();
+            }, 200);
+        })
+    });
+
+    function generateTreeItems(callback)
+    {
+        orgList = [];
+        treeItems = [];
+        getAssignableRoleFeatures(function (responseData)
+        {
+            if (responseData.result == "ok" && responseData.features != null)
+            {
+                orgList = responseData.features;
+                var featureGroups = {};
+                var svcGroups = {};
+
+                $.each(responseData.features, function (index, fItem)
+                {
+
+                    if (featureGroups[fItem.type] == null)
+                    {
+                        featureGroups[fItem.type] = [];
+                    }
+
+                    featureGroups[fItem.type].push({
+                        id: fItem.name,
+                        text: localizeResource(fItem.name),
+                        services: fItem.services,
+                        imageUrl: "${CdnPath}/common/images/feature.png"
+                    });
+
+                    //compile services for this type
+                    if (svcGroups[fItem.type] == null)
+                    {
+                        svcGroups[fItem.type] = [];
+                    }
+
+                    $.each(fItem.services, function (index, sItem)
+                    {
+                        svcGroups[fItem.type].push(sItem);
+                    });
+                });
+
+                $.each(featureGroups, function (index, fgroup)
+                {
+                    treeItems.push({
+                        id: index,
+                        text: localizeResource(index),
+                        imageUrl: "${CdnPath}/common/images/featuregroup.png",
+                        services: svcGroups[index],
+                        items: fgroup
+                    });
+                });
+
+                callback();
+            }
+            else
+            {
+                callback();
+                utils.throwServerError(responseData.reason);
+            }
+        }, null);
+    }
+
+    function getCurrentFeatures()
+    {
+        getRoleFeatures("", roleId, function (responseData)
+        {
+            if (responseData.result == "ok" && responseData.features != null)
+            {
+                $.each(responseData.features, function (index, fItem)
+                {
+                    $("#" + fItem.name).trigger("click");
+                });
+            }
+            else
+            {
+                utils.throwServerError(responseData);
+            }
+        }, null);
+    }
+
+    function closePopupWindow()
+    {
+        $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+    }
+
+</script>

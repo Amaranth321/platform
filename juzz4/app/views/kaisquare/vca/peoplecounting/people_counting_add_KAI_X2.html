@@ -1,0 +1,277 @@
+<script src="/public/javascripts/peopleCounting.js"></script>
+
+<div class="popup_wrapper">
+    <div class="vca_content">
+        <div class="left_box">
+            <div class="device_selection_top">
+                <label for="userDevices">&{'device-name'}</label>
+                <input id="userDevices" style="width: 220px"><br/>
+                <label id="channelDisplayName" for="cameraChannels">&{'channel'}</label>
+                <input id="cameraChannels" style="width: 220px">
+            </div>
+            <div class="leaflet_canvas_wrapper">
+                <div class="title">&{'please-draw-polygon-region'}</div>
+                <div class="leaflet_canvas_box">
+                    <div id="leafletRegionCanvas" class="mask_canvas"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right_box">
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'direction'} <span id="directionInfo" class="help_icon"></span>
+                </div>
+
+                <input id="areaList" style="width: 50px" autocomplete="off"/>
+                <img src="${CdnPath}/common/images/right_arrow.png" style="width:21px; height: 14px;">
+                <span id="destArea" style="font-weight: bold; margin-left: 3px">R2</span>
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="param_selection_box capture_size">
+                <div class="param_title">
+                &{'capture-size-range'}
+                    <span id="captureSizeInfo" class="help_icon"></span>
+                    <a href="javascript:configureCaptureBounds()" class="btn_capture_size"></a>
+                </div>
+                <div>
+                    <span class="status">&{'not-configured'}</span>
+                </div>
+            </div>
+
+            <div class="submit_btn_box">
+                <a href="javascript:submitVca()" class="k-button">&{'submit'}</a>&nbsp;
+                <a id="btnCancel" href="javascript:vca.closePopupWindow()" class="k-button">&{'cancel'}</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+var captureSizeBounds = null;
+
+function initDeviceSettings()
+{
+    $("#userDevices").kendoDropDownList({
+        optionLabel: "None",
+        dataTextField: "name",
+        dataValueField: "deviceId",
+        dataSource: parent.deviceManager.userDevices,
+        select: function (e)
+        {
+            var deviceItem = this.dataItem(e.item.index());
+            var channelList = $("#cameraChannels").data("kendoDropDownList");
+
+            if (deviceItem.name != "None")
+            {
+                if (deviceItem.model.capabilities.indexOf("node") != -1)
+                {
+                    utils.populateNodeNames(deviceItem.node.cameras, "cameraChannels");
+                }
+                else
+                {
+                    utils.populateChannels(deviceItem.model.channels, "cameraChannels");
+                }
+
+                channelList.select(0);
+                channelList.enable(true);
+                mapManager.setLiveSnapshotBackground(deviceItem.deviceId, channelList.value());
+            }
+            else
+            {
+                channelList.enable(false);
+                mapManager.setEmptyBackground();
+            }
+        }
+    });
+
+    $("#cameraChannels").kendoDropDownList({
+        dataTextField: "name",
+        dataValueField: "nodeCoreDeviceId",
+        dataSource: [],
+        select: function (e)
+        {
+            var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+            var selectedChannel = this.dataItem(e.item.index()).nodeCoreDeviceId;
+            mapManager.setLiveSnapshotBackground(selectedCamera.deviceId, selectedChannel);
+        }
+    });
+}
+
+function initUiElements()
+{
+    scheduler.init("scheduleInfo", null);
+
+    $("#paramExpander").kendoExpander({
+        name: "Expander",
+        title: '&{'additional-params'}',
+        isExpanded: false
+    });
+
+    $("#areaList").kendoDropDownList({
+        dataSource: ["R1", "R2"],
+        change: function (e)
+        {
+            var areaName = this.value();
+            if (areaName == "R1")
+            {
+                $("#destArea").text("R2");
+            }
+            else
+            {
+                $("#destArea").text("R1");
+            }
+        }
+    });
+}
+
+function initTooltips()
+{
+    utils.createTooltip("directionInfo", "top", "&{'direction-info-tooltip'}");
+    utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+    utils.createTooltip("captureSizeInfo", "bottom", localizeResource('msg-capture-size-info'));
+}
+
+function configureCaptureBounds()
+{
+    var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+    var channelList = $("#cameraChannels").data("kendoDropDownList");
+    if (selectedCamera.name == "None")
+    {
+        utils.popupAlert(localizeResource("select-camera-first"));
+        return;
+    }
+
+    DvcMgr.getCameraSnapshot(selectedCamera.deviceId, channelList.value(), function (jpegUrl)
+    {
+        VcaConfigWins.captureSize.openWin(jpegUrl, captureSizeBounds, function ()
+        {
+            captureSizeBounds = VcaConfigWins.captureSize.getSizeBounds();
+            updateCaptureBoundsStatus();
+        });
+    });
+}
+
+function updateCaptureBoundsStatus()
+{
+    var $captureSizeStatus = $(".capture_size .status");
+    if (!captureSizeBounds || Object.keys(captureSizeBounds).length == 0)
+    {
+        $captureSizeStatus.html(localizeResource("not-configured"));
+        return;
+    }
+
+    var postFixes = [];
+    if (captureSizeBounds.min)
+    {
+        postFixes.push(localizeResource("minimum"));
+    }
+    if (captureSizeBounds.max)
+    {
+        postFixes.push(localizeResource("maximum"));
+    }
+
+    var statusText = localizeResource("configured");
+    if (postFixes.length > 0)
+    {
+        statusText += " (" + postFixes.join(", ") + ")"
+    }
+    $captureSizeStatus.html(statusText);
+}
+
+function submitVca()
+{
+    var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+    var selectedChannel = $("#cameraChannels").data("kendoDropDownList").value();
+    if (selectedCamera == null || selectedCamera.name == "None")
+    {
+        utils.popupAlert("&{'no-device-selected'}");
+        return;
+    }
+
+    //check the drawn regions
+    var dropdown = $("#areaList").data("kendoDropDownList");
+    if (peopleCounting.areaCount < 2)
+    {
+        utils.popupAlert("&{'msg-draw-two-regions'}");
+        return;
+    }
+
+    var regions = peopleCounting.getRegionsDrawn();
+    var direction = (dropdown.value() == "R1") ? "r1r2" : "r2r1";
+
+    var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+    if (additionalParams == null)
+    {
+        utils.popupAlert(localizeResource("invalid-additional-params"));
+        return;
+    }
+
+    var jsonThresholds = {
+        "regions": regions,
+        "direction": direction,
+        "additional-params": additionalParams
+    };
+
+    //bounds are optional
+    if (captureSizeBounds)
+    {
+        if (captureSizeBounds.min)
+        {
+            jsonThresholds["min-bounds"] = captureSizeBounds.min;
+        }
+        if (captureSizeBounds.max)
+        {
+            jsonThresholds["max-bounds"] = captureSizeBounds.max;
+        }
+    }
+
+    //if the camera snapshot is not loaded, don't allow vca to be added
+    var customMjpgLink = (Object.keys(additionalParams).indexOf("i") != -1);
+    if (!deviceManager.isKaiNode(selectedCamera) && !mapManager.bgImageExists() && !customMjpgLink)
+    {
+        utils.popupAlert(localizeResource("msg-check-not-working-camera"));
+        return;
+    }
+
+    utils.showLoadingOverlay();
+    kupapi.addVca(
+            backend.VcaType.PEOPLE_COUNTING,
+            selectedCamera.id,
+            selectedChannel,
+            JSON.stringify(jsonThresholds),
+            scheduler.selectedRecurrenceRule,
+            VcaMgr.Program.KAI_X2,
+            vca.onAddAnalyticsSuccess
+    );
+}
+
+$(function ()
+{
+    peopleCounting.initDrawingCanvas("leafletRegionCanvas", false);
+    initDeviceSettings();
+    initUiElements();
+    initTooltips();
+});
+
+</script>

@@ -1,0 +1,32 @@
+<style>
+    .preset_name_wrapper label{
+        display: inline-block;
+        width: 90px;
+        margin-left: 5px;
+    }
+</style>
+
+<div class="preset_name_wrapper">
+    <label for="presetName">&{'preset-name'}</label>
+    <input id="presetName" type="text" class="k-textbox">
+</div>
+<div style="width: 60px; margin: 8px auto 0px auto">
+    <a href="javascript:saveAsWin.ok()" class="k-button" style="width: 60px">&{'save'}</a>
+</div>
+
+<script>
+    var saveAsWin = {
+        choice: false,
+        presetName: "",
+        close: function () {
+            $("#presetName").closest(".k-window-content").data("kendoWindow").close();
+        },
+        ok: function () {
+            this.choice = true;
+            this.presetName = $("#presetName").val();
+            if (this.presetName.length != 0) {
+                this.close();
+            }
+        }
+    };
+</script>

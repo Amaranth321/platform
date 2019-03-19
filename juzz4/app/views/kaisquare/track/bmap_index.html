@@ -1,0 +1,75 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+#{include HtmlPath + '/common/partial/bmap_headers.html'/}
+<style>
+    #browserInstruction {
+        padding-top: 250px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+</style>
+<div class="map_box" style="margin: 0px;">
+
+    <div id="map_canvas">
+    	<div id="browserInstruction">
+            <span>&{'instruction-baidu-map'}</span></br>
+			<a id="downloadSample" href="/${bucket}/content/downloadGuide?guideName=enable_baidu_map.pdf">
+	        &{'download-guide'}: 
+	        <img src="${CdnPath}/common/images/download_blue.png" width="16px"></a>
+        </div>
+	</div>
+    <div id="immoWin" style="overflow:hidden;"></div>
+
+    <div class="map_btns map_btns2">
+        <a href="#" class="btn_display">&{'display'}</a>
+    </div>
+
+    <div class="display_box">
+        <a href="#" class="btn_close">close</a>
+
+        <div class="box_title">&{'display'}</div>
+        <div class="box_block">
+            <div class="option">
+                <input id="chbPoi" type="checkbox" checked="true" autocomplete="off"/>
+                <label for="chbPoi">&{'poi'}</label>
+            </div>
+            <div class="option">
+                <input id="chbCameras" type="checkbox" checked="true" autocomplete="off"/>
+                <label for="chbCameras">&{'cameras'}</label>
+            </div>
+        </div>
+        <!-- /box_block -->
+    </div>
+
+</div>
+<script>
+    $(function () {
+        document.getElementById("map_canvas").style.height = $(window).height() - 140 + "px";
+
+        if(typeof baiduMapManager != 'undefined'){
+			baiduMapManager.initialize("map_canvas", MAP_CENTER_LAT, MAP_CENTER_LNG, MAP_ZOOM, true, function () {
+				baiduMapManager.loadPoiMarkers();
+				baiduMapManager.loadDevices();
+	        });
+		}
+
+        $("#chbPoi").click(function () {
+        	if(typeof baiduMapManager == "undefined")
+        		return;
+    		baiduMapManager.setVisibilityByType(0, document.getElementById("chbPoi").checked);
+        })
+
+        $("#chbCameras").click(function () {
+        	if(typeof baiduMapManager == "undefined")
+        		return;
+    		baiduMapManager.setVisibilityByType(1, document.getElementById("chbCameras").checked);
+        })
+    });    
+
+    function onPopupClosed() {
+        $("#immoWin").html("");
+    }
+
+
+</script>

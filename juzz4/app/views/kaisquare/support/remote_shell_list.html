@@ -1,0 +1,183 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/x-kendo-template" id="shellToolbarTmpl">
+    <div style="float: left; margin:5px 0px 5px 5px;">
+    	<label for="bucketList">&{'bucket-name'}</label>
+        <input id="bucketList" style="width:150px" autocomplete="off" />
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="nodeDeviceActionsTmpl">
+
+    <span id="shellbutton#= data.nodeId #">
+    	# if (data.connectionState == "CLOUD_REQUESTED_START" || data.connectionState == "NODE_DISCONNECTED") { #
+	    	<a href="javascript:startShell('#= data.nodeId #','#= data.connectionState #');" class="k-button" title="&{'remote-shell'}"
+	           style="min-width: 0px; min-height: 0px;">
+	            <span>
+	            # if (data.connectionState == "CLOUD_REQUESTED_START" ) { #
+	            	<span><img src="/public/css/common/kendo/moonlight/images/loading.gif"/></span>
+	            # } #
+	            &{'start'}</span>
+	        </a>
+        # } else { #
+        	<a href="javascript:stopShell('#= data.nodeId #');" class="k-button" title="&{'stop'}"
+	           style="min-width: 0px; min-height: 0px;">
+	            <span>
+	            # if (data.connectionState == "CLOUD_REQUESTED_STOP" ) { #
+	            	<span><img src="/public/css/common/kendo/moonlight/images/loading.gif"/></span>
+	            # } #
+	            &{'stop'}</span>
+	        </a>
+        # } #
+    </span>
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'remote-shell'}</span>
+</div>
+<div id="shellGrid"></div>
+
+<script type="text/javascript">
+
+    var bucketMap = {};
+    var _interval = null;
+
+    var dsNodes = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+            	var bucket = $("#bucketList").data("kendoComboBox");
+            	if (bucket != null)
+            	{
+	                var bucketId = bucket.value();
+	                if (bucketId != null || bucketId == "")
+	                {
+		                busyOverlayVisibility = false;
+		                getRemoteShellList("", bucketId, function (responseData) {
+		                    if (responseData.result == "ok" && responseData.devices != null) {
+		                        var deviceList = responseData.devices;
+		                        // var nodeList = [];
+		                        // $.each(deviceList, function (idx, dvc) {
+		                        //     if (dvc.model.capabilities.indexOf("node") != -1) {
+		                        //         dvc.bucketName = bucketMap[dvc.bucket];
+		                        //         nodeList.push(dvc);
+		                        //     }
+		                        // });
+
+		                        options.success(deviceList);
+		                    }
+		                    else {
+		                        utils.throwServerError(responseData.reason);
+		                        options.success([]);
+		                    }
+		                }, null);
+
+		                autoreload();
+		                return;
+		            }
+		        }
+
+		        if (_interval != null)
+		        	window.clearInterval(_interval);
+		        _interval = null;
+		        options.success([]);
+            }
+        },
+        pageSize: 15
+    });
+
+    function startShell(nodeId, connectionState) {
+    	var contentPage = "/support/startshell/" + nodeId;
+    	//Node is stopped and Cloud is established 
+    	if (connectionState == "CLOUD_REQUESTED_START") 
+    	{
+    		utils.popupConfirm(localizeResource("remote-shell"), localizeResource("remote-shell-send-again"), function(choice) {
+    			if (choice)
+    				utils.openPopup(localizeResource("remote-shell"), contentPage, null, null, true, onPopupClosed);
+    		});
+    	}
+    	else
+    		utils.openPopup(localizeResource("remote-shell"), contentPage, null, null, true, onPopupClosed);
+    }
+
+    function stopShell(nodeId) {
+        stopRemoteShell("", nodeId, function (resp) {
+        	$("#shellGrid").data("kendoGrid").dataSource.read();
+            autoreload();
+        });
+    }
+
+    function autoreload()
+    {
+    	if (_interval == null)
+        {
+            _interval = window.setInterval(function () {
+	            $("#shellGrid").data("kendoGrid").dataSource.read();
+	        }, 5000);
+        }
+    }
+
+    function onPopupClosed() {
+        $("#shellGrid").data("kendoGrid").dataSource.read();
+    }
+
+    function initGrid() {
+
+        var $shellGrid = $("#shellGrid");
+        $shellGrid.kendoGrid({
+            dataSource: dsNodes,
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+            	refresh: false
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            toolbar: kendo.template($("#shellToolbarTmpl").html()),
+            columns: [
+                { field: "status", title: "&{'status'}", width: "45px",
+                    template: kendo.template($("#deviceStatusTemplate").html())},
+                { field: "name", title: "&{'name'}" },
+                { field: "address", title: "&{'address'}", width: "100px" },
+                { field: "host", title: "&{'host'}", width: "150px" },
+                { field: "port", title: "&{'port'}", width: "100px" },
+                { field: "username", title: "&{'username'}", width: "100px" },
+                { field: "", title: "&{'actions'}", width: "150px",
+                    template: kendo.template($("#nodeDeviceActionsTmpl").html())
+                }
+            ]
+        }).data("kendoGrid").hideColumn("bucketName");
+
+		$("#bucketList").kendoComboBox({
+			dataTextField: "name",     //the field name of successResult bukets array
+			dataValueField: "id",
+	        suggest: true,
+	        dataSource: {
+	        	transport: {
+	        		read: function (options){	//options is datasource data which form invoke api callBack recive data
+	        			getBuckets(null, function (successResult){
+	        				if(successResult.result == "ok"){
+	            				options.success(successResult.buckets);            				
+	        				}else{
+	        					options.success([]);
+	        				}
+	        			}, null);
+	        		}
+	        	}
+	        },
+	        change: function (){
+				// Disallowed user input random bucket
+	        	if (this.selectedIndex != -1)
+	        		$("#shellGrid").data("kendoGrid").dataSource.read();
+	        }
+		});
+
+    }
+
+    $(function () {
+        initGrid();
+    });
+
+</script>

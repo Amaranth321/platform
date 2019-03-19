@@ -1,0 +1,189 @@
+
+<div style="font-size: 12px;font-family: verdana; width: 550px;">
+    <div id="bucketForm" class="kup-form-box" class="k-content">
+
+        <div class="k-edit-label"><label for="bucketLogo">&{'bucket-logo'}</label></div>
+        <div class="k-edit-field" >
+        	<input id="bucketLogo" name="bucketLogo"  type="file">
+        	<div class="bucket_logo_msg">
+        		* &{'msg-bucket-logo-size'} <br>
+	        	* &{'msg-bucket-logo-format'}
+        		
+        	</div>
+        </div>
+        
+        <div id="removeLogo">
+        	<div id="defaultLogo" style="display: none;">
+	        	<div class="k-edit-label"></div>
+		        <div class="k-edit-field" >
+		        	<img id="defaultLogoImg" src="data:image/png;base64,${defaultBinaryData}">
+		        </div>
+	        </div>
+        
+        	<div id="customLogo" style="display: none;">
+	        	<div class="k-edit-label"></div>
+		        <div class="k-edit-field" >
+		        	<img id="bucketLogoImg" src="data:image/png;base64,${binaryData}">
+		        </div>
+        	</div>
+        	
+			<div class="k-edit-label"></div>
+	        <div class="k-edit-field" >
+	        	<a id="btnRemoveLogo" href="#" class="k-button">&{'reset-default-logo'}</a>
+	        </div>
+        </div>
+
+
+
+    <div align="center">
+        <a id="btnUpdate" href="#" class="k-button">&{'update'}</a> &nbsp;
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        var viewModel = kendo.observable({
+            "bucketId": "${bucketSetting.bucketId}",
+            "userLimit": "${bucketSetting.userLimit}" == 0 ? "10" : "${bucketSetting.userLimit}",
+            "emailverificationofusersenabled": "${bucketSetting.emailVerificationOfUsersEnabled}" == "true" ? true : false,
+            "customLogo": "${customLogo}" == "true" ? true : false,
+            "binaryData": (function(){/*${binaryData}*/}).toString().slice(14,-3),//fix error Uncaught SyntaxError: Unexpected token ILLEGAL
+            "mapSource": "${bucketSetting.mapSource}"
+        });
+
+        // $("#userLimit").kendoNumericTextBox({
+        //     format: "n0",
+        //     min: 1
+        // });
+
+        kendo.bind($("#bucketForm"), viewModel);
+        var validator = $("#bucketForm").kendoValidator().data("kendoValidator");
+
+        $("#btnUpdate").click(function () {
+        	
+        	if (!validator.validate()) {
+                return;
+            }
+        	
+        	if(viewModel.binaryData != ""){
+        		viewModel.customLogo = true;
+        	}
+        	
+            viewModel.bucketId = viewModel.bucketId;
+            //viewModel.userLimit = viewModel.userLimit;
+            //viewModel.emailverificationofusersenabled = viewModel.emailverificationofusersenabled;
+            //viewModel.mapSource = viewModel.mapSource;
+            updateBucketSettings("", viewModel, function (responseData) {
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'update-successful'}");
+                    closePopupWindow();
+                    if(bucketManager){
+                        bucketManager.loadCurrentTab();
+                    }
+                }
+                else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+        
+        // $("#mapsourceList").kendoDropDownList({
+        // 	dataTextField: "mapName",
+        //     dataValueField: "mapId",
+        //     dataSource: [
+        //         { mapName: "Google", mapId: "google" },
+        //         { mapName: "Baidu", mapId: "baidu" }
+        //     ],
+        //     change: function (e) {
+        //     	var selectedMap = $("#mapsourceList").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+        //     	viewModel.set("mapSource", selectedMap.mapId);
+        //     },
+        //     value: viewModel.mapSource
+        // });
+        
+        var intLogoImg = $("#bucketLogoImg").attr('src');
+        intLogoImg = intLogoImg.substring(intLogoImg.indexOf(",")+1,intLogoImg.length);
+        viewModel.binaryData = intLogoImg;
+        
+        if(!viewModel.customLogo){
+        	$("#defaultLogo").show();
+        	$("#customLogo").hide();
+        }else {
+        	$("#defaultLogo").hide();
+        	$("#customLogo").show();
+        }        	
+        
+        $("#btnRemoveLogo").click(function () {
+        	viewModel.customLogo = false;
+        	viewModel.binaryData = "";
+        	$("#defaultLogo").show();
+        	$("#customLogo").hide();
+        	$(".k-upload-status").remove();
+        	$(".k-upload-files").remove();
+        });
+        
+        $("#bucketLogo").kendoUpload({
+        	multiple: false,
+            async: {
+                saveUrl: "/api/" + kupBucket + "/uploadlogobinarydata",
+                autoUpload: true
+            },
+            localization: {
+                select: "&{'select-file'}"
+            },
+            upload: function (e) {
+                if (e.files[0].extension.toLowerCase() != ".png") {
+                    utils.popupAlert("&{'msg-bucket-logo-format'}");
+                    viewModel.binaryData = "";
+                    e.preventDefault();
+                }  
+            },
+            success: function (e) {
+            	//get binary data for image
+    			var responseJson = JSON.parse(e.XMLHttpRequest.response);
+            	
+            	//check image dimension
+                var imgtmp = $('<img id="dynamic">');
+    			imgtmp.attr('src', "data:image/png;base64,"+responseJson.binaryData);
+    			imgtmp.appendTo('#removeLogo');
+    			imgtmp.hide();
+    			var img = imgtmp;
+    			$("<img/>").attr("src", $(img).attr("src"))
+    			    .load(function() {
+    			        if(this.width != 221 || this.height != 34){
+    			        	utils.popupAlert("&{'msg-bucket-exact-logo-size'}");
+    			        	$(".k-upload-status").remove();
+    			            $(".k-upload-files").remove();
+    			        }else{
+    			        	viewModel.binaryData = responseJson.binaryData;
+    			        	$("#bucketLogoImg").attr("src", "data:image/png;base64,"+responseJson.binaryData);
+    			        	$("#defaultLogo").hide();
+    		    			$("#customLogo").show();
+    			        }
+    			    });
+            },
+            error: function (e) {
+                var errorText = "";
+                if (e.XMLHttpRequest.response)
+                    errorText = e.XMLHttpRequest.response;
+                else
+                    errorText = "Session has expired!";
+                utils.popupAlert(errorText);
+            },
+            select: function (e) {
+            	$(".k-upload-status").remove();
+            	$(".k-upload-files").remove();
+            }
+        });
+    });   
+</script>

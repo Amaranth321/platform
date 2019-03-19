@@ -1,0 +1,54 @@
+<script src="/public/javascripts/notifications/occupancy.grid.js"></script>
+
+<style>
+    .occ_grid {
+        margin: -7px;
+        padding: 8px;
+    }
+
+    .occ_grid .store_box {
+        border-left: 2px solid #F6AE40;
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+        background: #333 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        padding: 7px 10px;
+    }
+
+    .occ_grid .store_box:not(:first-child) {
+        margin-top: 8px;
+    }
+
+    .occ_grid .store_box .column {
+        display: inline-block;
+    }
+
+    .occ_grid .store_box .name {
+        min-width: 200px;
+        color: #F6AE40;
+    }
+
+    .occ_grid .store_box .number {
+        min-width: 50px;
+        text-align: right;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="storeBoxTmpl">
+    <div id="#= data.labelId #" class="store_box">
+        <span class="column name">#= data.name #</span>
+        <span class="column number">#= data.occupancy #</span>
+    </div>
+</script>
+
+<div class="occ_grid">
+    <div class="holder"></div>
+</div>
+
+<script>
+
+    $(function ()
+    {
+        //DvcMgr.ready() has already been called by the parent page
+        OccupancyGrid.generate();
+    });
+</script>

@@ -1,0 +1,113 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/notifications/labelNotifications.js"></script>
+
+<style>
+    .label_noti {
+    }
+
+    .label_noti input[type=checkbox] {
+        margin: 0px 2px 0px 0px;
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
+
+    .label_noti .filter_box {
+        border-top: 1px solid #000000;
+        background: #282828 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    }
+
+    .label_noti .filters {
+        padding: 10px 15px;
+    }
+
+    .label_noti .filters .row:not(:last-child) {
+        margin-bottom: 10px;
+    }
+
+    .label_noti .filters label {
+        margin-right: 7px;
+    }
+
+    .label_noti .filters .event_types, .label_list, .period_from, .period_to {
+        margin-right: 40px;
+    }
+
+    .label_noti .filters .label_list {
+        width: 170px;
+    }
+
+    .label_noti .filters .event_types {
+        width: 180px;
+    }
+
+    .label_noti .filters .hide_resolved {
+        margin-right: 5px;
+    }
+
+    .label_noti .btn_group {
+        border-top: 1px solid #000000;
+        padding: 5px 10px;
+    }
+
+    .label_noti .btn_group .k-button {
+        text-align: center;
+        width: 70px;
+        line-height: 21px;
+        margin-right: 5px;
+    }
+
+</style>
+
+<script type="text/x-kendo-template" id="setResolvedColTmpl">
+    <div style="text-align: center">
+        # if(ackStatus == "ACKNOWLEDGED") { #
+        <span style="display: inline-block;padding: 3px 0px">&{'resolved'}</span>
+        # } else { #
+        <a href="javascript:notiLabelPage.acknowledgeEvent('#= eventId #')" class="k-button">&{'acknowledge'}</a>
+        # } #
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="labelNotiActionsTmpl">
+    <div class="action_btn_group">
+        <a href="javascript:utils.viewEventDetails('#= eventId #', 'label');" class="k-button">&{'details'}</a>
+    </div>
+</script>
+
+<div class="label_noti">
+    <div class="default_title_bar">
+        <span class="title">&{'label-notifications'}</span>
+    </div>
+
+    <div class="filter_box">
+        <div class="filters">
+            <div class="row">
+                <label>&{'store-label'}</label><input class="label_list">
+                <label>&{'event-type'}</label><input class="event_types">
+                <label>&{'from'}</label><input class="period_from" autocomplete="off"
+                                               title="&{'msg-choose-timerange'}"/>
+                <label>&{'to'}</label><input class="period_to" autocomplete="off" title="&{'msg-choose-timerange'}"/>
+            </div>
+            <div class="row">
+                <label><input class="hide_resolved" type="checkbox"/>&{'hide-resolved-events'}</label>
+            </div>
+        </div>
+
+        <div class="btn_group">
+            <a href="javascript:notiLabelPage.search()" class="k-button">&{'filter'}</a>
+            <a href="javascript:notiLabelPage.resetFilters()" class="k-button">&{'reset'}</a>
+        </div>
+    </div>
+    <div class="grid"></div>
+</div>
+
+<script>
+    var notiLabelPage = new LabelNotifications();
+
+    $(function ()
+    {
+        notiLabelPage.generate();
+    });
+</script>

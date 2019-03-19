@@ -1,0 +1,249 @@
+<style>
+    .paged_tables {
+        margin: -5px;
+        overflow: hidden;
+    }
+</style>
+
+<div class="paged_tables">
+    <div class="tab_strip">
+        <ul class="title_list"></ul>
+    </div>
+</div>
+
+<script>
+
+var pgdTbl = {
+    kendoTapStrip: null,
+    grids: []
+}
+
+pgdTbl.initTableList = function () {
+
+    if (kupapi.applicationType == "node") {
+
+        pgdTbl.addNew("unsyncEvents", "Event sync queue", "getunsyncedevents",
+                function (response) {
+                    var results = [];
+                    $.each(response.events, function (idx, evt) {
+                        var eventInfo = evt.eventInfo;
+                        results.push({
+                            time: kendo.toString(new Date(eventInfo.time), kupapi.TIME_FORMAT),
+                            eventId: eventInfo.eventId,
+                            type: eventInfo.type,
+                            camera: sysStatus.getDeviceName(eventInfo.camera.coreDeviceId)
+                        });
+                    });
+
+                    return results;
+                });
+
+        pgdTbl.addNew("unsyncEventVideos", "Video sync queue", "getunsyncedeventvideos",
+                function (response) {
+                    var results = [];
+                    $.each(response.videos, function (idx, vid) {
+                        var eventInfo = vid.ownerEventInfo;
+
+                        results.push({
+                            time: kendo.toString(new Date(eventInfo.time), kupapi.TIME_FORMAT),
+                            type: eventInfo.type,
+                            eventId: eventInfo.eventId,
+                            camera: sysStatus.getDeviceName(eventInfo.camera.coreDeviceId),
+                            failCount: vid.failCount
+                        });
+                    });
+
+                    return results;
+                });
+
+        pgdTbl.addNew("videoRequests", "Video core requests", "geteventvideorequests",
+                function (response) {
+                    var results = [];
+                    $.each(response.requests, function (idx, req) {
+                        var eventInfo = req.ownerEventInfo;
+
+                        results.push({
+                            time: kendo.toString(new Date(eventInfo.time), kupapi.TIME_FORMAT),
+                            type: eventInfo.type,
+                            eventId: eventInfo.eventId,
+                            camera: sysStatus.getDeviceName(eventInfo.camera.coreDeviceId),
+                            failCount: req.failCount
+                        });
+                    });
+
+                    return results;
+                });
+
+    }
+
+
+    pgdTbl.addNew("rejectedEvents", "Rejected events", "getrejectedevents",
+            function (response) {
+                var results = [];
+                $.each(response.events, function (idx, evt) {
+                    var eventInfo = evt.eventInfo;
+                    results.push({
+                        time: kendo.toString(new Date(eventInfo.time), kupapi.TIME_FORMAT),
+                        type: eventInfo.type,
+                        device: sysStatus.getDeviceName(eventInfo.camera.coreDeviceId),
+                        channel: sysStatus.getChannelName(eventInfo.camera.coreDeviceId, eventInfo.camera.channelId),
+                        jsonData: evt.jsonData,
+                        reason: evt.reason
+                    });
+                });
+
+                return results;
+            });
+
+    pgdTbl.addNew("browseVideos", "Browse completed videos", "browseeventvideos",
+            function (response) {
+                var results = [];
+
+                $.each(response.videos, function (idx, vid) {
+                    var eventInfo = vid.eventInfo;
+                    results.push({
+                        time: kendo.toString(new Date(vid._created), kupapi.TIME_FORMAT),
+                        eventType: eventInfo.type,
+                        device: sysStatus.getDeviceName(eventInfo.camera.coreDeviceId),
+                        channel: sysStatus.getChannelName[eventInfo.camera.coreDeviceId, eventInfo.camera.channelId],
+                        filename: vid.videoDetails.filename
+                    });
+                });
+
+                return results;
+            });
+
+    pgdTbl.addNew("notifications", "Sent Notifications", "getallnotifications",
+            function (response) {
+                var results = [];
+
+                $.each(response.notifications, function (idx, noti) {
+                    var info = noti.notificationInfo;
+
+                    var recipients = [];
+                    $.each(noti.userList, function (i, usrId) {
+                        recipients.push(sysStatus.getUserName(usrId) + " " + JSON.stringify(noti.notifiedMethodsList[i]));
+                    });
+
+                    results.push({
+                        time: kendo.toString(new Date(noti._created), kupapi.TIME_FORMAT),
+                        type: info.eventType,
+                        device: sysStatus.getDeviceName(info.camera.coreDeviceId),
+                        channel: sysStatus.getChannelName(info.camera.coreDeviceId, info.camera.channelId),
+                        to: recipients.join("<br/>")
+                    });
+                });
+
+                return results;
+            });
+
+    pgdTbl.addNew("migrationLogs", "Migration logs", "getmigrationerrorlogs",
+            function (response) {
+                var results = [];
+
+                $.each(response.errors, function (idx, err) {
+                    var shortenedException = err.exception.length < 300 ? err.exception : err.exception.substring(0, 300);
+                    results.push({
+                        time: kendo.toString(new Date(err._created), kupapi.TIME_FORMAT),
+                        fn: err.whichFn,
+                        item: err.migratingItem,
+                        exception: shortenedException
+                    });
+                });
+
+                return results;
+            });
+};
+
+pgdTbl.addNew = function (id, title, api, processor) {
+    var newGrid = {
+        id: id,
+        title: title,
+        api: api,
+        process: processor,
+        kendoGrid: null,
+        total: 0
+    }
+
+    pgdTbl.grids.push(newGrid);
+    $(".paged_tables .title_list").append("<li>" + title + "</li>");
+    $(".paged_tables .tab_strip").append("<div><div id=" + id + " class='remove_default_tab_padding'></div></div>");
+};
+
+pgdTbl.initTabStrip = function () {
+    pgdTbl.kendoTapStrip = $(".paged_tables .tab_strip").kendoTabStrip({
+        animation: {
+            open: {
+                effects: "fadeIn"
+            }
+        },
+        change: pgdTbl.loadCurrentTab
+
+    }).data("kendoTabStrip");
+};
+
+pgdTbl.loadCurrentTab = function () {
+    var selectedTab = pgdTbl.kendoTapStrip.select();
+    var index = $(selectedTab).index();
+    console.log("loading tab " + index);
+
+    var gridInfo = pgdTbl.grids[index];
+    var kendoGrid = gridInfo.kendoGrid;
+    if (kendoGrid) {
+        kendoGrid.dataSource.read();
+    } else {
+        pgdTbl.grids[index].kendoGrid = pgdTbl.initGrid(index);
+    }
+}
+
+pgdTbl.initGrid = function (gridIndex) {
+    var gridInfo = pgdTbl.grids[gridIndex];
+    return $("#" + gridInfo.id).kendoGrid({
+        dataSource: {
+            pageSize: 25,
+            serverPaging: true,
+            serverSorting: false,
+            transport: {
+                read: function (options) {
+                    var url = "/api/" + kupBucket + "/" + gridInfo.api;
+                    var params = { skip: options.data.skip, take: options.data.take};
+                    ajaxPost(url, params, function (res) {
+                        if (res.result != "ok") {
+                            options.success([]);
+                            utils.throwServerError(res);
+                            return;
+                        }
+
+                        pgdTbl.grids[gridIndex].total = res["total-count"];
+                        options.success(gridInfo.process(res));
+                    }, null);
+                }
+            },
+            schema: {
+                total: function () {
+                    return pgdTbl.grids[gridIndex].total;
+                }
+            }
+        },
+        pageable: {
+            input: false,
+            numeric: false,
+            pageSizes: false,
+            refresh: true
+        },
+        sortable: false,
+        filterable: false,
+        selectable: true,
+        resizable: true
+    }).data("kendoGrid");
+};
+
+pgdTbl.init = function () {
+    pgdTbl.initTableList();
+    pgdTbl.initTabStrip();
+};
+
+$(function () {
+    pgdTbl.init();
+})
+</script>

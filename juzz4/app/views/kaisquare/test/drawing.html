@@ -1,0 +1,94 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+#{include HtmlPath + '/common/partial/leaflet_scripts.html'/}
+
+<script src="/public/javascripts/vca.js"></script>
+<script src="/public/javascripts/vca/polygonTool.js"></script>
+
+<style>
+
+    .display {
+        float: right;
+        width: 500px;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .display .raw {
+        border: 1px solid #444;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .display .pretty {
+        border: 1px solid #444;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .pgn_test {
+        padding: 10px;
+    }
+
+    .pgn_test .polygon {
+        width: 560px;
+        height: 420px;
+    }
+
+</style>
+
+<div class="display">
+    <div class="raw">fdfd</div>
+    <pre class="pretty"></pre>
+</div>
+
+<div class="pgn_test">
+    <a href="javascript:drwTest.displayRegions(drwTest.tool1.setEditable(true))" class="k-button">enable</a>
+    <a href="javascript:drwTest.displayRegions(drwTest.tool1.getRegions())" class="k-button">get drawn</a>
+    <a href="javascript:drwTest.tool1.addRegions(drwTest.regions)" class="k-button">add samples</a>
+    <a href="javascript:drwTest.tool1.updateBackground(bgImageUrl)" class="k-button">set bg image</a>
+    <a href="javascript:drwTest.tool1.updateBackground(bgImageNull)" class="k-button">set empty bg</a>
+    <a href="javascript:drwTest.getLive()" class="k-button">live snapshot</a>
+
+    <div id="polyCanvas1" class="polygon"></div>
+</div>
+
+<script>
+    var bgImageUrl = "/public/css/common/images/office_sample.jpg";
+    var bgImageNull = null;
+
+    var drwTest = {
+        tool1: null,
+        regions: [
+            {"points": [
+                {"x": "0.455", "y": "0.212"},
+                {"x": "0.568", "y": "0.031"},
+                {"x": "0.928", "y": "0.042"},
+                {"x": "0.908", "y": "0.400"}
+            ]},
+            {"points": [
+                {"x": "0.068", "y": "0.912"},
+                {"x": "0.047", "y": "0.600"},
+                {"x": "0.340", "y": "0.544"},
+                {"x": "0.602", "y": "0.944"}
+            ]}
+        ]
+    };
+
+    drwTest.displayRegions = function (jsonString)
+    {
+        $(".display .raw").html(JSON.stringify(jsonString));
+        $(".display .pretty").html(JSON.stringify(jsonString, null, 2));
+    };
+
+    drwTest.getLive = function ()
+    {
+        drwTest.tool1.setCameraBackground(28, 4);
+    };
+
+    $(function ()
+    {
+        drwTest.tool1 = PolygonTool('polyCanvas1');
+    });
+
+</script>

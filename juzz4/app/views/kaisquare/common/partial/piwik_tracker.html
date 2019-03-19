@@ -1,0 +1,24 @@
+#{if applicationType == "cloud" && piwikId != 0}
+
+<script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function ()
+    {
+        var piwikServer = "${piwikServer}";
+        var piwikId = "${piwikId}";
+
+        _paq.push(['setTrackerUrl', piwikServer + '/piwik.php']);
+        _paq.push(['setSiteId', piwikId]);
+        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+        g.type = 'text/javascript';
+        g.async = true;
+        g.defer = true;
+        g.src = piwikServer + '/piwik.js';
+        s.parentNode.insertBefore(g, s);
+    })();
+</script>
+
+#{/if}
+

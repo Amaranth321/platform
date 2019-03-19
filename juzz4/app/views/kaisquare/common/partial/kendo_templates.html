@@ -1,0 +1,324 @@
+
+<script type="text/x-kendo-template" id="alertTableToolbar">
+
+    <div id=filterOptions class="event_filter_box">
+
+        <a id="clrFilter" class="k-button" style="float:right">
+            <span></span>&nbsp; &{'clear-location'}
+        </a>
+        <a id="btnFilter" class="k-button" style="float:right">
+            <span class="k-icon k-i-search"></span>&nbsp; &{'filter'}
+        </a>
+
+        <div>
+            <label for="deviceList" class="event_filter_label">&{'device-name'}</label>
+            <input id="deviceList" style="width:180px" autocomplete="off"/>
+            <label id="channelDisplayName" for="channelList" style="margin:0px 10px;">&{'channel'}</label>
+            <input id="channelList" style="width:150px; min-width: 47px;" autocomplete="off"/>
+        </div>
+        <div id="eventTypeSelection">
+            <label for="eventTypeList" class="event_filter_label">&{'event-type'}</label>
+            <input id="eventTypeList" style="width:180px" autocomplete="off"/>
+        </div>
+        <div style="margin-top: 15px">
+            <label class="event_filter_label" style="margin:0px"></label>
+            <span class="event_filter_time_range_title">&{'start'} &{'date-time'}</span>
+            <span class="event_filter_time_range_title">&{'end'} &{'date-time'}</span>
+        </div>
+
+        <div>
+            <label class="event_filter_label">&{'period'}</label>
+            <input id="startDateTime" class="event_filter_datetime" autocomplete="off"/>
+            <input id="endDateTime" class="event_filter_datetime" autocomplete="off"/>
+
+            <div style="float: right;">
+                <a id="btnExcel" class="k-button" style="float:right">
+                    <img src="${CdnPath}/common/images/export-excel.png"
+                         style="margin-right:3px; height:16px">&{'Excel'}
+            </a>
+                <a id="btnPdf" class="k-button" style="float:right">
+                    <img src="${CdnPath}/common/images/export-pdf.png" style="margin-right:3px; height:16px">&{'PDF'}
+            </a>
+            </div>
+        </div>
+        <div style="margin-top: 15px; display: none;">
+            <label for="location" class="event_filter_label">&{'location'}:</label>
+            <input type="checkbox" id="locationChk" value="&{'location'}" disabled="disabled"/>
+            <input type="button" id="map_view" value="&{'map-view'}" class="k-button"
+                   style="width:100px; margin-left: 40px"/>
+        </div>
+
+
+</script>
+
+<script type="text/x-kendo-template" id="DrivereventTableToolbar">
+
+    <div id=filterOptions class="event_filter_box">
+
+        <a id="clrFilter" class="k-button" style="float:right">
+            <span></span>&nbsp; &{'clear-location'}
+        </a>
+        <a id="btnFilter" class="k-button" style="float:right">
+            <span class="k-icon k-i-search"></span>&nbsp; &{'filter'}
+        </a>
+
+        <div>
+            <label for="deviceList" class="event_filter_label">&{'driver-name'}</label>
+            <input id="deviceList" style="width:180px" autocomplete="off"/>
+        </div>
+        <div id="eventTypeSelection">
+            <label for="eventTypeList" class="event_filter_label">&{'event-type'}</label>
+            <input id="eventTypeList" style="width:180px" autocomplete="off"/>
+        </div>
+        <div style="margin-top: 15px">
+            <label class="event_filter_label" style="margin:0px"></label>
+            <span class="event_filter_time_range_title">&{'start'} &{'date-time'}</span>
+            <span class="event_filter_time_range_title">&{'end'} &{'date-time'}</span>
+        </div>
+
+        <div>
+            <label class="event_filter_label">&{'period'}</label>
+            <input id="startDateTime" class="event_filter_datetime" autocomplete="off"/>
+            <input id="endDateTime" class="event_filter_datetime" autocomplete="off"/>
+        </div>
+        <div id=mapfilter style="margin-top: 10px">
+            <label for="location" class="event_filter_label">&{'location'}:</label>
+            <input type="checkbox" id="locationChk" value="&{'location'}" disabled="disabled"/>
+            <input type="button" id="map_view" value="&{'map-view'}" class="k-button"
+                   style="width:100px; margin-left: 40px"/>
+        </div>
+        <div style="float: right;">
+            <a id="btnExcel" class="k-button" style="float:right">
+                <img src="${CdnPath}/common/images/export-excel.png" style="margin-right:3px; height:16px">&{'Excel'}
+            </a>
+            <a id="btnPdf" class="k-button" style="float:right">
+                <img src="${CdnPath}/common/images/export-pdf.png" style="margin-right:3px; height:16px">&{'PDF'}
+            </a>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="groupHeaderTmpl">
+    <span class='table_group_title'>#= value #</span>
+</script>
+
+<div id="eventDetailWin" style="overflow: hidden"></div>
+
+<script type="text/x-kendo-template" id="deviceFilterHeaderTmpl">
+
+    <style scoped>
+
+        .toolbar label {
+            display: inline-block;
+            text-align: right;
+            width: 70px;
+            margin: 0px 4px 0px 0px;
+            vertical-align: middle;
+            line-height: 34px;
+        }
+
+        .toolbar .k-input.k-textbox {
+            width: 118px;
+        }
+
+        .search_box_wrapper {
+            margin: 6px 2px 2px 2px;
+            padding: 10px;
+            border: 1px \#333333 solid;
+        }
+
+        .search_box_container {
+            width: 800px;
+        }
+
+        .label_wrapper {
+            width: 800px;
+            height: 25px;
+            margin-top: 6px;
+        }
+
+        .label_wrapper label {
+            float: left;
+            display: inline-block;
+            margin: -3px 6px 0px 0px;
+        }
+
+        .multi_select_input {
+            width: 720px;
+            height: 25px;
+            float: left;
+        }
+
+        .k-floatwrap li {
+            margin: 2px;
+        }
+
+        .k-floatwrap input {
+            margin: 2px;
+        }
+
+        .k-floatwrap .k-readonly {
+            margin-top: 4px;
+        }
+
+        .k-multiselect-wrap {
+            border-radius: 0px;
+            width: 720px;
+        }
+
+        .clear_filter {
+            float: right;
+            margin: 3px 2px 0px 0px;
+        }
+
+    </style>
+
+    <div class="toolbar">
+        <div id=topButtonBox>
+            <a class="k-button" id="btnAddDevice" style="display: none;">
+                <span class="k-icon k-i-plus"></span> &{'add-new-device'}</a>
+        </div>
+
+        <div class="search_box_wrapper">
+            <div class="search_box_container">
+                <div class="label_wrapper">
+                    <label for="labelsFilter">&{'label'}</label>
+                    <select id="labelsFilter" class="multi_select_input"></select>
+                </div>
+                </br>
+
+                <label>&{'name'}</label>
+                <input id=nameFilter type="text" class="k-input k-textbox">
+                <label>&{'model'}</label>
+                <input id=modelFilter type="text" class="k-input k-textbox">
+                <label>&{'host'}</label>
+                <input id=hostFilter type="text" class="k-input k-textbox">
+                <label>&{'address'}</label>
+                <input id=addressFilter type="text" class="k-input k-textbox">
+
+                <div>
+                    <label>&{'port-range'}</label>
+                    <input class="portRange" style="width:52px;" id=minPortFilter placeholder="0">
+                    -
+                    <input class="portRange" style="width:53px;" id=maxPortFilter placeholder="0">
+
+                    <a id="clrFilter" class="k-button clear_filter">&{'clear-location'}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="periodicPdfDownloadTmpl">
+    # if(!utils.isNullOrEmpty(data.pdffilename)){ #
+        <a class="k-button" href="javascript:periodic._downloadPeriodicReport('#= data.pdffilename #')">
+        &{'pdf'}
+        </a>
+    # }
+    if(!utils.isNullOrEmpty(data.xlsfilename)){ #
+        <a class="k-button" href="javascript:periodic._downloadPeriodicReport('#= data.xlsfilename #')">
+        &{'xls'}
+        </a>
+    # }
+    if(!utils.isNullOrEmpty(data.csvfilename)){ #
+        <a class="k-button" href="javascript:periodic._downloadPeriodicReport('#= data.csvfilename #')">
+        &{'csv'}
+        </a>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="deviceStatusTemplate">
+    # var statusMessage = localizeResource("device-status-" + status); #
+
+    # if(status == DvcMgr.DeviceStatus.DISCONNECTED) { #
+    <span class="device_status_wrapper device_disconnected"
+          title="#= statusMessage #"></span>
+
+    # } else if(status == DvcMgr.DeviceStatus.UNKNOWN) { #
+    <span class="device_status_wrapper device_status_unknown"
+          title="#= statusMessage #"></span>
+    # } #
+
+</script>
+
+<script type="text/x-kendo-template" id="accountStatementsToolbarTmpl">
+    <div id=filterOptions class="event_filter_box">
+
+        <a href="javascript:accountstatement.exportXls()" class="k-button" style="float:right">
+            <img src="${CdnPath}/common/images/export-excel.png" style="margin-right:3px; height:16px">&{'Excel'}
+        </a>
+
+        <a href="javascript:accountstatement.exportPdf()" class="k-button" style="float:right">
+            <img src="${CdnPath}/common/images/export-pdf.png" style="margin-right:3px; height:16px">&{'PDF'}
+        </a>
+
+        <a href="javascript:accountstatement.clearFilter()" class="k-button" style="float:right">
+            <span></span>&nbsp; &{'clear-location'}
+        </a>
+
+        <div>
+            <label for="#= name #" class="event_filter_label">&{'bucket-name'}</label>
+            <input id="#= name #" style="width:150px" autocomplete="off" />
+        </div>
+
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="UserSessionTimeColumnDetailsGrid">
+    # var dateDiffObj = utils.getDateDifference(new Date(), new Date(timeobject))
+    if(dateDiffObj.days > 0){ #
+        <span> #= kendo.toString((kendo.parseDate(new Date(timeobject), kupapi.TIME_FORMAT)), kupapi.TIME_FORMAT) # </span>
+    #} else if (dateDiffObj.hours > 0) { #
+        <span>#= kendo.toString((kendo.parseDate(new Date(timeobject), kupapi.TIME_ONLY_FORMAT)), kupapi.TIME_ONLY_FORMAT) #
+        ( #= dateDiffObj.hours # &nbsp; #= localizeResource('hour(s)-ago') # )</span>
+    #} else if (dateDiffObj.minutes > 0) { #
+        <span>#= kendo.toString((kendo.parseDate(new Date(timeobject), kupapi.TIME_ONLY_FORMAT)), kupapi.TIME_ONLY_FORMAT) #
+        ( #= dateDiffObj.minutes # &nbsp; #= localizeResource('minute(s)-ago') # )</span>
+    #} else if (dateDiffObj.seconds > 0) { #
+        <span>#= kendo.toString((kendo.parseDate(new Date(timeobject), kupapi.TIME_ONLY_FORMAT)), kupapi.TIME_ONLY_FORMAT) #
+        ( #= dateDiffObj.seconds # &nbsp; #= localizeResource('second(s)-ago') # )</span>
+    #} #
+</script>
+
+<script type="text/x-kendo-template" id="labelManagementTemplate">
+    #if(data.name === localizeResource('all')){ #
+        <div class="label-list-view">
+            <a class="dropTragetlabelName">#= data.name #</a>
+        </div>
+    #} else { #
+        <div class="label-list-view">
+            <a class="dropTragetlabelName" title='#= data.name #'>#= data.name #</a>
+            <a class="k-icon k-i-close label-delete" href="javascript:labels.removeLabel('#= data.name #')"></a>
+        </div>
+    #} #
+</script>
+
+<script id="unassignLabelTemplate" type="text/x-kendo-template">
+    #if(data.isNode && data.isMainGrid){ #
+    <a class="k-button" href="javascript:labels.confirmRemoveNodeCameraLabels('#= data.deviceId #')">&{'remove'}</a>
+    #} else if(!data.isNode && data.isMainGrid) { #
+    <a class="k-button noneNodeRow" href="javascript:labels.removeDeviceLabel('#= data.deviceId #')">&{'remove'}</a>
+    # } else if(data.isNode && !data.isMainGrid){#
+        <a class="k-button" href="javascript:labels.removeNodeCameraLabel('#= data.deviceId #','#= data.channelId #')">&{'remove'}</a>
+    #} #
+</script>
+
+<script type="text/x-kendo-template" id="posGridToolbar">
+    <div class="toolbar">
+        <a class="k-button" id="EditPOS" href="javascript:pos.editPOSData()"><span
+                class="k-icon k-edit"></span> &{'edit'}</a>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="POSSaveGridToolbar">
+    <div class="POSGridToolbar">
+        <a class="k-button" id="savePOS" href="javascript:pos.updatePOS()"><span></span> &{'save-changes'}</a>
+        <a class="k-button" id="canclePOS" href="javascript:pos.closePOSPopup()"><span></span> &{'cancel-changes'}</a>
+        <a class="pos-download"
+           href="/${bucket}/content/downloadGuide?guideName=pos_user_guide.pdf">&{'learn-automatic-import'}</a>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="storeLabelGroupHeaderTmpl">
+    <span class='table_group_title'>#= value #</span>
+</script>

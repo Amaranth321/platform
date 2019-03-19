@@ -1,0 +1,217 @@
+<script src="/public/javascripts/crowddensity.js"></script>
+
+<script type="text/x-kendo-template" id="regionNameTemplate">
+    <div class="label-list-view">
+        <span class="dropTragetlabelName" title='#= data.name #'>#= data.name #</span>
+        <a class="k-icon k-i-close label-delete" href="javascript:crowddensity.removeLayer('#= data.name #')"></a>
+    </div>
+</script>
+
+<div class="popup_wrapper">
+    <div class="top_box">
+        <div class="enable_drawing">
+            <input id="chbEnable" type="checkbox" onclick="enableEditing(this.checked)">
+            <label for="chbEnable">&{'edit-configuration'}</label>
+        </div>
+    </div>
+    <div class="vca_content">
+        <div class="left_box">
+            <div class="leaflet_canvas_wrapper">
+                <div class="title">&{'please-draw-polygon-region'}</div>
+                <div class="leaflet_canvas_box">
+                    <div id="leafletRegionCanvas" class="mask_canvas"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right_box">
+            <div class="param_selection_box">
+                <div class="param_title">&{'crowd-region-name'}</div>
+                <div id="regionListAdd" style="margin-top: 5px"/>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'minimum-object-size'} <span id="minObjectInfo" class="help_icon"></span>
+                </div>
+                <span class="param_label">&{'width'}</span>
+                <input id="widthSelector" style="width: 75px;margin-right:20px">
+                <span class="param_label">&{'height'}</span>
+                <input id="heightSelector" style="width: 75px">
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="param_selection_box config_gmask">
+                <div class="param_title ">
+                &{'configure-gmask'}
+                    <span id="gmaskInfo" class="help_icon"></span>
+                    <a href="javascript:configureGmask()" class="btn_gmask"></a>
+                </div>
+                <div>
+                    <span class="regions">&{'none'}</span>
+                </div>
+            </div>
+
+            <div class="submit_btn_box">
+                <a id="btnRestart" href="javascript:restartVca()" class="k-button">&{'restart'}</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script type="text/javascript">
+
+    var targetInstance = null;
+    var gmaskRegions = [];
+    var kendoElementList = [];
+
+    function initUiElements()
+    {
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: '&{'additional-params'}',
+            isExpanded: true
+        });
+
+        var widthSelector = $("#widthSelector").kendoNumericTextBox({
+            format: "# \\%",
+            min: 1,
+            max: 100,
+            step: 1,
+            value: 5
+        }).data("kendoNumericTextBox");
+
+        var heightSelector = $("#heightSelector").kendoNumericTextBox({
+            format: "# \\%",
+            min: 1,
+            max: 100,
+            step: 1,
+            value: 10
+        }).data("kendoNumericTextBox");
+
+        var nameList = $("#regionListAdd").kendoListView({
+            dataSource: {
+                transport: {
+                    read: function (options)
+                    {
+                        var mapLayerName = crowddensity.getRectangles();
+                        options.success(mapLayerName);
+                    }
+                }
+            },
+            template: kendo.template($("#regionNameTemplate").html()),
+            selectable: false
+        }).data("kendoListView");
+
+        kendoElementList.push(widthSelector);
+        kendoElementList.push(heightSelector);
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("minObjectInfo", "top", localizeResource("min-objectSize-info-tooltip"));
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+        utils.createTooltip("gmaskInfo", "bottom", localizeResource('msg-gmask-info'));
+    }
+
+    function applyCurrentSettings()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+        $("#widthSelector").data("kendoNumericTextBox").value(settings.minWidth * 100);
+        $("#heightSelector").data("kendoNumericTextBox").value(settings.minHeight * 100);
+        $("#moreParams").val(vca.convertParamsToString(settings["additional-params"]));
+        scheduler.init("scheduleInfo", targetInstance.recurrenceRule);
+        gmaskRegions = settings["gmask-regions"];
+        VcaMgr.updateGmaskStatus(gmaskRegions);
+
+        crowddensity.initDrawingCanvas("leafletRegionCanvas", "regionListAdd", null);
+        crowddensity.addExistingAreas(settings.regions);
+        $("#regionListAdd").data("kendoListView").dataSource.read();
+        mapManager.setLiveSnapshotBackground(targetInstance.coreDeviceId, targetInstance.channelId);
+    }
+
+    function enableEditing(canEdit)
+    {
+        vca.enableConfigPage(kendoElementList, canEdit);
+        mapManager.enableDrawingTools(canEdit);
+    }
+
+    function configureGmask()
+    {
+        VcaMgr.openGmaskTool(gmaskRegions, targetInstance.coreDeviceId, targetInstance.channelId,
+                function (saved, regionsDrawn)
+                {
+                    if (saved)
+                    {
+                        gmaskRegions = regionsDrawn;
+                        VcaMgr.updateGmaskStatus(gmaskRegions);
+                    }
+                })
+    }
+
+    function restartVca()
+    {
+
+        //check the drawn boxes
+        var boxDropDown = $("#regionListCfg").data("kendoDropDownList");
+        var boxCount = crowddensity.getRectangles().length;
+
+        var regions = crowddensity.getBoxesDrawn();
+        var minWidth = $("#widthSelector").data("kendoNumericTextBox").value();
+        var minHeight = $("#heightSelector").data("kendoNumericTextBox").value();
+
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "regions": regions,
+            "minWidth": minWidth / 100,
+            "minHeight": minHeight / 100,
+            "gmask-regions": gmaskRegions,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.updateVca(
+                targetInstance.instanceId,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                vca.onUpdateAnalyticsSuccess
+        );
+    }
+
+    $(function ()
+    {
+        utils.showLoadingOverlay();
+        initUiElements();
+        initTooltips();
+        vca.getInstanceById("${instanceId}", function (instance)
+        {
+            targetInstance = instance;
+            applyCurrentSettings();
+            enableEditing(false);
+            utils.hideLoadingOverlay();
+        })
+    });
+</script>

@@ -1,0 +1,132 @@
+<script src="/public/javascripts/vca/passerbyCounting.js"></script>
+
+<div class="popup_wrapper">
+    <div class="top_box">
+        <div class="enable_drawing">
+            <input id="chbEnable" type="checkbox" onclick="enableEditing(this.checked)">
+            <label for="chbEnable">&{'edit-configuration'}</label>
+        </div>
+    </div>
+
+    <div class="vca_content">
+        <div class="left_box">
+            <div class="leaflet_canvas_wrapper">
+                <div class="title">&{'please-draw-polygon-region'}</div>
+                <div class="leaflet_canvas_box">
+                    <div id="leafletRegionCanvas" class="mask_canvas"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right_box">
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="submit_btn_box">
+                <a id="btnRestart" href="javascript:restartVca()" class="k-button">&{'restart'}</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var targetInstance = null;
+    var kendoElementList = [];
+
+    function initUiElements()
+    {
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: '&{'additional-params'}',
+            isExpanded: true
+        });
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+    }
+
+    function applyCurrentSettings()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+
+        $("#moreParams").val(vca.convertParamsToString(settings["additional-params"]));
+        scheduler.init("scheduleInfo", targetInstance.recurrenceRule);
+
+        passerbyCounting.initDrawingCanvas("leafletRegionCanvas", false);
+        passerbyCounting.addExistingRegions(settings.regions);
+        mapManager.setLiveSnapshotBackground(targetInstance.coreDeviceId, targetInstance.channelId);
+    }
+
+    function enableEditing(canEdit)
+    {
+        vca.enableConfigPage(kendoElementList, canEdit);
+        mapManager.enableDrawingTools(canEdit);
+    }
+
+    function restartVca()
+    {
+        if (passerbyCounting.areaCount < 2)
+        {
+            utils.popupAlert("&{'msg-draw-two-regions'}");
+            return;
+        }
+
+        var regions = passerbyCounting.getRegionsDrawn();
+        var direction = "r1r2";
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "regions": regions,
+            "direction": direction,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.updateVca(
+                targetInstance.instanceId,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                vca.onUpdateAnalyticsSuccess
+        );
+    }
+
+    $(function ()
+    {
+        utils.showLoadingOverlay();
+        initUiElements();
+        initTooltips();
+
+        vca.getInstanceById("${instanceId}", function (instance)
+        {
+            targetInstance = instance;
+            applyCurrentSettings();
+            enableEditing(false);
+            utils.hideLoadingOverlay();
+        });
+    });
+
+</script>

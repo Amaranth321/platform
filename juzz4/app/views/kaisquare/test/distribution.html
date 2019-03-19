@@ -1,0 +1,340 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/crowd/jquery.nouislider.min.js"></script>
+<link rel="stylesheet" href="/public/javascripts/crowd/jquery.nouislider.css"/>
+
+<style>
+
+    a, a:active, a:visited {
+        color: steelblue;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    rect {
+        shape-rendering: crispEdges;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    .axis path, .axis line {
+        fill: none;
+        stroke: #333;
+        shape-rendering: crispEdges;
+    }
+
+    div.container {
+        width: 451px;
+    }
+
+    .axis text {
+        font-size: 12px;
+    }
+
+    .axis .axis-label {
+        text-anchor: middle;
+        font-weight: bold;
+        fill: #333;
+        font-size: 13px;
+    }
+
+    rect.bg {
+        fill: #e3e3e3;
+        stroke: none;
+    }
+
+    circle {
+        fill: blue;
+        stroke: none;
+        shape-rendering: crispEdges;
+    }
+
+    text.chart-title {
+        font-size: 30px;
+        font-weight: bold;
+        text-anchor: end;
+    }
+
+    div.chart {
+        padding-bottom: 20px;
+    }
+
+    span.year {
+        position: relative;
+        top: 32px;
+        right: 3px;
+        text-align: center;
+        font-weight: bold;
+        display: block;
+        font-size: 16px;
+        pointer-events: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    rect.chart-title-background {
+        fill: #fff;
+        stroke: #e3e3e3;
+        stroke-width: 1px;
+    }
+
+    g.legend text {
+        text-anchor: start;
+        text-rendering: optimizeLegibility;
+    }
+
+</style>
+
+<div class="container-outer">
+    <div class="container">
+        <div class="chart"></div>
+        <div class="controls">
+            <div id="play">PLAY</div>
+            <div id="slider"></div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+var $slider = $("#slider"),
+        playButton = d3.select("div#play"),
+        year,
+        interval;
+
+d3.json("/public/javascripts/crowd/bins.json", function (err, bins) {
+
+    var cell = doCellSizing(),
+            width = cell * 20 + 1,
+            height = cell * 14 + 1,
+            margin = {top: cell + 20, right: 0, bottom: 36, left: 50},
+            currentYear = 1920;
+
+    d3.select("div.container").style("width", (width + margin.left + margin.right) + "px");
+
+    d3.select("div.container-outer").style("width", (width + margin.left + margin.right + 20) + "px");
+
+    $slider.css("width", (width + margin.left + margin.right - 151) + "px");
+
+    var x = d3.scale.ordinal()
+            .domain(d3.range(150, 350, 10))
+            .rangeBands([0, width], 0.05);
+
+    var y = d3.scale.ordinal()
+            .domain(d3.range(66, 80).reverse())
+            .rangeBands([0, height], 0.05);
+
+    var color = d3.scale.quantize()
+            .domain([0, 0.025])
+            .range(["#ffffff", "#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d"]);
+
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .tickValues(x.domain().filter(function (d) {
+                return d % 20 == 0;
+            }))
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .tickFormat(function (d) {
+                return Math.floor(d / 12) + "'" + utils.modulo(d, 12) + '"';
+            })
+            .tickValues(y.domain().filter(function (d) {
+                return d % 2 == 0;
+            }))
+            .orient("left");
+
+    var svg = d3.select("div.chart").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var bg = svg.append("rect")
+            .attr("class", "bg")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width)
+            .attr("height", height);
+
+    var rects = svg.selectAll("rect.cell")
+            .data(bins[currentYear])
+            .enter()
+            .append("rect")
+            .attr("class", "cell")
+            .attr("x", function (d) {
+                return x(d.w);
+            })
+            .attr("y", function (d) {
+                return y(d.h);
+            })
+            .attr("width", x.rangeBand())
+            .attr("height", y.rangeBand())
+            .style("fill", function (d) {
+                return color(d.pct);
+            });
+
+    svg.append("rect")
+            .attr("class", "chart-title-background")
+            .attr("x", width - 81 - 1)
+            .attr("y", height - 47)
+            .attr("width", 81)
+            .attr("height", 47);
+
+    svg.append("text")
+            .attr("class", "chart-title year")
+            .text(currentYear)
+            .attr("x", width)
+            .attr("y", height)
+            .attr("dx", "-0.3em")
+            .attr("dy", "-0.4em");
+
+    var gx = svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")");
+
+    gx.call(xAxis);
+
+    gx.append("text")
+            .text("Weight (lbs)")
+            .attr("y", margin.bottom)
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("dy", "-2px");
+
+    var gy = svg.append("g")
+            .attr("class", "y axis")
+
+    gy.call(yAxis);
+
+    gy.append("text")
+            .text("Height")
+            .attr("y", height / 2)
+            .attr("class", "axis-label")
+            .attr("x", 12 - margin.left)
+            .attr("transform", "rotate(-90 " + (12 - margin.left) + " " + (height / 2) + ")");
+
+    var legend = svg.append("g")
+            .attr("class", "legend")
+            .attr("transform", "translate(" + (width - (cell * 9 * 1.5) - 5) + "," + (-margin.top) + ")");
+
+    var swatches = legend.selectAll("g")
+            .data(color.range())
+            .enter()
+            .append("g");
+
+    swatches.append("rect")
+            .attr("width", cell * 1.5)
+            .attr("height", cell)
+            .style("fill", function (d) {
+                return d;
+            })
+            .attr("x", function (d, i) {
+                return (i * cell * 1.5);
+            })
+            .attr("y", 0);
+
+    swatches.append("text")
+            .attr("x", function (d, i) {
+                return cell * 1.5 * i;
+            })
+            .text(function (d, i) {
+                if (!i) return "";
+                return pretty(color.invertExtent(color.range()[i])[0]);
+            })
+            .style("font-size", (cell <= 20 ? "10px" : "12px"))
+            .attr("y", cell + 10);
+
+    $slider.noUiSlider({
+        start: 1920,
+        range: {
+            'min': 1920,
+            'max': 2014
+        },
+        connect: "lower",
+        step: 1
+    });
+
+    $("div.noUi-handle").append('<span class="year">1920</div>');
+
+    year = d3.selectAll(".year");
+
+    $slider.on("slide click", function (e) {
+        stop();
+        currentYear = +$(this).val();
+        updateYear(currentYear);
+    });
+
+    playButton.datum(false).on("click", function (d) {
+        if (d) stop();
+        else start();
+    });
+
+    d3.select("div.controls").style("display", "block");
+
+    start();
+
+    function start() {
+
+        clearInterval(interval);
+
+        playButton.datum(true).text("STOP");
+
+        update();
+
+        interval = setInterval(update, 175);
+
+    }
+
+    function stop() {
+        clearInterval(interval);
+
+        playButton.datum(false).text("PLAY");
+    }
+
+    function update() {
+
+        currentYear++;
+        if (currentYear > 2014) currentYear = 1920;
+
+        updateYear(currentYear);
+
+    }
+
+    function updateYear(yr) {
+
+        rects.data(bins[yr])
+                .style("fill", function (d) {
+                    return color(d.pct);
+                });
+
+        year.text(yr);
+        $slider.val(yr);
+
+    }
+
+    function pretty(pct) {
+        return (Math.round(1000 * pct) / 10) + "%";
+    }
+
+    function doCellSizing() {
+        if (window.innerWidth > 700) {
+            return 25;
+        }
+        return 20;
+    }
+
+});
+
+</script>

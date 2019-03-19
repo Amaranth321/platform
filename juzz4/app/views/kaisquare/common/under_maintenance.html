@@ -1,0 +1,22 @@
+#{extends HtmlPath + '/common/templates/not_logged_in.html'/}
+
+<style>
+
+    .maintenance {
+        line-height: 70px;
+        background: rgba(33, 33, 33, .6);
+        color: #eaac40;
+        text-align: center;
+        margin: 0px auto;
+        font-size: 18px;
+    }
+
+</style>
+
+<div class="wrapper-holder">
+    <div class="maintenance">&{'system-under-maintenance'}</div>
+</div>
+
+<div id="footer-wrapper">
+#{include HtmlPath + '/common/partial/login_footer_cloud.html'/}
+</div>

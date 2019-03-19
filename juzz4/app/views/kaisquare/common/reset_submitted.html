@@ -1,0 +1,21 @@
+#{extends HtmlPath + '/common/templates/not_logged_in.html'/}
+
+<style>
+    .maintenance {
+        line-height: 50px;
+        background: #333;
+        color: #eaac20;
+        text-align: center;
+        margin: 0px auto;
+    }
+</style>
+
+<div class="maintenance">
+    <div style="font-size: 20px; color: #f07230;">&{'pass-reset-submitted'}</div>
+    <p>&{'msg-reset-email-sent'}</p>
+    <p><a href="/">&{'go-to-login'}</a></p>
+</div>
+
+<div id="footer-wrapper">
+#{include HtmlPath + '/common/partial/login_footer_cloud.html'/}
+</div>

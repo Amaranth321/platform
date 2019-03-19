@@ -1,0 +1,176 @@
+<div>
+    <div style="margin-bottom:5px">&{'msg-mark-checkbox-to-assign'}</div>
+    <div id=dvcGrid style="width:650px;height: 440px"></div>
+
+    <div align="center" style="margin-top: 10px">
+        <a id="btnUpdate" href="#" class="k-button">&{'update'}</a>
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+
+</div>
+
+<script>
+    var userId = "${userId}";
+    var orgList = [];
+
+    $(function () {
+
+        var dsUser = new kendo.data.DataSource({
+            transport: {
+                read: function (options) {
+                    getUserDevicesByUserId(userId, "", function (data) {
+                        if (data.result == "ok" && data.devices != null) {
+                            options.success(data.devices);
+
+                            $.each(data.devices, function (index, item) {
+                                document.getElementById("chb" + item.id).checked = true;
+                                orgList.push(item.id);
+                            });
+
+                            checkDeviceAssignSituation();
+                        }
+                        else {
+                            options.success([]);
+                            orgList = [];
+                        }
+                    }, null);
+                }
+            }
+        });
+
+        var dsAll = new kendo.data.DataSource({
+            transport: {
+                read: function (options) {
+                    getBucketDevices("", function (data) {
+                        if (data.result == "ok" && data.devices != null) {
+                            options.success(data.devices);
+
+                            setTimeout(function () {
+                                dsUser.read()
+                            }, 500);
+
+                            $.each(dsAll.data(), function(index, item) {
+                                document.getElementById("chb" + item.id).onclick = function() {
+                                    checkDeviceAssignSituation();
+                                }
+                            })
+                        }
+                        else {
+                            options.success([]);
+                        }
+                    }, null);
+                }
+            }
+        });
+
+        $("#dvcGrid").kendoGrid({
+            dataSource: dsAll,
+            selectable: true,
+            columns: [
+                { field: "deviceId", title: "&{'device-id'}", width: "20%" },
+                { field: "name", title: "&{'device-name'}", width: "40%" },
+                { field: "address", title: "&{'location'}", width: "30%" },
+                {
+                    headerTemplate: '<input type="checkbox" id="check-all" />',
+                    headerAttributes: {style: "text-align:center;"},
+                    template: "<input type='checkbox' id='chb#= id #' />",
+                    width: "15%",
+                    attributes: {style: "text-align:center;"}
+                }
+            ]
+        });
+
+        $("#check-all").click(function(e) {
+        	var isCheckAll = e.currentTarget.checked;
+        	$.each(dsAll.data(), function(index, item) {
+        		if(isCheckAll){
+        			document.getElementById("chb" + item.id).checked = true
+        		}else{
+        			document.getElementById("chb" + item.id).checked = false;
+        		}
+        	})
+        });
+
+        function checkDeviceAssignSituation() {
+        	var selectedResult = "";
+            $.each(dsAll.data(), function(index, item) {
+                selectedResult += document.getElementById("chb" + item.id).checked
+            })
+
+            var checkAllButton = document.getElementById("check-all");
+            if(selectedResult.indexOf("truefalse") != -1 || selectedResult.indexOf("falsetrue") != -1) {
+                checkAllButton.indeterminate = true;
+            } else if(selectedResult.indexOf("false") == -1) { //not find "false"
+                checkAllButton.indeterminate = false;
+                checkAllButton.checked = true;
+            } else {
+                checkAllButton.indeterminate = false;
+                checkAllButton.checked = false;
+            }
+        }
+
+        $("#btnUpdate").click(function () {
+
+            var toUpdate = [];
+            var returnCount = 0;
+            var fails = "";
+
+            //check for changes
+            $.each(dsAll.data(), function (index, item) {
+                if (document.getElementById("chb" + item.id).checked == true) {
+                    //new checked device
+                    if ($.inArray(item.id, orgList) == -1) {
+                        toUpdate.push({deviceId: item.id, status: true});
+                    }
+                }
+                else {
+                    //new unchecked device
+                    if ($.inArray(item.id, orgList) != -1) {
+                        toUpdate.push({deviceId: item.id, status: false});
+                    }
+                }
+            });
+
+            if (toUpdate.length == 0) {
+                closePopupWindow();
+            }
+
+            //send updates to server
+            $.each(toUpdate, function (index, item) {
+
+                function onUpdateSuccess(responseData) {
+                    returnCount++;
+                    if (responseData.result != "ok") {
+                        fails += item.name + '\n';
+                    }
+
+                    if (toUpdate.length == returnCount) {
+                        if (fails == "") {
+                            utils.slideDownInfo("&{'update-successful'}");
+                            closePopupWindow();
+                        }
+                        else {
+                            utils.popupAlert(localizeResource("update-failed-for") + ": \n\n" + fails);
+                        }
+                    }
+                }
+
+                if (item.status == true) {
+                    addDeviceUser("", item.deviceId, userId, onUpdateSuccess, null);
+                }
+                else {
+                    removeDeviceUser("", item.deviceId, userId, onUpdateSuccess, null);
+                }
+            })
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+    });
+
+</script>

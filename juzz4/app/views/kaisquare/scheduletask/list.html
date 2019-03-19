@@ -1,0 +1,60 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" href="/public/javascripts/scheduletask/schedule_task.css"/>
+<script src="/public/javascripts/scheduletask/schedule_task.js"></script>
+
+<script type="text/x-kendo-template" id="scheduledActionsTmpl">
+    <span class="device_options_wrapper">
+        <a href="javascript:scheduleTskListingPage.editSchedule('#= data._id #')"
+           class="k-button" title="&{'details'}"
+           style="min-width: 0px; min-height: 0px;">
+            &{'details'}
+        </a>
+
+        <a href="javascript:scheduleTskListingPage.deleteSchedule('#= data._id #')"
+           class="k-button" title="&{'delete'}"
+           style="min-width: 0px; min-height: 0px;">
+            &{'delete'}
+        </a>
+    </span>
+</script>
+
+<div class="scheduleTsk_listing">
+    <div class="default_title_bar">
+        <span class="title">&{'schedule-tasks'}</span>
+    </div>
+
+    <div class="tab_strip">
+        <ul>
+            <li>&{'ota-schedules'}</li>
+            *{<li>&{'models'}</li>}*
+        </ul>
+        <div class="tab_content">
+            <div class="header_box">
+                <div class="filters">
+                    <label>&{'from'}</label><input class="ota_period_from" autocomplete="off"
+                                                   title="&{'msg-choose-timerange'}"/>
+                    <label class="left_margin">&{'to'}</label><input class="ota_period_to" autocomplete="off" title="&{'msg-choose-timerange'}"/>
+
+                </div>
+                <div class="scheduleTsk_toolbox">
+                    <a href="javascript:scheduleTskListingPage.addScheduleTask()" class="k-button add">&{'assign-ota-schedule'}</a>
+                    <a href="javascript:scheduleTskListingPage.refreshOTAGrid()" class="k-button">&{'filter'}</a>
+                    <a href="javascript:scheduleTskListingPage.clearSearch()" class="k-button btn_clear">&{'clear-filters'}</a>
+                </div>
+            </div>
+            <div class="otaSchedule_grid"></div>
+        </div>
+        *{<div class="tab_content">}*
+        *{</div>}*
+    </div>
+</div>
+
+<script>
+    var scheduleTskListingPage = new ScheduledListingPage();
+    $(function ()
+    {
+        scheduleTskListingPage.generate();
+    });
+
+</script>

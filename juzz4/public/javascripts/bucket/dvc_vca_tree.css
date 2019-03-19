@@ -1,0 +1,88 @@
+
+.dvc_vca_tree {
+    width: 100%;
+    padding: 10px;
+}
+
+.dvc_vca_tree svg {
+    cursor: move;
+    border: 1px solid #565656;
+}
+
+.dvc_vca_tree svg .edge_link {
+    fill: none;
+    stroke: #555;
+    stroke-width: 1px;
+}
+
+.dvc_vca_tree svg .d3_node {
+    fill: #ccc;
+}
+
+.dvc_vca_tree svg .d3_node .bucket:hover {
+    /* implement when this is clickable */
+}
+
+.dvc_vca_tree svg .d3_node .device:hover {
+    fill: #F6AE40;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.dvc_vca_tree svg .d3_node .camera:hover {
+    /* implement when this is clickable */
+}
+
+.dvc_vca_tree svg .d3_node .vca:hover {
+    fill: #F6AE40;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.dvc_vca_tree .hover_win {
+    display: none;
+    position: absolute;
+    background: #000;
+    padding: 0px 7px 7px 7px;
+    opacity: 0.85;
+    text-align: left;
+    border-radius: 3px;
+    min-width: 150px;
+}
+
+.dvc_vca_tree .hover_win div {
+    line-height: 18px;
+    font-size: 11px;
+}
+
+.dvc_vca_tree .hover_win .name {
+    line-height: 24px;
+    font-size: 13px;
+    color: #F6AE40;
+    border-bottom: 1px solid #444;
+    margin-bottom: 7px;
+}
+
+.dvc_vca_tree .top_bar {
+    padding: 3px 0px;
+    height: 32px;
+    vertical-align: bottom;
+}
+
+.dvc_vca_tree .top_bar .summary_box {
+    float: right;
+}
+
+.dvc_vca_tree .top_bar .summary_box .count {
+    background: #222;
+    padding: 3px 5px;
+}
+
+.dvc_vca_tree .top_bar .summary_box label {
+    margin-left: 3px;
+    display: inline-block;
+    width: 60px;
+    color: #F6AE40;
+}
+
+

@@ -1,0 +1,139 @@
+<div>
+
+    <div id=vehicleGrid style="width:610px;height: 330px"></div>
+
+    <div align="center" style="margin-top: 10px">
+        <a id="btnUpdate" href="#" class="k-button" style="margin-right: 10px">&{'update'}</a>
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    var userId = "${userId}";
+    var orgList = [];
+
+    var dsUser = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+                getUserVehiclesByUserId("", userId, function (responseData) {
+                    if (responseData.result == "ok" && responseData.vehicles != null) {
+                        options.success(responseData.vehicles);
+
+                        $.each(responseData.vehicles, function (index, item) {
+                            document.getElementById(item._id).checked = true;
+                            orgList.push(item._id);
+                        });
+                    }
+                    else {
+                        utils.throwServerError(responseData.reason);
+                        options.success([]);
+                        orgList = [];
+                    }
+                }, null);
+            }
+        }
+    });
+
+    var dsAll = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+                getBucketVehicles("", function (responseData) {
+                    if (responseData.result == "ok" && responseData.vehicles != null) {
+                        options.success(responseData.vehicles);
+
+                        setTimeout(function () {
+                            dsUser.read()
+                        }, 300);
+                    }
+                    else {
+                        utils.throwServerError(responseData.reason);
+                        options.success([]);
+                    }
+                }, null);
+            }
+        }
+    });
+
+    $(function () {
+        var grid = $("#vehicleGrid").kendoGrid({
+            dataSource: dsAll,
+            pageable: false,
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            columns: [
+                { field: "vehicleLicensePlate", title: "&{'license-plate'}" },
+                { field: "vehicleNumber", title: "&{'vehicle-number'}" },
+                { field: "vehicleCategory", title: "&{'category'}" },
+                {
+                    title: "Assign",
+                    "template": "<input type='checkbox' id='#= _id #' />",
+                    width: "80px",
+                    attributes: {style: "text-align:center;"}
+                }
+            ]
+        }).data("kendoGrid");
+
+        $("#btnUpdate").click(function () {
+
+            var toUpdate = [];
+            var returnCount = 0;
+            var failed = false;
+
+            $.each(dsAll.data(), function (index, item) {
+                if (document.getElementById(item._id).checked == true) {
+                    if ($.inArray(item._id, orgList) == -1)
+                        toUpdate.push({id: item._id, status: true});
+                }
+                else {
+                    if ($.inArray(item._id, orgList) != -1)
+                        toUpdate.push({id: item._id, status: false});
+                }
+            });
+
+            if (toUpdate.length == 0) {
+                closePopupWindow();
+            }
+
+            function onSuccessUpdateUserVehicle(responseData) {
+
+                returnCount++;
+                if (responseData.result != "ok") {
+                    failed = true;
+                }
+
+                if (returnCount == toUpdate.length) {
+                    if (failed)
+                        utils.popupAlert("&{'update-failed'}")
+                    else {
+                        utils.slideDownInfo("&{'update-successful'}")
+                        closePopupWindow();
+                    }
+                }
+            }
+            
+            //send updates to server
+            $.each(toUpdate, function (index, item) {
+                if (item.status == true) {
+                    addVehicleUser("", userId, item.id, onSuccessUpdateUserVehicle, null);
+                }
+                else {
+                    removeVehicleUser("", userId, item.id, onSuccessUpdateUserVehicle, null);
+                }
+            });
+
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+           $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+
+    });
+</script>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+
+#{i18n /}
+
+    <script type="text/javascript" src="/public/javascripts/layout/jquery-1.11.1.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/kendo/kendo.common.min.css"/>
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/kendo/moonlight/kendo.ml.custom.css"/>
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/kendo.all.min.js"></script>
+
+    <link rel="stylesheet" href="/public/css/common/style_all.css"/>
+
+    <script type="text/javascript" src="/public/javascripts/localization.js"></script>
+    <script type="text/javascript" src="${CdnRootPath}/public/javascripts/utils.js"></script>
+
+    <link rel="stylesheet" href="/public/javascripts/drawing/leaflet-0.7.7/leaflet.css"/>
+    <link rel="stylesheet" href="/public/javascripts/drawing/leaflet.draw-0.2.4/leaflet.draw.css"/>
+    <script src="/public/javascripts/drawing/leaflet-0.7.7/leaflet-src.js"></script>
+    <script src="/public/javascripts/drawing/leaflet.draw-0.2.4/leaflet.draw-src.js"></script>
+    <script src="/public/javascripts/drawing/tools/leaflet.manager.js"></script>
+    <script src="/public/javascripts/drawing/tools/drawingTool.rectangle.js"></script>
+
+    <style>
+
+        body {
+            margin: 0px;
+            padding: 0px;
+            background: #212121;
+        }
+
+        .capture_size {
+        }
+
+        .capture_size .selection {
+            text-align: center;
+            margin: 0px auto 5px auto;
+        }
+
+        .capture_size .selection label {
+            display: inline-block;
+            width: 140px;
+            line-height: 26px;
+            margin-right: 20px;
+        }
+
+        .capture_size .selection input[type=radio] {
+            margin-right: 2px;
+        }
+
+        .capture_size .drawing_area {
+            width: 520px;
+            height: 390px;
+            margin: 0px auto;
+        }
+
+        .capture_size .btn_group {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .capture_size .btn_group .k-button {
+            margin-left: 10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div class="capture_size">
+    <div class="selection">
+        <label><input type="radio" name="sizeType" checked onclick="captureLimitWin.setConfigTarget(0)"/>
+        &{'set-minimum'}</label>
+        <label><input type="radio" name="sizeType" onclick="captureLimitWin.setConfigTarget(1)"/>
+        &{'set-maximum'}</label>
+    </div>
+
+    <div class="drawing_area"></div>
+
+    <div class="btn_group">
+        <a href="javascript:captureLimitWin.save()" class="k-button">&{'update'}</a>
+        <a href="javascript:captureLimitWin.cancel()" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+</body>
+
+<script>
+
+var captureLimitWin = (function ()
+{
+    var $pageMain = $(".capture_size");
+    var parentConfig = parent.VcaConfigWins;
+    var drawingTool = null;
+    var captureSizeBounds = null;
+
+    var colorOptions = {
+        borderColor: "#fff",
+        borderOpacity: 0.9,
+        fillColor: "#F6AE40",
+        fillOpacity: 0.2
+    };
+
+    var drawnRectangles = [];
+
+    var current = {
+        indicator: 0,
+        rectangle: null
+    };
+
+    var eventHandlers = {
+        onDrawStarted: function ()
+        {
+            setDrawingState(true);
+        },
+        onDrawStopped: function ()
+        {
+            setDrawingState(false);
+        },
+        onCreated: function (rectangle)
+        {
+            current.rectangle = rectangle;
+        },
+        onEditStarted: function ()
+        {
+            setDrawingState(true);
+        },
+        onEditStopped: function ()
+        {
+            setDrawingState(false);
+        },
+        onEdited: function (editedList)
+        {
+            //only one rectangle will exist
+            if (editedList && editedList.length == 1)
+            {
+                current.rectangle = editedList[0];
+            }
+        },
+        onDeleteStarted: function ()
+        {
+            setDrawingState(true);
+        },
+        onDeleteStopped: function ()
+        {
+            setDrawingState(false);
+        },
+        onDeleted: function (deletedList)
+        {
+            if (deletedList && deletedList.length > 0)
+            {
+                current.rectangle = null;
+
+                //remove stored copy
+                drawnRectangles[current.indicator] = null;
+                current.rectangle = null;
+            }
+        }
+    };
+
+    var generate = function ()
+    {
+        var $drawingContainer = $pageMain.find(".drawing_area");
+        drawingTool = LeafletManager.newDrawingArea($drawingContainer, LeafletManager.ToolType.RECTANGLE);
+        drawingTool.generate(colorOptions);
+        drawingTool.setBackgroundImage(parentConfig.captureSize.getSnapshot());
+        drawingTool.setDrawnItemLimit(1);
+
+        drawingTool.addListeners(
+                eventHandlers.onDrawStarted,
+                eventHandlers.onDrawStopped,
+                eventHandlers.onCreated,
+                eventHandlers.onEditStarted,
+                eventHandlers.onEditStopped,
+                eventHandlers.onEdited,
+                eventHandlers.onDeleteStarted,
+                eventHandlers.onDeleteStopped,
+                eventHandlers.onDeleted
+        );
+
+        restoreExistingData();
+    };
+
+    var setConfigTarget = function (newIndicator)
+    {
+        if (current.indicator == newIndicator)
+        {
+            return;
+        }
+
+        //save and clear current
+        drawnRectangles[current.indicator] = current.rectangle;
+        drawingTool.removeAll();
+
+        //restore the target
+        current.rectangle = drawnRectangles[newIndicator];
+        if (current.rectangle)
+        {
+            drawingTool.addRectangle(current.rectangle);
+        }
+
+        current.indicator = newIndicator;
+    };
+
+    var save = function ()
+    {
+        //reset old
+        captureSizeBounds = null;
+
+        //update the current rectangle
+        drawnRectangles[current.indicator] = current.rectangle;
+
+        //conversions
+        var minRect = drawnRectangles[0];
+        var maxRect = drawnRectangles[1];
+
+        //nothing set
+        if (minRect == null && maxRect == null)
+        {
+            closeWin();
+            return;
+        }
+
+        if (!verifyMinAndMaxBounds(minRect, maxRect))
+        {
+            return;
+        }
+
+        captureSizeBounds = {
+            min: minRect,
+            max: maxRect
+        };
+        closeWin();
+    };
+
+    var closeWin = function ()
+    {
+        parentConfig.captureSize.closeWin(captureSizeBounds);
+    };
+
+    var verifyMinAndMaxBounds = function (minRegion, maxRegion)
+    {
+        //min must be smaller than max
+        if (minRegion && maxRegion)
+        {
+            if (minRegion.width >= maxRegion.width || minRegion.height >= maxRegion.height)
+            {
+                parent.utils.popupAlert(localizeResource("error-max-smaller-than-min-size"));
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    var setDrawingState = function (active)
+    {
+        var $selection = $pageMain.find(".selection");
+        var $btnGroup = $pageMain.find(".btn_group");
+
+        if (active)
+        {
+            utils.enableDiv($selection, false);
+            utils.enableDiv($btnGroup, false);
+        }
+        else
+        {
+            utils.enableDiv($selection, true);
+            utils.enableDiv($btnGroup, true);
+        }
+    };
+
+    var restoreExistingData = function ()
+    {
+        captureSizeBounds = parentConfig.captureSize.getSizeBounds();
+        if (captureSizeBounds)
+        {
+            if (captureSizeBounds.min)
+            {
+                drawnRectangles[0] = captureSizeBounds.min;
+
+                //min is always selected on page load
+                current.indicator = 0;
+                current.rectangle = captureSizeBounds.min;
+                drawingTool.addRectangle(captureSizeBounds.min);
+            }
+            if (captureSizeBounds.max)
+            {
+                drawnRectangles[1] = captureSizeBounds.max;
+            }
+        }
+    };
+
+    return {
+        generate: generate,
+        setConfigTarget: setConfigTarget,
+        save: save,
+        cancel: closeWin
+    }
+})();
+
+$(function ()
+{
+    captureLimitWin.generate();
+});
+
+</script>
+
+</html>

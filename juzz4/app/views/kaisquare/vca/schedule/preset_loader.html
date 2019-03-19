@@ -1,0 +1,104 @@
+<style>
+    .preset_loader_wrapper label {
+        width: 55px;
+        display: inline-block;
+    }
+
+    .preset_loader_wrapper a img {
+        height: 16px;
+        width: 16px;
+        margin-left: 5px;
+    }
+
+</style>
+
+<div class="preset_loader_wrapper">
+    <input id="presetList" style="width: 250px">
+    <a href="javascript:presetLoader.deletePreset()">
+        <img src="${CdnPath}/common/images/offline.png">
+    </a>
+</div>
+<div style="width: 60px; margin: 8px auto 0px auto">
+    <a href="javascript:presetLoader.ok()" class="k-button" style="width: 60px">&{'load'}</a>
+</div>
+
+<script>
+
+    var presetLoader = {
+        choice: false,
+        recurrenceRule: null,
+        presetList: null,
+
+        init: function () {
+            this.presetList = $("#presetList").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "_id",
+                dataSource: {
+                    transport: {
+                        read: function (options) {
+                            getSchedulePresets("", function (responseData) {
+                                if (responseData == null || responseData.result != "ok") {
+                                    utils.throwServerError(responseData);
+                                    return;
+                                }
+
+                                if (responseData.presets.length == 0) {
+                                    presetLoader.presetList.text("");
+                                }
+
+                                options.success(responseData.presets);
+                            }, null);
+                        }
+                    }
+                }
+            }).data("kendoDropDownList");
+        },
+
+        deletePreset: function () {
+            var presetItem = this.presetList.dataItem();
+            if (presetItem == null) {
+                return;
+            }
+
+            utils.popupConfirm(localizeResource("confirmation"),
+                            localizeResource("confirm-delete") + " '" + presetItem.name + "'?",
+                    function (choice) {
+                        if (!choice) {
+                            return;
+                        }
+
+                        removeSchedulePreset("", presetItem._id, function (responseData) {
+                            if (responseData == null || responseData.result != "ok") {
+                                utils.throwServerError(responseData);
+                                return;
+                            }
+
+                            presetLoader.refresh();
+                        }, null);
+                    });
+        },
+
+        refresh: function () {
+            $("#presetList").data("kendoDropDownList").dataSource.read();
+        },
+
+        close: function () {
+            $("#presetList").closest(".k-window-content").data("kendoWindow").close();
+        },
+
+        ok: function () {
+            var selectedPreset = $("#presetList").data("kendoDropDownList").dataItem();
+            if (selectedPreset == null) {
+                return;
+            }
+
+            this.choice = true;
+            this.recurrenceRule = selectedPreset.recurrenceRule;
+            this.close();
+        }
+    }
+
+    $(function () {
+        presetLoader.init();
+    });
+</script>

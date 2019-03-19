@@ -1,0 +1,109 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/javascript" src="/public/javascripts/moment.js"></script>
+
+<!-- JW Player -->
+<script src="/public/javascripts/jwplayer7/jwplayer.js"></script>
+<script src="/public/javascripts/jwplayer7/key.js"></script>
+
+<!-- Period selector -->
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/rec_status_bar.css"/>
+<script src="${CdnRootPath}/public/javascripts/recording/recStatusBar.js"></script>
+
+<!-- page scripts -->
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/playback_common.css"/>
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/playback_cloud.css"/>
+<script src="${CdnRootPath}/public/javascripts/device/cameraSelector.js"></script>
+<script src="${CdnRootPath}/public/javascripts/recording/cloudplayback.js"></script>
+
+<script type="text/x-kendo-template" id="requesterTmpl">
+    <div class="requester_list">
+        <div>&{'warning-requester-list'}</div>
+        <ul>
+            # $.each(data, function(i, user){ #
+            <li class="requester">#= user.name #</li>
+            # }); #
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="pickerMonthEntryTmpl">
+    # var requests = cloudPlayback.getActiveRequests(data.date); #
+    # if(requests.length > 0) { #
+    <div class="with_active_requests">
+        #= data.value #
+    </div>
+    # } else { #
+    <div>#= data.value #</div>
+    # } #
+</script>
+
+<div class="rec_mgr">
+    <div class="title_bar">
+        <span class="title">&{'cloud-playback'}</span>
+    </div>
+
+    <div class="main-wrap">
+        <div class="filter-sidebar">
+            <div class="item">
+                <a href="javascript:cloudPlayback.triggerCameraChange()" class="button">
+                    <div class="camera">
+                        <div class="primary"></div>
+                        <div class="secondary"></div>
+                    </div>
+                </a>
+
+                <div class="camera_info_box">
+                    <span class="storage_info" title="&{'info-camera-cloud-storage-limit'}">
+                        <div class="progress-bar"></div>
+                        <div class="details"></div>
+                    </span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="calendar"></div>
+            </div>
+        </div>
+
+        <div class="display-area">
+            <div class="rec_viewer">
+                <div id="recStatusBar"></div>
+
+                <div id="movingToolBox">
+                    <a href="javascript:cloudPlayback.clearPeriodSelection()" class="button clear"></a>
+
+                    <div class="period_status"></div>
+
+                    <div class="options">
+                        <a href="javascript:cloudPlayback.requestRecordings()" class="button request"
+                           title="&{'request-node-recordings'}"></a>
+
+                        <a href="javascript:cloudPlayback.downloadSelection()" class="button download"
+                           title="&{'download'}"></a>
+
+                        <a href="javascript:cloudPlayback.deleteRequestedFiles()" class="button cancel"
+                           title="&{'delete-selected-cloud-recordings'}"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom_container">
+                <div class="player_area">
+                    <div class="player_box">
+                        <div class="select_file_msg">&{'error-no-playable-recordings'}</div>
+                        <div id="jwClPlyr" class="player"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    $(function ()
+    {
+        cloudPlayback.init();
+    });
+
+</script>

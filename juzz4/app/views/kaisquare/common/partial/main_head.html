@@ -1,0 +1,204 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>&{'company-product-title'}</title>
+<meta name="description" content="&{'company-product-title'}">
+<meta name="keywords" content="KAI square,KUP,Platform"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+#{include HtmlPath + '/common/partial/kup_headers.html'/}
+#{include HtmlPath + '/common/partial/kendo_headers.html'/}
+<link rel="stylesheet" type="text/css" href="${CdnRootPath}/public/css/kup/common/dist/semantic.custom.min.css"/>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/common/style_all.css"/>
+<!-- after must to split old main and report-->
+<link rel="stylesheet" type="text/css" href="${CdnPath}/kup/report/css/main_for_report.css"/>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/common/main.css"/>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/default/theme_diff.css"/>
+
+<script type="text/javascript" src="/public/javascripts/ui_scripts.js"></script>
+<script type="text/javascript" src="/public/javascripts/authorize.js"></script>
+<script type="text/javascript" src="/public/javascripts/jqueryplayer/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="/public/javascripts/audio/notificationManager.js"></script>
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/semantic.min.js"></script>
+
+<!-- KUP -->
+<link rel="stylesheet" type="text/css" href="${CdnPath}/kup/default.css"/>
+<script src="${CdnRootPath}/public/javascripts/kup/external/jquery.blockUI.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/external/numeral.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/external/raphael.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/external/morris.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/external/notify.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/kup.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/kup.utils.js"></script>
+<script src="${CdnRootPath}/public/javascripts/kup/kup.request.js"></script>
+
+<script type="text/javascript">
+
+    kupapi.applicationType = "${applicationType}";
+    kupapi.CdnPath = "${CdnPath}";
+    kupapi.mapSource = "${mapSource}";
+    kupapi.platformVersion = ${platformVersion};
+    kupapi.internetStatus = "${internetStatus}";
+    kupapi.notificationSound = true;
+    kupapi.notificationSlpSecond = ${notificationSlpSecond} * 1000;
+    kupapi.currentUserId = ${userId};
+
+    //New UI parameters
+    localStorage.setItem("session-key", "${userSessionKey}");
+    localStorage.setItem("bucket", "${bucket}");
+
+    kupInit('${bucket}', utils.throwServerError);
+    deviceManager.initialize();
+
+    $(document).ready(function ()
+    {
+        var count = 0;
+        var showCount = '';
+        checkAndUpdateFeaturesForUI();
+        notificationManager.initialize();
+
+        function onNotificationSuccess(responseData)
+        {
+            if (responseData.result == "ok" && responseData.event != null)
+            {
+                var eventJson = $.parseJSON(responseData.event);
+                var localTime = new Date(eventJson.timeMillis);
+                if (count > 2)
+                {
+                    $("#eventNotification li:nth-last-child(3)").remove();
+                }
+
+                var html = "<li onclick='utils.viewEventDetails(\"" + eventJson.id + "\",\"" + eventJson.source + "\")' class='media-info clearfix'>" +
+                        "<span id='eventTime' style='display:none;'>" + localTime + "</span><i class='media icon " + eventJson.type + " left'></i>" +
+                        "<div class='info'>" +
+                        "<p>" +
+                        "<a href='javascript:void(0)' class='attract'>" + eventJson.title + "</a><br>" +
+                        "<span class='device_name'>" + eventJson.itemName + "<span>" +
+                        "</p>" +
+                        "<p id='timeTrack' class='tal-right less-contrast'><em>" + localizeResource('just-now') + "</em></p>" +
+                        "</div>" +
+                        "</li>"
+                $("#eventNotification").prepend(html);
+                updateHeaderAlertTime();
+                count++;
+                showCount = (count > 99) ? '99+' : count;
+                $("#countBubble").text(showCount);
+                if (count == 1)
+                {
+                    $("#countBubble").show();
+                }
+
+                receiveCometNotification("", onNotificationSuccess, onFailed);
+                notificationManager.play();
+            }
+            else
+            {
+                if (responseData.reason == "no-devices")
+                {
+                    return;
+                }
+                else if (responseData.reason == "retry")
+                {
+                    receiveCometNotification("", onNotificationSuccess, onFailed);
+                }
+                if (responseData.result == "error" && responseData.reason == "session-expired")
+                {
+                    //go to login page
+                    window.location.href = window.location.protocol + '//' + window.location.host;
+                }
+            }
+        }
+
+        function onFailed(responseData)
+        {
+            // do nothing on error
+        }
+
+        receiveCometNotification("", onNotificationSuccess, onFailed);
+
+
+        $("#headerAlert").click(function ()
+        {
+            updateHeaderAlertTime();
+        });
+
+        function updateHeaderAlertTime()
+        {
+            var time = $("#eventNotification li:nth-last-child(5)").find("span:first").text();
+            var displayTime;
+            if (!utils.isNullOrEmpty(time))
+            {
+                var differentObject = utils.getDateDifference(new Date(), new Date(time));
+                if (differentObject.days > 0)
+                {
+                    displayTime = differentObject.days + " " + localizeResource("day(s)-ago");
+                }
+                else if (differentObject.hours > 0)
+                {
+                    displayTime = differentObject.hours + " " + localizeResource("hour(s)-ago");
+                }
+                else if (differentObject.minutes > 0)
+                {
+                    displayTime = differentObject.minutes + " " + localizeResource("minute(s)-ago");
+                }
+                else
+                {
+                    displayTime = differentObject.seconds + " " + localizeResource("second(s)-ago");
+                }
+                $("#eventNotification li:nth-last-child(5)").find("#timeTrack").text(displayTime);
+            }
+            time = $("#eventNotification li:nth-last-child(4)").find("span:first").text();
+            if (!utils.isNullOrEmpty(time))
+            {
+                var differentObject = utils.getDateDifference(new Date(), new Date(time));
+                if (differentObject.days > 0)
+                {
+                    displayTime = differentObject.days + " " + localizeResource("day(s)-ago");
+                }
+                else if (differentObject.hours > 0)
+                {
+                    displayTime = differentObject.hours + " " + localizeResource("hour(s)-ago");
+                }
+                else if (differentObject.minutes > 0)
+                {
+                    displayTime = differentObject.minutes + " " + localizeResource("minute(s)-ago");
+                }
+                else
+                {
+                    displayTime = differentObject.seconds + " " + localizeResource("second(s)-ago");
+                }
+                $("#eventNotification li:nth-last-child(4)").find("#timeTrack").text(displayTime);
+            }
+            time = $("#eventNotification li:nth-last-child(3)").find("span:first").text();
+            if (!utils.isNullOrEmpty(time))
+            {
+                var differentObject = utils.getDateDifference(new Date(), new Date(time));
+                if (differentObject.days > 0)
+                {
+                    displayTime = differentObject.days + " " + localizeResource("day(s)-ago");
+                }
+                else if (differentObject.hours > 0)
+                {
+                    displayTime = differentObject.hours + " " + localizeResource("hour(s)-ago");
+                }
+                else if (differentObject.minutes > 0)
+                {
+                    displayTime = differentObject.minutes + " " + localizeResource("minute(s)-ago");
+                }
+                else
+                {
+                    displayTime = differentObject.seconds + " " + localizeResource("second(s)-ago");
+                }
+                $("#eventNotification li:nth-last-child(3)").find("#timeTrack").text(displayTime);
+            }
+        }
+    });
+
+    jQuery(document).ready(function ($)
+    {
+        var config = KUP.getOpt();
+        config.bucket = '${bucket}';
+        config.api.url = '/api/${bucket}/';
+        KUP.setOpt(config);
+        KUP.init();
+    });
+</script>

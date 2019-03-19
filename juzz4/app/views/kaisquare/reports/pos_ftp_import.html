@@ -1,0 +1,274 @@
+<style>
+    .ftp_imp {
+    }
+
+    .ftp_imp .display_area {
+        width: 700px;
+        margin: 10px auto;
+        color: #F6AE40;
+    }
+
+    .ftp_imp input[type=checkbox] {
+        margin: 0px 3px 0px 0px;
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+        width: 14px;
+        height: 14px;
+    }
+
+    .ftp_imp .wrapper {
+        margin: 10px 0px;
+        background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        border-radius: 4px;
+    }
+
+    .ftp_imp .enable_label {
+        text-align: right;
+        line-height: 35px;
+    }
+
+    .ftp_imp .group_label {
+        display: inline-block;
+        width: 250px;
+        text-align: right;
+        line-height: 35px;
+    }
+
+    .ftp_imp .group_value {
+        margin-left: 20px;
+    }
+
+    .ftp_imp .group_value label {
+        display: inline-block;
+        min-width: 75px;
+        color: #d0d0d0;
+        vertical-align: middle;
+    }
+
+    .ftp_imp .group_value input[type=text], input[type=email], input[type=number], input[type=password] {
+        width: 200px;
+        border-radius: 2px;
+        padding: 4px 5px;
+    }
+
+    .ftp_imp .group_value textarea {
+        width: 200px;
+        height: 70px;
+        padding: 4px 5px;
+    }
+
+    .ftp_imp .wrapper .cond_group {
+        display: none;
+    }
+
+    .ftp_imp .ftp_box .cond_group {
+        border-top: 1px solid #444;
+        padding-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .ftp_imp .btn_group {
+        text-align: right;
+    }
+
+    .ftp_imp .btn_group .k-button {
+        min-width: 90px;
+        margin-left: 5px;
+        line-height: 26px;
+    }
+
+</style>
+
+<div class="ftp_imp">
+
+    <div class="display_area">
+
+        <div class="wrapper ftp_box">
+            <div>
+                <label class="enable_label">
+                    <input type="checkbox" name="ftp" onclick="posMgr.enableFTP(this.checked)"
+                           data-bind="checked:importEnabled">
+                &{'enable-ftp-pos-import'}
+                </label>
+            </div>
+
+            <div class="cond_group">
+                <div>
+                    <label class="group_label">&{'ftp-protocol'}</label>
+                    <span class="group_value">
+                    <input type="text" class="k-input" data-bind="value:ftp.protocol" placeholder="&{'ftp-protocol-watermark'}">
+                </span>
+                </div>
+
+                <div>
+                    <label class="group_label">&{'ftp-server'}</label>
+                <span class="group_value">
+                    <input type="text" class="k-input" data-bind="value:ftp.host" placeholder="&{'host-ip'}">
+                </span>
+                </div>
+
+                <div>
+                    <label class="group_label">&{'port-number'}</label>
+                <span class="group_value">
+                    <input type="number" class="k-input" data-bind="value:ftp.port" placeholder="&{'port-number'}">
+                </span>
+                </div>
+
+                <div>
+                    <label class="group_label">&{'username'}</label>
+                <span class="group_value">
+                    <input type="text" class="k-input" data-bind="value:ftp.username" placeholder="&{'username'}">
+                </span>
+                </div>
+
+                <div>
+                    <label class="group_label">&{'password'}</label>
+                <span class="group_value">
+                    <input type="password" class="k-input" data-bind="value:ftp.password" placeholder="&{'password'}">
+                </span>
+                </div>
+
+                <div>
+                    <label class="group_label">&{'import-files-dir'}</label>
+                <span class="group_value">
+                    <input type="text" class="k-input" data-bind="value:ftp.directory" placeholder="&{'folder-name'}">
+                </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn_group">
+            <a href="javascript:posMgr.submit()" class="k-button">&{'save'}</a>
+            <a href="javascript:posMgr.cancelChanges()" class="k-button">&{'cancel-changes'}</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    var posMgr = {
+        original: null,
+        viewModel: kendo.observable({
+            importEnabled: false,
+            ftp: {
+                host: "",
+                port: 0,
+                username: "",
+                password: "",
+                directory: ""
+            }
+        })
+
+    };
+
+    posMgr.init = function ()
+    {
+        kendo.bind($(".ftp_imp"), posMgr.viewModel);
+        posMgr.sendGetSettings();
+    };
+
+    posMgr.sendGetSettings = function ()
+    {
+        posMgr.loading(true);
+        getPOSSettings(function (responseData)
+        {
+            posMgr.loading(false);
+            if (responseData.result != "ok")
+            {
+                utils.throwServerError(responseData);
+                return;
+            }
+
+            posMgr.applyDbSettings(responseData.settings);
+        }, null);
+    };
+
+    posMgr.applyDbSettings = function (dbSettings)
+    {
+        posMgr.original = dbSettings;
+        var vm = this.viewModel;
+
+        vm.set("importEnabled", dbSettings.enabled);
+        vm.set("ftp.protocol", dbSettings.ftpDetails.protocol);
+        vm.set("ftp.host", dbSettings.ftpDetails.host);
+        vm.set("ftp.port", dbSettings.ftpDetails.port);
+        vm.set("ftp.username", dbSettings.ftpDetails.username);
+        vm.set("ftp.password", dbSettings.ftpDetails.password);
+        vm.set("ftp.directory", dbSettings.ftpDetails.directory);
+
+        //show/hide
+        posMgr.enableFTP(vm.get("importEnabled"));
+    };
+
+    posMgr.convertToDbSettings = function ()
+    {
+        var vm = this.viewModel;
+        var dbSettings = {
+            enabled: vm.get("importEnabled"),
+            ftpDetails: {
+                protocol: vm.get("ftp.protocol"),
+                host: vm.get("ftp.host"),
+                port: vm.get("ftp.port"),
+                username: vm.get("ftp.username"),
+                password: vm.get("ftp.password"),
+                directory: vm.get("ftp.directory")
+            }
+        };
+
+        return dbSettings;
+    };
+
+    posMgr.enableFTP = function (enabled)
+    {
+        var $ftpBox = $(".ftp_box .cond_group");
+        if (enabled)
+        {
+            $ftpBox.slideDown();
+        }
+        else
+        {
+            $ftpBox.slideUp();
+        }
+    };
+
+    posMgr.loading = function (loading)
+    {
+        kendo.ui.progress($(".ftp_imp"), loading);
+    };
+
+    posMgr.submit = function ()
+    {
+        posMgr.loading(true);
+        var updatedSettings = posMgr.convertToDbSettings();
+        updatePOSSettings(updatedSettings,
+                function (responseData)
+                {
+                    posMgr.loading(false);
+
+                    if (responseData.result != "ok")
+                    {
+                        utils.throwServerError(responseData);
+                        return;
+                    }
+
+                    utils.slideDownInfo(localizeResource("update-successful"));
+                    posMgr.original = updatedSettings;
+                }, null);
+    };
+
+    posMgr.cancelChanges = function ()
+    {
+        if (posMgr.original != null)
+        {
+            posMgr.applyDbSettings(posMgr.original);
+        }
+    };
+
+    $(function ()
+    {
+        posMgr.init();
+    })
+
+</script>

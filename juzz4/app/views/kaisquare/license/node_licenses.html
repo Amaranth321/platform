@@ -1,0 +1,359 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style>
+    .license-mgr .title_bar {
+        height: 55px;
+        background-color: #212121;
+        padding: 10px 0px 0px 15px;
+    }
+
+    .license-mgr .title_bar .title {
+        font-size: 18px;
+        color: #bbb;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="licenseGroupHeaderTmpl">
+    <span class='table_group_title'>#= value # (#= count #)</span>
+</script>
+
+<script type="text/x-kendo-template" id="licenseToolbarTmpl">
+    <div class="license_toolbar">
+        <div>
+            <a class="k-button" id="btnAddLicense">&{'add-license'}</a>
+        </div>
+        <div class="filterBox">
+            <div style="float: right;">
+                <a id="clearFilter" class="k-button" style="margin-right:2px;">&{'clear-location'}</a>
+                <a id="btnPDF" class="k-button">
+                    <img src="${CdnPath}/common/images/export-pdf.png" style="margin-right:2px; height:16px">&{'pdf'}
+                </a>
+                <a id="btnExcel" class="k-button">
+                    <img src="${CdnPath}/common/images/export-csv.png" style="margin-right:2px; height:16px">&{'excel'}
+                </a>
+            </div>
+
+            <div class="element">
+                <label class="accessBucket" for="bucket">&{'bucket'} </label>
+                <input class="accessBucket" id="bucket" type="text" style="width: 160px"/>
+            </div>
+
+            <div class="element">
+                <label for="status">&{'status'} </label>
+                <input id="status" type="text" style="width: 160px"/>
+            </div>
+
+            <div class="element">
+                <label for="deviceName">&{'device-name'} </label>
+                <input id="deviceName" type="text" class="k-input" style="width: 158px"/>
+
+                <label for="registrationNumber">&{'registration-number'} </label>
+                <input id="registrationNumber" type="text" class="k-input" style="width: 158px"/>
+            </div>
+
+        </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="licenseNumberTmpl">
+    # var formattedSerial = utils.formatSerialNumber(data.licenseNumber); #
+    <span>#= formattedSerial #</span>
+</script>
+
+<div class="license-mgr">
+    <div class="title_bar">
+    #{if readonly }
+        <span class="title">&{'local-license-management'}</span>
+    #{/if}
+    #{else }
+        <span class="title">&{'global-license-management'}</span>
+    #{/else}
+    </div>
+    <div id="licenseGrid" style="display: none"></div>
+</div>
+
+<script type="text/javascript">
+
+var userBucketId = "${bucketId}";
+var selectedBucketId = userBucketId;
+
+var LicenseStatus = {
+    UNUSED: localizeResource("UNUSED"),
+    ACTIVE: localizeResource("ACTIVE"),
+    SUSPENDED: localizeResource("SUSPENDED"),
+    EXPIRED: localizeResource("EXPIRED")
+};
+
+var dsLicenses = new kendo.data.DataSource({
+    transport: {
+        read: function (options)
+        {
+            getNodeLicenses("", selectedBucketId, function (responseData)
+            {
+                if (responseData.result == "ok" && responseData["node-licenses"] != null)
+                {
+                    var licenses = responseData["node-licenses"];
+                    options.success(licenses);
+                }
+                else
+                {
+                    utils.throwServerError(responseData.reason);
+                    options.success([]);
+                }
+            }, null);
+        }
+    },
+    group: { field: "bucketName", aggregates: [
+        { field: "bucketName", aggregate: "count" }
+    ] },
+    pageSize: 15
+});
+
+function initGrid()
+{
+
+    function onPopupClosed()
+    {
+        $("#licenseGrid").data("kendoGrid").dataSource.read();
+    }
+
+    var showDetails = function (e)
+    {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var contentPage = "/license/licensedetails/" + dataItem.licenseNumber;
+        utils.openPopup(localizeResource("license-details"), contentPage, null, null, true, onPopupClosed);
+    }
+
+    var copyLicenseNumber = function (e)
+    {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var formattedSerial = utils.formatSerialNumber(dataItem.licenseNumber);
+        utils.copyToClipBoard(formattedSerial);
+    }
+
+    $("#licenseGrid").kendoGrid({
+        dataSource: dsLicenses,
+        pageable: {
+            input: true,
+            numeric: false,
+            pageSizes: [15, 30, 50],
+            refresh: true
+        },
+        sortable: true,
+        filterable: false,
+        selectable: true,
+        resizable: false,
+        toolbar: kendo.template($("#licenseToolbarTmpl").html()),
+        columns: [
+            { field: "status", title: "&{'status'}", width: "150px",
+                template: "#= localizeResource(status) #"},
+            { field: "licenseNumber", title: "&{'license-number'}", width: "170px",
+                template: $("#licenseNumberTmpl").html(), attributes: {"class": "unambiguous-font"}
+            },
+            { field: "durationMonths", title: "&{'validity'}", width: "100px",
+                template: "#= displayDuration(data) #" },
+            { field: "cloudStorageGb", title: "&{'storage'}", width: "100px",
+                template: "#= cloudStorageGb # GB"},
+            { field: "durationMonths", title: "&{'expires-on'}", width: "150px",
+                template: "#= calculateExpiry(data) #" },
+            { field: "registrationNumber", title: "&{'registration-number'}", width: "200px" },
+            { field: "deviceName", title: "&{'device-name'}", width: "250px"},
+            { field: "bucketName", title: localizeResource("bucket"),
+                groupHeaderTemplate: kendo.template($("#licenseGroupHeaderTmpl").html())},
+            { command: [
+                { text: localizeResource('copy'), click: copyLicenseNumber },
+                { text: localizeResource('more'), click: showDetails }
+            ], title: "&{'actions'}", width: "170px"}
+        ]
+    }).data("kendoGrid").hideColumn("bucketName");
+
+    $("#btnAddLicense").click(function (e)
+    {
+        var contentPage = "/license/addlicense";
+        utils.openPopup(localizeResource("add-license"), contentPage, null, null, true, onPopupClosed);
+    });
+
+    $("#bucket").kendoDropDownList({
+        dataTextField: "name",
+        dataValueField: "id",
+        dataSource: {
+            transport: {
+                read: function (options)
+                {
+                    getBuckets("", function (responseData)
+                    {
+                        if (responseData.result == "ok" && responseData.buckets != null)
+                        {
+                            var bList = [];
+                            bList.push({
+                                "name": localizeResource("all"),
+                                "id": ""
+                            });
+                            $.each(responseData.buckets, function (key, obj)
+                            {
+                                bList.push({
+                                    "name": obj.name,
+                                    "id": obj.id
+                                });
+                            });
+                            options.success(bList);
+                        }
+                        else
+                        {
+                            utils.throwServerError(responseData.reason);
+                            options.success([]);
+                        }
+                    }, null)
+                }
+            }
+        },
+        change: function (e)
+        {
+            var selectedBucket = $("#bucket").data("kendoDropDownList").dataItem();
+            if (selectedBucket.name == localizeResource("all"))
+            {
+                selectedBucketId = userBucketId;
+            }
+            else
+            {
+                selectedBucketId = selectedBucket.id;
+            }
+
+            dsLicenses.read();
+        }
+    });
+
+    $("#status").kendoDropDownList({
+        dataTextField: "statusName",
+        dataValueField: "statusType",
+        dataSource: {
+            transport: {
+                read: function (options)
+                {
+                    var results = [];
+                    results.push({
+                        "statusType": "",
+                        "statusName": localizeResource("all")
+                    });
+                    $.each(LicenseStatus, function (key, statusType)
+                    {
+                        results.push({
+                            "statusType": statusType,
+                            "statusName": localizeResource(statusType)
+                        });
+                    });
+                    options.success(results);
+                }
+            }
+        },
+        change: function (e)
+        {
+            filterLicense();
+        }
+    });
+
+    $("#deviceName").keyup(function ()
+    {
+        filterLicense();
+    });
+
+    $("#registrationNumber").keyup(function ()
+    {
+        filterLicense();
+    });
+
+    $("#licenseGrid").show();
+}
+
+function calculateExpiry(licenseData)
+{
+    if (licenseData.expiryDate == 0 || licenseData.durationMonths == -1)
+    {
+        return "N/A";
+    }
+
+    var localTime = new Date(licenseData.expiryDate);
+    return kendo.toString(localTime, kupapi.TIME_FORMAT);
+}
+
+function displayDuration(licenseData)
+{
+    if (licenseData.durationMonths == -1)
+    {
+        return localizeResource("perpetual");
+    }
+    return licenseData.durationMonths + " " + localizeResource("months");
+}
+
+function filterLicense()
+{
+    var deviceFilter = {logic: "and", filters: []};
+    var deviceName = $("#deviceName").val();
+    var registrationNumber = $("#registrationNumber").val();
+    var status = $("#status").data("kendoDropDownList").text();
+
+    if (deviceName.length > 0)
+    {
+        deviceFilter.filters.push({ field: "deviceName", operator: "contains", value: deviceName});
+        deviceFilter.filters.push({ field: "deviceName", operator: "neq", value: "N/A"});
+    }
+    if (registrationNumber.length > 0)
+    {
+        deviceFilter.filters.push({ field: "registrationNumber", operator: "contains", value: registrationNumber});
+        deviceFilter.filters.push({ field: "registrationNumber", operator: "neq", value: "N/A"});
+    }
+    if (status != localizeResource("all"))
+    {
+        deviceFilter.filters.push({ field: "status", operator: "contains", value: status});
+    }
+
+    $("#licenseGrid").data("kendoGrid").dataSource.filter(deviceFilter);
+}
+
+$(function ()
+{
+
+    mainJS.toggleLeftBar();
+    initGrid();
+
+    if (${readonly})
+    {
+        $("#btnAddLicense").hide();
+    }
+
+    $("#btnExcel").click(function ()
+    {
+        exportLicenseList(
+                "xls",
+                $("#bucket").data("kendoDropDownList").value(),
+                $("#status").data("kendoDropDownList").value(),
+                $("#registrationNumber").val(),
+                $("#deviceName").val());
+    });
+
+    $("#btnPDF").click(function ()
+    {
+        exportLicenseList(
+                "pdf",
+                $("#bucket").data("kendoDropDownList").value(),
+                $("#status").data("kendoDropDownList").value(),
+                $("#registrationNumber").val(),
+                $("#deviceName").val());
+    });
+
+    $("#clearFilter").click(function ()
+    {
+        $("#bucket").data("kendoDropDownList").select(0);
+        selectedBucketId = userBucketId;
+        dsLicenses.read();
+
+        $("#deviceName").val("");
+        $("#registrationNumber").val("");
+        $("#status").data("kendoDropDownList").select(0);
+        filterLicense();
+    });
+});
+
+</script>

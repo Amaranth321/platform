@@ -1,0 +1,171 @@
+<script src="/public/javascripts/jw6/jwplayer.js"></script>
+<script src="/public/javascripts/jw6/key.js"></script>
+
+<style>
+    .evt_details {
+    }
+
+    .evt_details .info {
+        float: left;
+        width: 400px;
+        padding-left: 7px;
+    }
+
+    .evt_details .info label {
+        display: inline-block;
+        width: 110px;
+        line-height: 26px;
+    }
+
+    .evt_details .info span {
+        margin-left: 10px;
+        color: #ddd;
+        overflow: hidden;
+    }
+
+    .evt_details .btns span {
+        margin: 0px 10px 0px 0px;
+    }
+
+    .evt_details .info .acknowledgement {
+        display: none;
+    }
+</style>
+
+<div class="evt_details">
+    <div class="info">
+        <div>
+            <label>&{'time'}</label>:<span data-bind="text:time"></span>
+        </div>
+
+        <div>
+            <label>&{'event-type'}</label>:<span data-bind="text:type"></span>
+        </div>
+
+        <div>
+            <label>&{'store-label'}</label>:<span data-bind="text:labelName"></span>
+        </div>
+
+        <div>
+            <label>&{'sendVia'}</label>:<span data-bind="text:sentVia"></span>
+        </div>
+
+        <div class="acknowledgement">
+            <label>&{'acknowledged-by'}</label>:<span data-bind="text:acknowledger"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var evtVwr = {
+        eventId: "${eventId}",
+        $main: $(".evt_details"),
+        kendoWin: null,
+        eventDetails: null,
+        labelDetails: null
+    };
+
+    evtVwr.init = function ()
+    {
+        evtVwr.kendoWin = evtVwr.$main.closest(".k-window-content").data("kendoWindow");
+
+        evtVwr.loading(true);
+        evtVwr.getEventDetails(function ()
+        {
+            evtVwr.getLabelDetails(function ()
+            {
+                evtVwr.loadPage();
+                evtVwr.loading(false);
+            });
+        });
+    };
+
+    evtVwr.getEventDetails = function (onReady)
+    {
+        var details = null;
+        if (typeof notiLabelPage != 'undefined')
+        {
+            details = notiLabelPage.getEventDetails(evtVwr.eventId);
+            if (details)
+            {
+                evtVwr.eventDetails = details;
+                onReady();
+                return;
+            }
+        }
+
+        getLabelNotifications(evtVwr.eventId, null, null, null, null, null, null, null,
+                function (responseData)
+                {
+                    if (responseData.result != "ok")
+                    {
+                        utils.throwServerError(responseData);
+                        evtVwr.eventDetails = {};
+                    }
+                    else
+                    {
+                        var details = responseData.notifications[0];
+                        details.sentVia = details.notifiedMethods.join(", ");
+                        evtVwr.eventDetails = details;
+                    }
+                    onReady();
+                }, null);
+    };
+
+    evtVwr.getLabelDetails = function (onReady)
+    {
+        var labelInfo = LabelMgr.getLabelById(evtVwr.eventDetails.labelId);
+        if (labelInfo != null)
+        {
+            evtVwr.labelDetails = labelInfo;
+            onReady();
+            return;
+        }
+
+        LabelMgr.ready(function ()
+        {
+            evtVwr.labelDetails = LabelMgr.getLabelById(evtVwr.eventDetails.labelId);
+            onReady();
+        })
+    };
+
+    evtVwr.loadPage = function ()
+    {
+        evtVwr.loadInfo();
+        evtVwr.kendoWin.center();
+    };
+
+    evtVwr.loadInfo = function ()
+    {
+        var evt = evtVwr.eventDetails;
+
+        evtVwr.eventDetails.time = kendo.toString(new Date(evt.time), kupapi.TIME_FORMAT);
+        evtVwr.eventDetails.type = localizeResource(evt.eventType);
+        evtVwr.eventDetails.labelName = evtVwr.labelDetails ?
+                evtVwr.labelDetails.name :
+                localizeResource("deleted-db-entry");
+
+        if (!utils.isNullOrEmpty(evt.acknowledgedBy))
+        {
+
+            var acknowledgedTime = kendo.toString(new Date(evt.acknowledgedTime), kupapi.TIME_FORMAT);
+            evtVwr.eventDetails.acknowledger = evt.acknowledgedBy + " (@" + acknowledgedTime + ")";
+            $(".evt_details .info .acknowledgement").show();
+        }
+
+        kendo.bind(evtVwr.$main.find(".info"), evtVwr.eventDetails);
+    };
+
+    evtVwr.loading = function (loading)
+    {
+        kendo.ui.progress(evtVwr.$main, loading);
+    };
+
+    $(function ()
+    {
+        evtVwr.init();
+    });
+
+</script>
+</div>

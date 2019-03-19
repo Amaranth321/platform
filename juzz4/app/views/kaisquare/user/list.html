@@ -1,0 +1,370 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style scoped>
+    .search_box {
+        margin: 6px 2px 2px 2px;
+        padding: 10px 38px 44px 14px; 
+    }
+    
+    .outer_box {
+        border: 1px #565656 solid;
+    }
+
+    #autocomplete div li {
+        margin: 1px;
+    }
+
+    #autocomplete div {
+        float: left;
+    }
+    #autocomplete {
+    	margin-top: 10px;
+    }
+    .k-multiselect-wrap k-floatwrap li {
+        margin: 6px 2px 2px 2px;
+    }
+
+    .k-multiselect-wrap {
+      	border-radius: 0;
+    	margin-left: 2px;
+    	max-height: 1.12em;
+    	min-width: 148px;
+    	width: auto;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="deviceHeaderTemplate">
+    <div class="toolbar">
+        <a class="k-button" id="addNewUser"><span class="k-icon k-i-plus"></span>&{'add-user'}</a>
+    *{#if (kupapi.applicationType == "cloud") {#}*
+    *{<a class="k-button" id="syncNode">&{'sync-node'}</a>}*
+    *{#}#}*
+        <span style="text-align:right">
+			<a id="btnCSV" class="k-button" style="float:right">
+                <img src="${CdnPath}/common/images/export-csv.png" style="margin-right:3px; height:16px">&{'export-user-list'}
+            </a>
+        </span>
+    </div>
+
+        <div id=searchOptions class="outer_box">
+		<div style="width: 100%;">
+        	<div class="inventory_title_uploader">&{'filter-user'}
+        </div>
+		<div id=searchOptions class="search_box">
+            <label class="vca_report_others_label">&{'name'} :</label>
+            <input id=userFilter type="text" class="k-input k-textbox">
+            <label style="margin:0px 5px 0px 30px">&{'full-name'} :</label>
+            <input id=fnameFilter type="text" class="k-input k-textbox">
+            <label style="margin:0px 5px 0px 30px">&{'email'} :</label>
+            <input id=emailFilter type="text" class="k-input k-textbox">
+            <label style="margin:0px 5px 0px 30px">&{'phone'} :</label>
+            <input id=phoneFilter type="text" class="k-input k-textbox">
+
+            <div id="autocomplete">
+                <div><label style="margin-top: 3px;" for="channList" class="vca_report_others_label">&{'label'}:</label></div>
+                <div style="margin: 0px 2px 1px;"><input id="labelsFilter"/></div>
+            <a id="clrFilter" class="k-button" style="float:right; margin-right: 45px;">
+                <span></span>&nbsp; &{'clear-location'}
+            </a>
+		</div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="template">
+    <div class="toolbar">
+        <a class="k-button" id="addNewUser"><span class="k-icon k-i-plus"></span>&{'add-user'}</a>
+        #if (kupapi.applicationType == "cloud") {#
+        <!--<a class="k-button" id="syncNode">&{'sync-node'}</a>-->
+        #}#
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="statusBtnTmpl">
+    # if(data.activated){ #
+    <a href="javascript:suspendUser('#= data.userId #')" class="k-button">&{'suspend'}</a>
+    # } else {#
+    <a href="javascript:unsuspendUser('#= data.userId #')" class="k-button" style="background: \#B82832;">&{'activate'}</a>
+    # }#
+</script>
+
+<div id="userList" class="k-content" style="margin: 5px;">
+    <div class="default_title_bar">
+        <span class="title">&{'user-management'}</span>
+    </div>
+    <div id="userGrid"></div>
+</div>
+
+<script>
+
+function initializeUserTable() {
+    var isFileGenerating = false;
+    var labelDataItem = null;
+    var multi = null;
+    var btnManageList = [];
+    btnManageList.push({ text: "&{'devices'}", click: assignDevices });
+
+    var grid = $("#userGrid").kendoGrid({
+        dataSource: {
+            transport: {
+                read: function (options) {
+                    getBucketUsers("", onSuccess, null);
+                    function onSuccess(responseData) {
+                        if (responseData.result == "ok" && responseData.users != null){
+                            var users =[];
+                            $.each(responseData.users, function(index, user){
+                                if("${bucket}" === "superadmin" && user.login === "root"){
+                                }else{
+                                    users.push(user);
+                                }
+                            });
+                            options.success(users);
+                        }else{
+                            options.success([]);
+                        }
+                    }
+                }
+            },
+            pageSize: 15
+        },
+        pageable: {
+            input: true,
+            numeric: false,
+            pageSizes: false,
+            refresh: true
+        },
+        sortable: true,
+        filterable: false,
+        selectable: true,
+        resizable: false,
+        toolbar: kendo.template($("#deviceHeaderTemplate").html()),
+        columns: [
+            { field: "activated", title: "&{'status'}", template: kendo.template($("#statusBtnTmpl").html())},
+            { field: "joinedLabels", title: "&{'label'}" },
+            { field: "login", title: "&{'username'}" },
+            { field: "name", title: "&{'full-name'}" },
+            { field: "email", title: "&{'email'}" },
+            { field: "phone", title: "&{'phone'}" },
+            { command: [
+                { text: "&{'roles'}", click: assignRoles}
+            ], title: "&{'access'}", width: "110px"},
+            { command: btnManageList, title: "&{'manage'}", width: "180px"},
+            { command: [
+                { text: "&{'edit'}", click: editDetails },
+                { text: "&{'delete'}", click: deleteUser }
+            ], title: "&{'actions'}", width: "170px" }
+        ]
+    }).data("kendoGrid");
+
+    var multi = $("#labelsFilter").kendoMultiSelect({
+        dataSource: {
+            transport: {
+                read: function (options) {
+                    getBucketUserLabels("", onSuccess, null);
+                    function onSuccess(responseData) {
+                        if (responseData.result == "ok" && responseData.labels != null)
+                            options.success(responseData.labels);
+                        else
+                            options.success([]);
+                    }
+                }
+            }
+        },
+        placeholder: "&{'filter-labels'}",
+        animation: {
+            close: {
+                effects: "fadeOut zoom:out",
+                duration: 300
+            },
+            open: {
+                effects: "fadeIn zoom:in",
+                duration: 300
+            }
+        },
+        change: filterResults
+    }).data("kendoMultiSelect");
+
+    function assignVehicles(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var contentPage = "/user/assignvehicle/" + dataItem.userId;
+        utils.openPopup("&{'assign-vehicles'}", contentPage, null, null, true, onPopupClosed);
+    }
+
+    function assignDevices(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var contentPage = "/user/assigndevice/" + dataItem.userId;
+        utils.openPopup("&{'assign-devices'}", contentPage, null, null, true, onPopupClosed);
+    }
+
+    function assignRoles(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var contentPage = "/user/assignrole/" + dataItem.userId;
+        utils.openPopup("&{'roles'}", contentPage, null, null, true, onPopupClosed);
+    }
+
+    function editDetails(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var contentPage = "/user/edit/" + dataItem.userId;
+            utils.openPopup("&{'edit-details'}", contentPage, null, null, true, onPopupClosed);
+        }
+
+    function deleteUser(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function (choice) {
+            if (choice) {
+                function onRemoveUserSuccess(responseData) {
+                    if (responseData.result == "ok") {
+                        utils.slideDownInfo("&{'user-deleted'}")
+                    } else {
+                        utils.popupAlert(responseData.reason);
+                    }
+                    $("#userGrid").data("kendoGrid").dataSource.read();
+                    $("#labelsFilter").data("kendoMultiSelect").dataSource.read();
+                }
+                removeUser("", dataItem.userId, onRemoveUserSuccess, null);
+            }
+        });
+    }
+
+    $("#addNewUser").click(function (e) {
+        var contentPage = "/user/add";
+        utils.openPopup("&{'add-user'}", contentPage, null, null, true, onPopupClosed);
+    });
+
+    $("#syncNode").click(function (e) {
+        if (isFileGenerating)
+            return;
+        isFileGenerating = true;
+        $(this).html('<img src="${CdnPath}/common/images/loading1.gif" />');
+        generateSyncFile("",
+                function (response) {
+                    $("#syncNode").html("&{'sync-node'}");
+                    isFileGenerating = false;
+                },
+                function () {
+                    $("#syncNode").html("&{'sync-node'}");
+                    isFileGenerating = false;
+                }
+        );
+    });
+
+    $("#btnCSV").click(function () {
+        exportuserlist();
+    });
+
+    function onPopupClosed() {
+        $("#userGrid").data("kendoGrid").dataSource.read();
+        $("#labelsFilter").data("kendoMultiSelect").dataSource.read();
+    }
+
+    function filterResults(event) {
+        var userFilter = { logic: "and", filters: [] };
+        var subFilter = { logic: "or", filters: [] };
+        var searchTerm = $("#userFilter").val();
+        userFilter.filters.push({ field: "login", operator: "contains", value: $("#userFilter").val() });
+        userFilter.filters.push({ field: "name", operator: "contains", value: $("#fnameFilter").val() });
+        userFilter.filters.push({ field: "email", operator: "contains", value: $("#emailFilter").val() });
+        userFilter.filters.push({ field: "phone", operator: "contains", value: $("#phoneFilter").val() });
+        //userFilter.filters.push(subFilter);
+        if (event.sender) {
+            labelDataItem = event.sender._dataItems;
+            for (i = 0; i < labelDataItem.length; i++) {
+                userFilter.filters.push({ field: "joinedLabels", operator: "contains", value: labelDataItem[i] });
+            }
+        }
+        else if (labelDataItem != null) {
+            for (i = 0; i < labelDataItem.length; i++) {
+                userFilter.filters.push({ field: "joinedLabels", operator: "contains", value: labelDataItem[i] });
+            }
+        }
+        $("#userGrid").data("kendoGrid").dataSource.filter(userFilter);
+    }
+	
+    $("#userFilter").keyup(filterResults);
+		$("#fnameFilter").keyup(filterResults);
+		$("#emailFilter").keyup(filterResults);
+		$("#phoneFilter").keyup(filterResults);
+		$("#labelsFilter").keyup(function(e) {
+			if (e.keyCode == 13) {
+				filterResults(e);
+			}
+		});
+		$("#clrFilter").click(function(e) {
+			$("#userFilter").val("");
+			$("#fnameFilter").val("");
+			$("#emailFilter").val("");
+			$("#phoneFilter").val("");
+			multi.value('');
+			$("#userGrid").data("kendoGrid").dataSource.filter([]);
+		});
+
+	}
+
+	function suspendUser(userId) {
+		utils
+				.popupConfirm(
+						"&{'confirmation'}",
+						"&{'confirm-suspension'}?",
+						function(choice) {
+							if (choice) {
+								deactivateUser(
+										"",
+										userId,
+										function(responseData) {
+											if (responseData == null
+													|| responseData.result != "ok") {
+												utils
+														.throwServerError(responseData);
+											}
+
+											utils
+													.slideDownInfo(localizeResource("update-successful"));
+											$("#userGrid").data("kendoGrid").dataSource
+													.read();
+										}, null);
+							}
+						});
+	}
+
+	function unsuspendUser(userId) {
+		utils
+				.popupConfirm(
+						"&{'confirmation'}",
+						"&{'confirm-activation'}?",
+						function(choice) {
+							if (choice) {
+								activateUser(
+										"",
+										userId,
+										function(responseData) {
+											if (responseData == null
+													|| responseData.result != "ok") {
+												utils
+														.throwServerError(responseData);
+											}
+
+											utils
+													.slideDownInfo(localizeResource("update-successful"));
+											$("#userGrid").data("kendoGrid").dataSource
+													.read();
+										}, null);
+							}
+						});
+	}
+
+	$(function() {
+		var intvl = setInterval(function() {
+			if (checkingAccessDone) {
+				initializeUserTable();
+				clearTimeout(intvl);
+			}
+		}, 100);
+	});
+</script>
+

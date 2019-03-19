@@ -1,0 +1,22 @@
+{
+    "misc": {
+        "notification-sound-min-gap-seconds": 5,
+        "license-encryption-key": "kaiUp@Platfrm!Kp"
+    },
+    "debugging": {
+        "print-api-call-log": false
+    },
+    "vca-event-processor": {
+        "type": ["*"],
+        "threads": 0
+    },
+    "servers": {
+        "vca-server-port": 7475,
+        "event-receiver-port": 7474
+    },
+    "model-lookup": {
+        "excluded-apps": {
+            "115": ["peoplecount", "passerby"]
+        }
+    }
+}

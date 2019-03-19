@@ -1,0 +1,207 @@
+<script type="text/x-kendo-template" id="dataLogHeaderBarTmpl">
+    <div class="header_box data_search">
+        <div class="btn_group">
+            <a href="javascript:vcaList.filterDataLogs()" class="k-button">&{'filter'}</a>
+            <a href="javascript:vcaList.clearDataLogFilters()" class="k-button">&{'clear-location'}</a>
+            <a href="javascript:vcaList.exportData('pdf')" class="k-button">
+                <span class="pdf">&{'pdf'}</span>
+            </a>
+            <a href="javascript:vcaList.exportData('csv')" class="k-button">
+                <span class="csv">&{'csv'}</span>
+            </a>
+        </div>
+
+        <div>
+            <label class="event_filter_label">&{'device-name'}</label>
+            <input class="device_list" autocomplete="off"/>
+            <label id="channelDisplayName">&{'channel'}</label>
+            <input class="channel_list" autocomplete="off"/>
+        </div>
+
+        <div>
+            <div style="margin-top: 15px">
+                <label class="event_filter_label" style="margin:0px"></label>
+                <span class="event_filter_time_range_title">&{'start'} &{'date-time'}</span>
+                <span class="event_filter_time_range_title">&{'end'} &{'date-time'}</span>
+            </div>
+
+            <div>
+                <label class="event_filter_label">&{'period'}</label>
+                <input class="event_filter_datetime start_time" autocomplete="off"
+                       title="&{'msg-choose-startdate'}"/>
+                <input class="event_filter_datetime end_time" autocomplete="off"
+                       title="&{'msg-choose-startdate'}"/>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="runningStatusTmpl">
+    # var messageKey = "vca-state-" + data.vcaState; #
+    <span class="vca_status_wrapper #= messageKey #" title="#= localizeResource(messageKey) #"></span>
+</script>
+
+<script type="text/x-kendo-template" id="deviceWithStatusTmpl">
+    <span title="#= data.instanceId #">#= data.deviceName #</span>
+    # var offline = (data.deviceStatus == DvcMgr.DeviceStatus.DISCONNECTED); #
+    # if(offline) { #
+    #   var messageKey = "vca-state-OFFLINE"; #
+    <span class="vca_status_wrapper #= messageKey #" title="#= localizeResource(messageKey) #"></span>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="channelWithStatusTmpl">
+    #= data.channelName #
+
+    # var offline = (data.channelStatus == DvcMgr.DeviceStatus.DISCONNECTED); #
+    # if(offline) { #
+    #   var messageKey = "vca-state-OFFLINE"; #
+    <span class="vca_status_wrapper #= messageKey #" title="#= localizeResource(messageKey) #"></span>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="recurrenceRuleTmpl">
+    # if(utils.isNullOrEmpty(data.recurrenceRule)) { #
+    <span>#= localizeResource("not-scheduled") #</span>
+    # } else { #
+    <a href="javascript:VcaMgr.viewSchedule('#= data.instanceId #')" class="k-button">
+        #= data.recurrenceRule.summary #</a>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="actionBtnGroupTmpl">
+    #
+    var onNodeUI = (kupapi.applicationType == "node");
+    var deviceOnline = (data.deviceStatus != DvcMgr.DeviceStatus.DISCONNECTED);
+    var pendingRequest = (data.vcaState == VcaMgr.VcaStatus.WAITING);
+    var isReadonly = !deviceOnline || pendingRequest || !data.enabled;
+    var nodeUpdateRequired = data.updateRequired;
+
+    //conditional buttons
+    var showDebugger, showConfig, showActivate, showDeactivate, showErrorLogs, showDelete;
+
+    //backward compatibility
+    if(nodeUpdateRequired){
+
+    showDebugger = false;
+    showConfig = true;
+    showActivate = false;
+    showDeactivate = data.enabled;
+    showErrorLogs = true;
+    showDelete = true;
+    isReadonly = true;
+
+    } else if(onNodeUI){
+
+    showDebugger = (data.vcaState == VcaMgr.VcaStatus.RUNNING);
+    showConfig = true;
+    showActivate = !data.enabled && deviceOnline;
+    showDeactivate = data.enabled;
+    showErrorLogs = true;
+    showDelete = true;
+
+    } else {
+
+    if(!deviceOnline){
+    isReadonly = true;
+    showDebugger = false;
+    showConfig = true;
+    showActivate = false;
+    showDeactivate = false;
+    showErrorLogs = true;
+    showDelete =false;
+    } else {
+    showDebugger = data.runningOnCloud && (data.vcaState == VcaMgr.VcaStatus.RUNNING);
+    showConfig = !pendingRequest;
+    showActivate = !data.enabled && (data.runningOnCloud || !pendingRequest);
+    showDeactivate = data.enabled && (data.runningOnCloud || !pendingRequest);
+    showErrorLogs = !pendingRequest;
+    showDelete = true;
+    }
+
+    }
+
+    #
+
+    <span class="vca_action_wrapper">
+
+        <span class="button_slot">
+        # if(showDebugger) { #
+            <a href="javascript:vcaList.openDebugger('#= data.instanceId #')"
+               class="k-button" style="min-width: 0px; min-height: 0px;" title="&{'debugger'}">
+                <span class="debugger"></span>
+            </a>
+        # } #
+        </span>
+
+        <span class="button_slot">
+        # if(showConfig) { #
+            <a href="javascript:vcaList.configureVca('#= data.instanceId #', #= isReadonly #)"
+               class="k-button" style="min-width: 0px; min-height: 0px;" title="&{'configuration'}">
+                <span class="config"></span>
+            </a>
+        # } #
+        </span>
+
+        <span class="button_slot">
+        # if(showActivate) { #
+            <a href="javascript:vcaList.activateVca('#= data.instanceId #')"
+               class="k-button" style="min-width: 0px; min-height: 0px;" title="&{'activate-vca'}">
+                <span class="start"></span>
+            </a>
+        # } else if(showDeactivate) { #
+            <a href="javascript:vcaList.deactivateVca('#= data.instanceId #')"
+               class="k-button" style="min-width: 0px; min-height: 0px;" title="&{'deactivate-vca'}">
+                <span class="stop"></span>
+            </a>
+        # } #
+        </span>
+
+        <span class="button_slot">
+        # if(showErrorLogs) { #
+           <a href="javascript:vcaList.openErrorLog('#= data.instanceId #')"
+              class="k-button" style="min-width: 0px; min-height: 0px;" title="&{'vca-logs'}">
+               <span class="vca_logs"></span>
+           </a>
+        # } #
+        </span>
+
+        <span class="button_slot">
+        # if(showDelete) { #
+           <a href="javascript:vcaList.deleteVca('#= data.instanceId #')"
+              class="k-button" style="min-width: 0px; min-height: 0px;" title="&{'remove'}">
+               <span class="delete"></span>
+           </a>
+        # } #
+        </span>
+
+        # if(nodeUpdateRequired) { #
+            <span style="color:orange">
+            #=  localizeResource("node-update-required") #
+            </span>
+        # } #
+
+    </span>
+</script>
+
+<script type="text/x-kendo-template" id="vcaScheduleTmpl">
+    <span class="schedule">
+        <span class="name">#= data #</span>
+        <a href="javascript:scheduler.removeSchedule()" class="close">
+            <span class="k-icon k-i-close"></span>
+        </a>
+    </span>
+</script>
+
+<script type="text/x-kendo-template" id="gmaskNameTmpl">
+    # for (var i = 0; i < data.length; i++) { #
+
+    <span name="#= i #" class="gmask_item">
+        <span class="name">#= data[i].name #</span>
+        <a href="javascript:VcaMgr.removeGmaskRegion('#= data[i].name #')" class="close">
+            <span class="k-icon k-i-close"></span>
+        </a>
+    </span>
+
+    # } #
+</script>

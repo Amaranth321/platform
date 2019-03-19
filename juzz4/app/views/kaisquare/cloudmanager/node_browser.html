@@ -1,0 +1,124 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" href="/public/javascripts/device/node_browser.css"/>
+<script src="/public/javascripts/device/node.browser.js"></script>
+
+<script type="text/x-kendo-template" id="nodeStatusTemplate">
+    # var statusClass = "unknown"; #
+    # if(status == 'CONNECTED') { #
+    #   statusClass = "connected";  #
+    # } else if(status == 'DISCONNECTED') { #
+    #   statusClass = "disconnected";  #
+    # } #
+
+    <div align=center class="status #= statusClass #"></div>
+</script>
+
+<script type="text/x-kendo-template" id="nodeSoftwareTemplate">
+    # if(data.softwareStatus == 'UPDATE_AVAILABLE') { #
+    <span>Available</span>
+    # } else if(data.softwareStatus == 'UPDATING') { #
+    <span>update in progress</span>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="recurrenceRuleTmpl">
+    # if(utils.isNullOrEmpty(data.recurrenceRule)) { #
+    <span>#= localizeResource("not-scheduled") #</span>
+    # } else { #
+    <span>#= data.recurrenceRule.summary #</span>
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="runningStatusTmpl">
+    # var messageKey = "vca-state-" + data.status; #
+    <span class="vca_status_wrapper #= messageKey #" title="#= localizeResource(messageKey) #"></span>
+</script>
+
+<script type="text/x-kendo-template" id="subGridsTmpl">
+    <div class="sub_grid">
+        <div>Cameras</div>
+        <div class='camera_grid'></div>
+        <div>VCAs</div>
+        <div class='vca_grid'></div>
+    </div>
+</script>
+
+<div class="node_browser">
+    <div class="title_bar">
+        <span class="title">&{'node-browser'}</span>
+    </div>
+
+    <div class="search">
+        <div class="filters">
+            <div class="term">
+                <label>Search Term</label>
+                <input type="text" style="width: 200px" autocomplete="off"
+                       onkeyup="nodeBrowser.searchTermChanged('search-term', this)">
+            </div>
+
+            <span class="or">Or</span>
+
+            <div class="term">
+                <label>Node's platformDeviceId</label>
+                <input style="width: 60px" autocomplete="off"
+                       onkeyup="nodeBrowser.searchTermChanged('platform-device-id', this)">
+            </div>
+
+            <span class="or">Or</span>
+
+            <div class="term">
+                <label>Node's coreDeviceId</label>
+                <input style="width: 60px" autocomplete="off"
+                       onkeyup="nodeBrowser.searchTermChanged('core-device-id', this)">
+            </div>
+
+            <div class="btn_group">
+                <a href="javascript:nodeBrowser.search()" class="k-button btn_search">Search</a> &nbsp;
+                <a href="javascript:nodeBrowser.clearSearch()" class="k-button btn_search">Clear All</a>
+
+                <span style="margin-left: 20px">
+                    The results are cached. Most recent changes (< 20mins) will not be reflected here.
+                </span>
+            </div>
+        </div>
+
+        <div class="sub_filter">
+            <label>
+                <input type="checkbox" autocomplete="off"
+                       onclick="nodeBrowser.searchTermChanged('node-offline', this)"/>
+                Offline Nodes only
+            </label>
+
+            <label>
+                <input type="checkbox" autocomplete="off"
+                       onclick="nodeBrowser.searchTermChanged('camera-offline', this)"/>
+                Contains Offline cameras
+            </label>
+
+            <label>
+                <input type="checkbox" autocomplete="off"
+                       onclick="nodeBrowser.searchTermChanged('vca-unstable', this)"/>
+                Contains unstable VCAs
+            </label>
+
+            <label>
+                <input type="checkbox" autocomplete="off"
+                       onclick="nodeBrowser.searchTermChanged('update-available', this)"/>
+                Update Available
+            </label>
+        </div>
+    </div>
+
+    <div class="grid"></div>
+</div>
+
+<script>
+
+    var nodeBrowser = new NodeBrowser();
+
+    $(function () {
+        nodeBrowser.generate();
+    });
+
+</script>

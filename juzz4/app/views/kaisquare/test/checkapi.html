@@ -1,0 +1,203 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style>
+    .display .btn_group {
+
+    }
+
+    .display .api, .inputs, .outputs {
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #444;
+    }
+</style>
+
+<div class="display">
+    <div class="btn_group">
+        <a href="javascript:chkApi.getlabels('getlabels')" class="k-button">getlabels</a>
+        <a href="javascript:chkApi.addlabel('addlabel')" class="k-button">addlabel</a>
+        <a href="javascript:chkApi.updatelabel('updatelabel')" class="k-button">updatelabel</a>
+        <a href="javascript:chkApi.removelabel('removelabel')" class="k-button">removelabel</a>
+        <a href="javascript:chkApi.assignchannellabel('assignchannellabel')" class="k-button">assignchannellabel</a>
+        <a href="javascript:chkApi.unassignchannellabel('unassignchannellabel')"
+           class="k-button">unassignchannellabel</a>
+
+        <br/>
+    </div>
+    <br/>
+    <br/>
+
+    <div>api</div>
+    <pre class="api"></pre>
+
+    <div>Inputs</div>
+    <pre class="inputs"></pre>
+
+    <div>Outputs</div>
+    <pre class="outputs"></pre>
+</div>
+
+<script>
+
+    var chkApi = {
+        post: function (api, params)
+        {
+            chkApi.loading(true);
+            var url = "/api/" + kupBucket + "/" + api;
+            chkApi.showApi(url);
+            chkApi.showInputs(params);
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: params,
+                cache: false,
+                success: function (response)
+                {
+                    chkApi.loading(false);
+                    chkApi.showOutputs(response);
+                },
+                error: function (jqXHR, status)
+                {
+                    chkApi.loading(false);
+                    console.error(api + " call failed: " + status);
+                }
+            });
+        },
+        showApi: function (url)
+        {
+            var $box = $(".display .api");
+            $box.html(url);
+        },
+        showInputs: function (params)
+        {
+            var $box = $(".display .inputs");
+            $box.html(JSON.stringify(params, null, 4));
+        },
+        showOutputs: function (response)
+        {
+            var $box = $(".display .outputs");
+            $box.html(JSON.stringify(response, null, 4));
+        },
+        loading: function (loading)
+        {
+            kendo.ui.progress($(".display"), loading);
+        }
+    };
+
+    chkApi.getlabels = function (api)
+    {
+        var params = {};
+        chkApi.post(api, params);
+    };
+
+    chkApi.addlabel = function (api)
+    {
+        var params = {
+            "label-name": utils.randomAlphanumeric(10),
+            "label-type": "STORE",
+            "label-info": JSON.stringify(
+                    {
+                        location: {
+                            "address": "sg",
+                            "lat": 1.3147,
+                            "lng": 103.8470,
+                            "timeZoneId": "Asia/Singapore"
+                        },
+                        schedule: {
+                            holidays: [6, 7],
+                            weeklyPeriods: {
+                                repeat: "NON_STOP",
+                                lowestTrafficHour: 3
+                            }
+                        },
+                        occupancySettings: {
+                            enabled: true,
+                            limits: [
+                                {limit: 200, alertMessage: "msg11"},
+                                {limit: 100, alertMessage: "msg464"},
+                                {limit: 300, alertMessage: "msg64674"}
+                            ]
+                        }
+                    }
+            )
+        };
+
+        chkApi.post(api, params);
+    };
+
+    chkApi.updatelabel = function (api)
+    {
+        var params = {
+            "label-id": "673698b9-8402-4adf-a1af-24dc01d143c5",
+            "label-name": utils.randomAlphanumeric(10),
+            "label-type": "STORE",
+            "label-info": JSON.stringify(
+                    {
+                        location: {
+                            "address": "sg",
+                            "lat": 1.3147,
+                            "lng": 103.8470,
+                            "timeZoneId": "Asia/Singapore"
+                        },
+                        schedule: {
+                            holidays: [6, 7],
+                            weeklyPeriods: {
+                                repeat: "NON_STOP",
+                                periods: [
+                                    {
+                                        from: 1,
+                                        to: 3,
+                                        period: {startMinutes: 480, endMinutes: 1080}
+                                    },
+                                    {
+                                        from: 4,
+                                        to: 5,
+                                        period: {startMinutes: 360, endMinutes: 720}
+                                    }
+                                ],
+                                lowestTrafficHour: 14
+                            }
+                        },
+                        occupancySettings: {
+                            enabled: false,
+                            limits: [
+                                {limit: 200, alertMessage: "msg11"},
+                                {limit: 100, alertMessage: "msg464"},
+                                {limit: 300, alertMessage: "msg64674"}
+                            ]
+                        }
+                    }
+            )
+        };
+        chkApi.post(api, params);
+    };
+
+    chkApi.removelabel = function (api)
+    {
+        var params = {
+            "label-id": "d991e295-e599-4223-9964-a1ce5df4652a"
+        };
+        chkApi.post(api, params);
+    };
+
+    chkApi.assignchannellabel = function (api)
+    {
+        var params = {
+            "label-id": "13c9d1dc-267d-4fca-9d2e-3de6077623dc",
+            "platform-device-id": 2,
+            "channel-id": 1
+        };
+        chkApi.post(api, params);
+    };
+
+    chkApi.unassignchannellabel = function (api)
+    {
+        var params = {
+            "label-id": "f4d8e4be-c63b-4d1c-b9d4-7f8886fdbaea",
+            "platform-device-id": 3,
+            "channel-id": 1
+        };
+        chkApi.post(api, params);
+    };
+
+</script>

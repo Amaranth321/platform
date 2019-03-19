@@ -1,0 +1,36 @@
+<a href="javascript:void(0)" class="icon menu-toggle-icon left ir">Toggle left menu</a>
+<a href="/${bucket}/dashboard" class="logo left" 
+	style = "background: url('/${bucket}/content/bucketlogo/${bucketId}') 0 0 no-repeat"></a>
+        
+<ul class="profile-error clearfix">
+    <li class="profile pos-r">
+        <a href="javascript:void(0)"><i class="icon account-icon left"></i>${username}</a>
+        <ul class="inner setting">
+            <li class="triangle">&nbsp;</li>
+            <li><a href="/${bucket}/user/account">&{'my-account'}</a></li>
+            <li><a href="javascript:submitLogout()">&{'logout'}</a></li>
+        </ul>
+    </li>
+    <li class="errors pos-r">
+        <a id="headerAlert" href="javascript:void(0)"><i class="icon alert-icon left"></i><span id="countBubble" class="badge-error tal-center">0</span></a>
+        <ul class="inner" id="eventNotification">
+            <li class="triangle">&nbsp;</li>
+            <li id="goToSecurityAlert" class="toggle-more" style="padding-left: 10px;">
+                <a href="/${bucket}/notification/securityalerts">
+                    &gt; &nbsp; <strong>&{'go-to-security-alerts'}</strong></a>
+            </li>
+            <li id="goToLabelAlert" class="toggle-more" style="border-top: 1px solid #000000;padding-left: 10px;">
+                <a href="/${bucket}/notification/labelnotifications">
+                    &gt; &nbsp; <strong>&{'go-to-label-alerts'}</strong></a>
+            </li>
+        </ul>
+    </li>
+    <li class="alertSound pos-r">
+        <a href="javascript:notificationManager.setSoundOnOff()" ><i id="alert-icon-id" class="icon alert-sound-icon-on-unclick left"></i></a>
+    </li>
+    <li class="header_liveView_seperator"></li>
+    <li class="profile pos-r">
+        <a class="liveView_block" href="/${bucket}/live/fullview" style="display: none;">
+            <i class="icon header-liveView-img left"></i>&{'live-view'}</a>
+    </li>
+</ul>

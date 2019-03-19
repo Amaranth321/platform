@@ -1,0 +1,179 @@
+<div class="popup_wrapper">
+    <div class="vca_content">
+
+        <div class="left_box" style="margin: 0px 0px 25px 0px">
+            <div class="device_selection_top">
+                <label for="userDevices">&{'device-name'}</label>
+                <input id="userDevices" style="width: 200px"><br/>
+                <label id="channelDisplayName" for="cameraChannels">&{'channel'}</label>
+                <input id="cameraChannels" style="width: 200px">
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="param_selection_box config_gmask">
+                <div class="param_title ">
+                &{'configure-gmask'}
+                    <span id="gmaskInfo" class="help_icon"></span>
+                    <a href="javascript:configureGmask()" class="btn_gmask"></a>
+                </div>
+                <div>
+                    <span class="regions">&{'none'}</span>
+                </div>
+            </div>
+
+            <div class="submit_btn_box">
+                <a href="javascript:submitVca()" class="k-button">&{'submit'}</a>&nbsp;
+                <a id="btnCancel" href="javascript:vca.closePopupWindow()" class="k-button">&{'cancel'}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var gmaskRegions = [];
+
+    function initDeviceSettings()
+    {
+
+        $("#userDevices").kendoDropDownList({
+            optionLabel: "None",
+            dataTextField: "name",
+            dataValueField: "deviceId",
+            dataSource: parent.deviceManager.userDevices,
+            select: function (e)
+            {
+                var deviceItem = this.dataItem(e.item.index());
+                var channelList = $("#cameraChannels").data("kendoDropDownList");
+
+                if (deviceItem.name != "None")
+                {
+                    if (deviceItem.model.capabilities.indexOf("node") != -1)
+                    {
+                        utils.populateNodeNames(deviceItem.node.cameras, "cameraChannels");
+                    }
+                    else
+                    {
+                        utils.populateChannels(deviceItem.model.channels, "cameraChannels");
+                    }
+
+                    channelList.select(0);
+                    channelList.enable(true);
+                }
+                else
+                {
+                    channelList.enable(false);
+                }
+            }
+        });
+
+        $("#cameraChannels").kendoDropDownList({
+            dataTextField: "name",
+            dataValueField: "nodeCoreDeviceId",
+            dataSource: [],
+            select: function (e)
+            {
+                var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+                var selectedChannel = this.dataItem(e.item.index()).nodeCoreDeviceId;
+            }
+        });
+    }
+
+    function initUiElements()
+    {
+        scheduler.init("scheduleInfo", null);
+
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: '&{'additional-params'}',
+            isExpanded: false
+        });
+    }
+
+    function initToolTips()
+    {
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+        utils.createTooltip("gmaskInfo", "bottom", localizeResource('msg-gmask-info'));
+    }
+
+    function configureGmask()
+    {
+        var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+        var channelList = $("#cameraChannels").data("kendoDropDownList");
+        if (selectedCamera.name == "None")
+        {
+            utils.popupAlert(localizeResource("select-camera-first"));
+            return;
+        }
+
+        VcaMgr.openGmaskTool(gmaskRegions, selectedCamera.deviceId, channelList.value(),
+                function (saved, regionsDrawn)
+                {
+                    if (saved)
+                    {
+                        gmaskRegions = regionsDrawn;
+                        VcaMgr.updateGmaskStatus(gmaskRegions);
+                    }
+                })
+    }
+
+    function submitVca()
+    {
+        var selectedCamera = $("#userDevices").data("kendoDropDownList").dataItem();
+        var selectedChannel = $("#cameraChannels").data("kendoDropDownList").value();
+
+        if (selectedCamera.name == "None")
+        {
+            utils.popupAlert("&{'no-device-selected'}")
+            return;
+        }
+
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "gmask-regions": gmaskRegions,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        console.info("vcaType::"+backend.VcaType.AUDIENCE_PROFILING);
+        kupapi.addVca(
+                backend.VcaType.AUDIENCE_PROFILING,
+                selectedCamera.id,
+                selectedChannel,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                VcaMgr.Program.KAI_X3,
+                vca.onAddAnalyticsSuccess,
+                null
+        );
+    }
+
+    $(function ()
+    {
+        initDeviceSettings();
+        initUiElements();
+        initToolTips();
+    });
+</script>

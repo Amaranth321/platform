@@ -1,0 +1,125 @@
+<style>
+    .vca_ver {
+        background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        margin: -6px;
+    }
+
+    .vca_ver .table {
+        text-align: left;
+    }
+
+    .vca_ver .table .row {
+        border-bottom: 1px solid #353535;
+    }
+
+    .vca_ver .table .row:hover {
+        background: #151515;
+    }
+
+    .vca_ver .table .row:last-child {
+        border-bottom: 0px;
+    }
+
+    .vca_ver .table .row:first-child:hover {
+        background: transparent;
+    }
+
+    .vca_ver .table .row .column {
+        display: inline-block;
+        line-height: 28px;
+    }
+
+    .vca_ver .table .row .program {
+        margin-left: 15px;
+        width: 70px;
+    }
+
+    .vca_ver .table .row .name {
+        min-width: 200px;
+    }
+
+    .vca_ver .table .row .version {
+        width: 70px;
+    }
+
+    .vca_ver .table .row .description {
+        min-width: 450px;
+        margin-right: 10px;
+    }
+
+    .vca_ver .table .row .colored {
+        color: #F6AE40;
+    }
+
+</style>
+
+<script type="text/x-kendo-template" id="versionTableTmpl">
+    <div class="table">
+        <div class="row">
+            <span class="column program colored">&{'exe-program'}</span>
+            <span class="column name colored">&{'vca-name'}</span>
+            <span class="column version colored">&{'version'}</span>
+        </div>
+
+        # $.each(data, function(i, appInfo){ #
+        <div class="row">
+            <span class="column program" title="#= appInfo.appId #">#= localizeResource(appInfo.program) #</span>
+            <span class="column name" title="#= appInfo.description #">#= appInfo.displayName #</span>
+            <span class="column version">#= appInfo.version #</span>
+        </div>
+        # }); #
+    </div>
+</script>
+
+<div class="vca_ver">
+
+</div>
+
+<script>
+
+    var vcaVer = {
+        nodeId: "${nodeId}",
+        supportedAppList: []
+    };
+
+    vcaVer.init = function (ready)
+    {
+        if (nodeInfo)   //from parent page if any
+        {
+            vcaVer.supportedAppList = nodeInfo.dataObj.supportedAppList;
+            ready();
+        }
+        else
+        {
+            vcaVer.loading(true);
+            getNodeInfoOnCloud(vcaVer.nodeId, function (responseData)
+            {
+                vcaVer.loading(false);
+                vcaVer.supportedAppList = responseData.info.supportedAppList;
+                ready();
+            });
+        }
+    };
+
+    vcaVer.fillTable = function ()
+    {
+        var $container = $(".vca_ver");
+        $container.html("");
+        var template = kendo.template($("#versionTableTmpl").html());
+        $container.append(template(vcaVer.supportedAppList));
+    };
+
+    vcaVer.loading = function (loading)
+    {
+        kendo.ui.progress($(".vca_ver"), loading);
+    };
+
+    $(function ()
+    {
+        vcaVer.init(function ()
+        {
+            vcaVer.fillTable();
+            utils.centerKendoWin($(".vca_ver"));
+        });
+    });
+</script>

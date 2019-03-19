@@ -1,0 +1,169 @@
+<style>
+
+    .cam_selector {
+        margin: -6px;
+    }
+
+    .cam_selector .camera_tree {
+        background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        padding: 5px 5px 0px 4px;
+    }
+
+    .cam_selector #camSelectorTree {
+        width: 350px;
+        height: 400px;
+    }
+
+    .cam_selector .button_group {
+        padding: 5px;
+        text-align: right;
+        border-top: 1px solid #444;
+    }
+
+    .cam_selector .button_group .k-button {
+        display: inline-block;
+        width: 60px;
+    }
+
+    .cam_selector .search_bar {
+        margin-bottom: 5px;
+    }
+
+    .cam_selector .search_bar .input {
+        display: none;
+        margin: 0px;
+    }
+
+    .cam_selector .search_bar .k-autocomplete.k-header {
+        height: 24px;
+        width: 100%;
+        margin: 0px;
+    }
+
+    .cam_selector .collapse {
+        width: 22px;
+        height: 22px;
+        margin-top: 2px;
+        margin-left: 8px;
+        background: url(/public/css/common/images/collapse_all.png) 50% 50% no-repeat;
+        background-size: 20px 20px;
+        border: 1px solid #444;
+    }
+
+    .cam_selector .collapse:hover {
+        background-color: #F6AE40;
+    }
+
+    /*
+        cam Tree Styling
+    */
+    .cam_selector .k-image {
+        height: 20px;
+        width: 20px;
+        vertical-align: middle;
+        margin-left: 0px;
+        margin-right: 5px;
+    }
+
+    .cam_selector .k-item {
+        padding-left: 19px;
+        border-left: 1px solid #444;
+    }
+
+    .cam_selector .suspended {
+        color: #FF2E12;
+    }
+
+    .cam_selector .k-plus {
+        background: url("/public/css/common/images/plus_square_brown.png") 50% 50% no-repeat !important;
+        margin: 0px 0px 0px -12px;
+        padding: 0px;
+        height: 29px;
+        width: 20px;
+    }
+
+    .cam_selector .k-minus {
+        background: url("/public/css/common/images/minus_square_brown.png") 50% 50% no-repeat !important;
+        margin: 0px 0px 0px -12px;
+        padding: 0px;
+        height: 29px;
+        width: 20px;
+    }
+
+    .cam_selector .tree_item {
+        height: 20px;
+        margin: 5px 0px;
+    }
+
+    .cam_selector .tree_item .name {
+        color: #F6AE40;
+    }
+
+    .cam_selector .non_selectable .name {
+        color: #f5f5f5;
+    }
+
+    .cam_selector .k-state-selected {
+        background: #F6AE40;
+        border-radius: 2px;
+    }
+
+    .cam_selector .k-state-selected .name {
+        color: #222;
+    }
+
+    .cam_selector .lineage_line {
+        border-left: 1px solid #444;
+        border-bottom: 1px solid #444;
+        width: 21px;
+        margin: 0px;
+        padding: 2px 0px 2px 1px;
+    }
+
+    .cam_selector .separate_root {
+        /*margin-top: 10px;*/
+    }
+
+    .cam_selector .tree_item span {
+        display: inline-block;
+        min-width: 70px;
+        height: 24px;
+        line-height: 24px;
+        padding-right: 5px;
+        margin-left: -5px;
+    }
+</style>
+
+<script id="camSelectorItemTmpl" type="text/kendo-ui-template">
+    # var itemClass = item.isRoot? "root_item" : "child_item"; #
+    # itemClass += item.selectable? "" : " non_selectable"; #
+    # itemClass += item.disabled? " disabled_item non_selectable" : ""; #
+
+    <span id="#= item.id #" class="tree_item #= itemClass #">
+        <span class="name">#= item.name #</span>
+    </span>
+</script>
+
+<div class="cam_selector">
+    <div class="camera_tree top_box">
+        <div class="search_bar">
+            <input class="input" type="text" class="k-textbox">
+        </div>
+        <a href="javascript:camsltr.collapseFullTree()" class="k-button collapse" title="&{'collapse-all'}"></a>
+
+        <div id="camSelectorTree"></div>
+    </div>
+    <div class="button_group">
+        <a href="javascript:camsltr.close(false)" class="k-button select">&{'select'}</a> &nbsp;
+        <a href="javascript:camsltr.close(true)" class="k-button cancel">&{'cancel'}</a>
+    </div>
+</div>
+
+<script>
+
+    $(function ()
+    {
+        camsltr.generateTree("camSelectorTree");
+    });
+
+</script>

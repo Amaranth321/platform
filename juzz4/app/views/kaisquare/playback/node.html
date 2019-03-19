@@ -1,0 +1,81 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script type="text/javascript" src="${CdnRootPath}/public/javascripts/moment.js"></script>
+
+<!-- JW Player -->
+<script src="/public/javascripts/jwplayer7/jwplayer.js"></script>
+<script src="/public/javascripts/jwplayer7/key.js"></script>
+
+<!-- Period selector -->
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/rec_status_bar.css"/>
+<script src="${CdnRootPath}/public/javascripts/recording/recStatusBar.js"></script>
+
+<!-- page scripts -->
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/playback_common.css"/>
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/playback_node.css"/>
+<script src="${CdnRootPath}/public/javascripts/recording/nodeplayback.js"></script>
+
+<!-- Task monitor -->
+<link rel="stylesheet" href="${CdnRootPath}/public/javascripts/recording/taskMonitor.css"/>
+<script src="/public/javascripts/recording/taskMonitor.js"></script>
+
+
+<div class="rec_mgr">
+    <div class="title_bar">
+        <span class="title">&{'node-playback'}</span>
+    </div>
+
+    <div class="main-wrap">
+        <div class="filter-sidebar">
+            <div class="item">
+                <div class="button">
+                    <input class="camera_list" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="item">
+                <div class="calendar"></div>
+            </div>
+        </div>
+
+        <div class="display-area">
+            <div class="rec_viewer">
+                <div id="recStatusBar"></div>
+
+                <div id="movingToolBox">
+                    <a href="javascript:nodePlayback.clearPeriodSelection()" class="button clear"></a>
+
+                    <div class="period_status"></div>
+
+                    <div class="options">
+                        <a href="javascript:nodePlayback.stream()" class="button stream"
+                           title="&{'play-available-recordings'}"></a>
+                        <a href="javascript:nodePlayback.zippedDownload()" class="button zip"
+                           title="&{'download-zipped-file'}"></a>
+                        <a href="javascript:nodePlayback.exportToUSB()" class="button usb"
+                           title="&{'title-export-to-usb'}"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom_container">
+                <div class="player_area">
+                    <div class="player_box">
+                        <div id="jwClPlyr" class="player"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function ()
+    {
+        nodePlayback.init();
+    })
+
+</script>
+
+
+

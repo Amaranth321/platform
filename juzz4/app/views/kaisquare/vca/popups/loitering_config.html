@@ -1,0 +1,188 @@
+<div class="popup_wrapper">
+
+    <div class="top_box">
+        <div class="enable_drawing">
+            <input id="chbEnable" type="checkbox" onclick="enableEditing(this.checked)">
+            <label for="chbEnable">&{'edit-configuration'}</label>
+        </div>
+    </div>
+
+    <div class="vca_content">
+        <div class="left_box">
+            <div class="poly_canvas_wrapper">
+                <div id="maskCanvas" class="mask_canvas"></div>
+            </div>
+        </div>
+
+        <div class="right_box">
+
+			<div class="param_selection_box">
+                <div class="param_title">
+                &{'sensitivity'}
+                </div>
+                <input id="maskSlider" style="width: 100%; margin:0px 0px 10px 0px;">
+            </div>
+			
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'msg-duration-info'}
+                </div>
+                <input id="durationSelector" style="width: 110px">
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div id="maskErrorBox" class="param_selection_box">
+                <div style="margin-bottom: 5px">
+                &{'error-old-mask-found'}
+                </div>
+                <a href="javascript:viewOldMask()" class="k-button">View old mask</a>
+            </div>
+
+            <div class="submit_btn_box">
+                <a id="btnRestart" href="javascript:restartVca()" class="k-button">&{'restart'}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var targetInstance = null;
+    var polygonTool = null;
+    var kendoElementList = [];
+
+    function initUiElements()
+    {
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: '&{'additional-params'}',
+            isExpanded: true
+        });
+        
+        var maskSlider = $("#maskSlider").kendoSlider({
+            min: 1,
+            max: 10,
+            smallStep: 1,
+            largeStep: 1
+        }).data("kendoSlider");
+
+        kendoElementList.push(maskSlider);
+
+        var durationSelector = $("#durationSelector").kendoNumericTextBox({
+            format: "# seconds",
+            min: 1,
+            step: 1,
+            value: 5
+        }).data("kendoNumericTextBox");
+
+        kendoElementList.push(durationSelector);
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+    }
+
+    function applyCurrentSettings()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+        $("#maskSlider").data("kendoSlider").value((110 - settings.maskPercent) / 10);
+        $("#durationSelector").data("kendoNumericTextBox").value(settings.duration);
+        $("#moreParams").val(vca.convertParamsToString(settings["additional-params"]));
+
+        //mask regions
+        var regions = settings["mask-regions"];
+        if (regions)
+        {
+            polygonTool.addRegions(regions);
+        }
+        //for older versions
+        else if (settings["mask-base64"])
+        {
+            var $errorBox = $("#maskErrorBox");
+            $errorBox.show();
+        }
+
+        polygonTool.setCameraBackground(targetInstance.coreDeviceId, targetInstance.channelId);
+        scheduler.init("scheduleInfo", targetInstance.recurrenceRule);
+    }
+
+    function enableEditing(canEdit)
+    {
+        vca.enableConfigPage(kendoElementList, canEdit);
+        polygonTool.setEditable(canEdit);
+    }
+
+    function restartVca()
+    {
+    	var maskValue = $("#maskSlider").data("kendoSlider").value();
+        var duration = $("#durationSelector").data("kendoNumericTextBox").value();
+        var regions = polygonTool.getRegions();
+        if (regions.length == 0)
+        {
+            utils.popupAlert(localizeResource("msg-no-mask-drawn"));
+            return;
+        }
+
+
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "duration": duration,
+            "maskPercent": 100 - ((maskValue - 1) * 10),
+            "mask-regions": regions,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.updateVca(
+                targetInstance.instanceId,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                vca.onUpdateAnalyticsSuccess
+        );
+    }
+
+    function viewOldMask()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+        utils.displayBase64Image(settings["mask-base64"]);
+    }
+
+    $(function ()
+    {
+        polygonTool = PolygonTool("maskCanvas");
+        initUiElements();
+        initTooltips();
+
+        utils.showLoadingOverlay();
+        vca.getInstanceById("${instanceId}", function (instance)
+        {
+            targetInstance = instance;
+            applyCurrentSettings();
+            enableEditing(false);
+            utils.hideLoadingOverlay();
+        });
+    });
+
+</script>

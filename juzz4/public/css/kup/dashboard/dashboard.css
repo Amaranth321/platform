@@ -1,0 +1,449 @@
+/* CSS crunched with Crunch - http://crunchapp.net/ */
+.dashboard-container {
+  width: 100%;
+  background-image: url('images/background.png');
+  background-repeat: repeat;
+  /* height: 110%; */
+  padding-bottom: 25px;
+}
+.title {
+  /* padding: 18px 0 0 2.37859266600595%; */
+  text-align: left;
+  text-decoration: none;
+  font-size: 24px;
+  color: #8c8c8c;
+  letter-spacing: 0.05em;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  position: relative;
+  background: #212121;
+  /* min-height: 37px; */
+  float: left;
+  width: 100%;
+  margin: 0 0 0 0;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  line-height: 55px;
+  padding-left: 25px;
+}
+.dashboard-infobox {
+  display: inline-block;
+  margin: 25px 0 0 25px;
+  -webkit-border-radius: 4.44px/3px;
+  -moz-border-radius: 4.44px/3px;
+  border-radius: 4.44px/3px;
+  background: #4d4d4d;
+  min-height: 126px;
+  height: 126px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  cursor: pointer;
+  /*Will not allow bg color to leak outside borders*/
+  min-width: 30%;
+  /*min-width: 300px;*/
+}
+.dashboard-infobox.noHover {
+  cursor: default;
+}
+.dashboard-infobox-highlight {
+  display: inline-block;
+  -webkit-border-radius: 4.44px 0px 0px 4.44px;
+  -moz-border-radius: 4.44px 0px 0px 4.44px;
+  border-radius: 4.44px 0px 0px 4.44px;
+  background: #f6ae40;
+  width: 41%;
+  min-height: 126px;
+}
+.dashboard-infobox-icon {
+  margin: 0 0 0 0;
+}
+.dashboard-infobox-icon img {
+  width: 50px;
+  height: 50px;
+  margin: 38px 0 0 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.dashboard-infobox-text {
+  width: 59%;
+  float: right;
+  padding-top: 30px;
+}
+.dashboard-infobox-value {
+  font-size: 30.0px;
+  color: #f6ae40;
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: 37px 0 -6px 0;
+  float: center;
+  position: relative;
+}
+.dashboard-infobox-description {
+  font-size: 13.02px;
+  line-height: 18.02px;
+  color: #bfbfbf;
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: 0 0 -6px 0;
+  float: center;
+  position: relative;
+}
+.dashboard-chartbox {
+  display: none;
+  vertical-align: top;
+  margin: 25px 0 0 25px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  min-height: 350px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  min-width: 333px;
+  width: 46.2%;
+  background: #4d4d4d;
+}
+.dashboard-chartbox-content {
+  padding: 22px 13px 14px 13px;
+  min-height: 69%;
+  background: #282828;
+  border-radius: 3px 3px 0 0;
+  display: none;
+}
+.dashboard-chartbox-title {
+  text-align: left;
+  text-decoration: none;
+  font-size: 18px;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: -1px 0 0 9px;
+  float: left;
+  position: relative;
+}
+.dashboard-chart-container {
+  float: left;
+  clear: both;
+  position: relative;
+  margin: 3px 0 0 0;
+  width: 100%;
+  min-height: 190px;
+}
+.dash-clearfix {
+  display: inline-block;
+}
+.dash-clearfix:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.dash-people-footer-group {
+  float: left;
+  clear: both;
+  position: relative;
+  width: 100%;
+  margin: 29px 0 0 0;
+  display: none;
+  /*background: #4d4d4d;*/
+}
+.dash-people-footer-total {
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 14.4px;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: -5px auto -4px 20%;
+  float: left;
+  position: relative;
+  width: 104px;
+}
+.dash-people-footer-today {
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 14.4px;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: -5px 20% -4px auto;
+  float: right;
+  position: relative;
+  width: 87px;
+}
+.dash-security-footer-group {
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 14.4px;
+  color: #bfbfbf;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin-top: 25px;
+  margin-right: auto;
+  margin-bottom: -4px;
+  margin-left: auto;
+  float: left;
+  clear: both;
+  position: relative;
+  width: 100%;
+  display: none;
+}
+.dash-gender-footer-group {
+  float: left;
+  clear: both;
+  position: relative;
+  width: 100%;
+  margin: 30px 0 0 0;
+  display: none;
+}
+.dash-gender-footer-male {
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 14.4px;
+  color: #bfbfbf;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: -5px auto -4px 20%;
+  float: left;
+  position: relative;
+  width: 85px;
+}
+.dash-gender-footer-female {
+  text-align: center;
+  text-indent: 0;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 14.4px;
+  color: #bfbfbf;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: -5px 20% -4px auto;
+  float: right;
+  position: relative;
+  width: 85px;
+}
+/* nodata chart and text*/
+.dashboard-chartbox-content.noData {
+  display: block;
+}
+.dashboard-chartbox.noData {
+  background: #282828;
+}
+.dashboard-chartbox.isData {
+  background: #4d4d4d;
+}
+.dashboard-chart-container.noData {
+  height: 250px;
+  text-align: center;
+}
+.dashboard-chart-container.noData:before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  /* width: 0; */
+  height: 100%;
+}
+.nodata-display {
+  color: #4d4d4d;
+  font-family: Muli, sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  /* text-align: center; */
+  /* line-height: 250px; */
+  display: inline-block;
+  vertical-align: middle;
+  /* width: 400px; */
+  /* border: 1px solid; */
+}
+/*fix chart info*/
+.chartTextWrapper {
+  width: 100%;
+  height: 15px;
+  float: left;
+  clear: both;
+}
+.chartTextWrapper > .chartIcon {
+  width: 7px;
+  height: 7px;
+  float: left;
+  margin: 2px 5px 0 0;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  float: right;
+}
+.chartTextWrapper > .chartText {
+  text-align: left;
+  text-decoration: none;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  margin: 0 0 -2px 0;
+  float: right;
+  width: 90px;
+  /*border: 1px solid red;*/
+}
+.chartTextWrapper > .chartText > span:nth-child(1) {
+  float: left;
+}
+.chartTextWrapper > .chartText > span:nth-child(2) {
+  margin-right: 0px;
+  float: right;
+}
+.chartSvgWrapper {
+  width: 100%;
+  float: left;
+  clear: both;
+}
+.peopleCountingWrapper > .chartIcon {
+  background: #f6ae40;
+}
+.peopleCountingWrapper > .chartText {
+  color: #f6ae40;
+}
+.securityAlertsWrapper > .chartIcon {
+  background: #f6ae40;
+}
+.securityAlertsWrapper > .chartText {
+  color: #f6ae40;
+}
+.genderProfilingWrapper.female > .chartIcon {
+  background: #ff675d;
+}
+.genderProfilingWrapper.female > .chartText {
+  color: #ff675d;
+}
+.genderProfilingWrapper.male > .chartIcon {
+  background: #32a8ad;
+}
+.genderProfilingWrapper.male > .chartText {
+  color: #32a8ad;
+}
+/**fix chart text group*/
+.chartTextGroup {
+  height: 100px;
+  /*border: 1px solid red;*/
+  width: 100%;
+  float: left;
+  clear: both;
+  display: none;
+}
+.chartTextGroup > .chartOnly {
+  /*border: 1px solid white;*/
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.chartTextGroup > .chartLeft {
+  /*border: 1px solid white;*/
+  float: left;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+}
+.chartTextGroup > .chartRight {
+  /*border: 1px solid white;*/
+  float: right;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+}
+.chartTextGroup > .chartOnly:before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+.chartTextGroup > .chartLeft:before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+.chartTextGroup > .chartRight:before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+.chartTextGroup > .chartOnly > .chartText,
+.chartTextGroup > .chartLeft > .chartText,
+.chartTextGroup > .chartRight > .chartText {
+  font-size: 12px;
+  line-height: 14.4px;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Muli, sans-serif;
+  display: inline-block;
+  vertical-align: middle;
+  /*border: 1px solid black;*/
+}
+.chartTextGroup > .chartOnly > .chartText > span:nth-child(1),
+.chartTextGroup > .chartLeft > .chartText > span:nth-child(1),
+.chartTextGroup > .chartRight > .chartText > span:nth-child(1) {
+  font-size: 30px;
+  line-height: 36px;
+  color: #f6ae40;
+}
+.chartTextGroup > .chartOnly > .chartText > span:nth-child(2),
+.chartTextGroup > .chartLeft > .chartText > span:nth-child(2),
+.chartTextGroup > .chartRight > .chartText > span:nth-child(2) {
+  line-height: 18px;
+}
+/* fix other detail*/
+@media (max-width: 1015px) {
+  .dashboard-infobox {
+    min-width: 93%;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+  }
+  .dashboard-chartbox {
+    min-width: 93%;
+  }
+}
+.dashboard-infobox:not(.noHover):hover {
+  background-color: #404040;
+}
+.dashboard-infobox:not(.noHover):hover > .dashboard-infobox-highlight {
+  background-color: #eb981e;
+}
+.pieChart {
+  height: 160px;
+}
+#content {
+  padding-bottom: 62px;
+}
+#showMale {
+  color: #32a8ad;
+}
+#showFemale {
+  color: #ff675d;
+}

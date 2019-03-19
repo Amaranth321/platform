@@ -1,0 +1,236 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="${CdnRootPath}/public/javascripts/reports/raphael.min.fixed.js"></script>
+<script src="${CdnRootPath}/public/javascripts/reports/kaiFlow.js"></script>
+
+<style>
+    .colors {
+        color: #205FA4;
+        color: #ff2a3f;
+        color: #8dc051;
+        color: #fe642f;
+        color: #f6ae40;
+        color: #428bca;
+        color: #32a8ad;
+        color: #ffe400;
+        color: #b777d5;
+    }
+</style>
+
+<a href="javascript:generate()" class="k-button">Mock data</a>
+<a href="javascript:generateReal(0)" class="k-button">real data</a>
+<a href="javascript:generateReal(1)" class="k-button">all zero</a>
+<a href="javascript:generateReal(2)" class="k-button">one zero</a>
+<a href="javascript:test100()" class="k-button">100%</a>
+<a href="javascript:testEmptyBg()" class="k-button">empty bg</a>
+<a href="javascript:test10Regions()" class="k-button">10 regions</a>
+<a href="javascript:KaiFlow.openInNewWin()" class="k-button">export</a>
+<br>
+<br>
+
+<div id="flowContainer"></div>
+
+<script>
+
+var bgImageUrl = "/public/css/common/images/office_sample.jpg";
+
+var options = {
+    cssSelector: "flowContainer",
+    width: 600,
+    height: 450,
+    showRegionsByDefault: false
+};
+
+var mockFlowData = [
+    {from: "R1", to: "R2", count: utils.getRandomInteger(50, 500)},
+    {from: "R1", to: "R3", count: utils.getRandomInteger(50, 500)},
+    {from: "R2", to: "R1", count: utils.getRandomInteger(50, 500)},
+    {from: "R2", to: "R3", count: utils.getRandomInteger(50, 500)},
+    {from: "R3", to: "R1", count: utils.getRandomInteger(50, 500)},
+    {from: "R3", to: "R2", count: utils.getRandomInteger(50, 500)}
+];
+
+var regions1 = {"sourceName": "R1", "regions": [
+    {"name": "R1", "points": [
+        {"x": "0.640", "y": "0.080"},
+        {"x": "0.890", "y": "0.060"},
+        {"x": "0.965", "y": "0.227"},
+        {"x": "0.938", "y": "0.583"},
+        {"x": "0.680", "y": "0.500"}
+    ]},
+    {"name": "R2", "points": [
+        {"x": "0.545", "y": "0.490"},
+        {"x": "0.940", "y": "0.663"},
+        {"x": "0.968", "y": "0.973"},
+        {"x": "0.487", "y": "0.927"}
+    ]},
+    {"name": "R3", "points": [
+        {"x": "0.563", "y": "0.043"},
+        {"x": "0.500", "y": "0.370"},
+        {"x": "0.087", "y": "0.947"},
+        {"x": "0.175", "y": "0.383"},
+        {"x": "0.258", "y": "0.067"}
+    ]}
+]};
+
+var regions2 = {"sourceName": null, "regions": [
+    {"name": "R1", "points": [
+        {"x": "0.260", "y": "0.020"},
+        {"x": "0.978", "y": "0.033"},
+        {"x": "0.960", "y": "0.383"},
+        {"x": "0.077", "y": "0.433"}
+    ]},
+    {"name": "R2", "points": [
+        {"x": "0.060", "y": "0.460"},
+        {"x": "0.393", "y": "0.463"},
+        {"x": "0.367", "y": "0.950"},
+        {"x": "0.043", "y": "0.950"}
+    ]},
+    {"name": "R3", "points": [
+        {"x": "0.415", "y": "0.433"},
+        {"x": "0.385", "y": "0.977"},
+        {"x": "0.983", "y": "0.973"},
+        {"x": "0.970", "y": "0.410"}
+    ]}
+], "minWidth": 0.05, "minHeight": 0.1, "additional-params": {}};
+
+var region10 = {"sourceName": "R1", "regions": [
+    {"name": "R1", "points": [
+        {"x": "0.028", "y": "0.973"},
+        {"x": "0.015", "y": "0.730"},
+        {"x": "0.175", "y": "0.760"},
+        {"x": "0.220", "y": "0.963"}
+    ]},
+    {"name": "R2", "points": [
+        {"x": "0.365", "y": "0.970"},
+        {"x": "0.357", "y": "0.743"},
+        {"x": "0.610", "y": "0.717"},
+        {"x": "0.637", "y": "0.973"}
+    ]},
+    {"name": "R3", "points": [
+        {"x": "0.720", "y": "0.967"},
+        {"x": "0.700", "y": "0.673"},
+        {"x": "0.950", "y": "0.687"},
+        {"x": "0.978", "y": "0.980"}
+    ]},
+    {"name": "R4", "points": [
+        {"x": "0.698", "y": "0.617"},
+        {"x": "0.710", "y": "0.353"},
+        {"x": "0.970", "y": "0.343"},
+        {"x": "0.960", "y": "0.623"}
+    ]},
+    {"name": "R5", "points": [
+        {"x": "0.705", "y": "0.233"},
+        {"x": "0.713", "y": "0.030"},
+        {"x": "0.958", "y": "0.017"},
+        {"x": "0.965", "y": "0.267"}
+    ]},
+    {"name": "R6", "points": [
+        {"x": "0.652", "y": "0.297"},
+        {"x": "0.660", "y": "0.010"},
+        {"x": "0.405", "y": "0.030"},
+        {"x": "0.367", "y": "0.290"}
+    ]},
+    {"name": "R7", "points": [
+        {"x": "0.330", "y": "0.270"},
+        {"x": "0.318", "y": "0.023"},
+        {"x": "0.015", "y": "0.027"},
+        {"x": "0.015", "y": "0.327"}
+    ]},
+    {"name": "R8", "points": [
+        {"x": "0.022", "y": "0.570"},
+        {"x": "0.010", "y": "0.343"},
+        {"x": "0.305", "y": "0.310"},
+        {"x": "0.280", "y": "0.493"}
+    ]},
+    {"name": "R9", "points": [
+        {"x": "0.350", "y": "0.637"},
+        {"x": "0.355", "y": "0.377"},
+        {"x": "0.610", "y": "0.363"},
+        {"x": "0.623", "y": "0.637"}
+    ]},
+    {"name": "R10", "points": [
+        {"x": "0.237", "y": "0.863"},
+        {"x": "0.120", "y": "0.650"},
+        {"x": "0.223", "y": "0.557"},
+        {"x": "0.362", "y": "0.690"}
+    ]}
+], "minWidth": 0.05, "minHeight": 0.1, "gmask-regions": [], "additional-params": {}};
+
+function generate() {
+    KaiFlow.generate(options, regions2, mockFlowData, bgImageUrl);
+}
+
+function test100() {
+    var fullPercent = [
+        {from: "R1", to: "R2", count: 0},
+        {from: "R1", to: "R3", count: 59}
+    ];
+    KaiFlow.generate(options, regions1, fullPercent, bgImageUrl);
+}
+
+function testEmptyBg() {
+    KaiFlow.generate(options, regions1, mockFlowData, null);
+}
+
+function test10Regions() {
+    var flowData = [
+        {"from": "R6", "to": "R9", "_id": "55fa9915ae52aae3744f42b6", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 1, "date": "2015/09/17 10:00:00", "time": 1442484000000, "hour": 0},
+        {"from": "R5", "to": "R4", "_id": "55fa9915ae52aae3744f42b5", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 1, "date": "2015/09/17 10:00:00", "time": 1442484000000, "hour": 0},
+        {"from": "R9", "to": "R2", "_id": "55fa9915ae52aae3744f42b4", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 1, "date": "2015/09/17 10:00:00", "time": 1442484000000, "hour": 0},
+        {"from": "R7", "to": "R8", "_id": "55fa98b3ae52aae3744f42b3", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 1, "date": "2015/09/17 10:00:00", "time": 1442484000000, "hour": 0},
+        {"from": "R3", "to": "R4", "_id": "55fa98b3ae52aae3744f42b2", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 1, "date": "2015/09/17 10:00:00", "time": 1442484000000, "hour": 0},
+        {"from": "R2", "to": "R1", "_id": "55fa8d96ae52aae3744f42b0", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 2, "date": "2015/09/17 09:00:00", "time": 1442480400000, "hour": 0},
+        {"from": "R1", "to": "R2", "_id": "55fa7cbcae52aae3744f42ae", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 1, "date": "2015/09/17 08:00:00", "time": 1442476800000, "hour": 0},
+        {"from": "R2", "to": "R1", "_id": "55fa79e7ae52aae3744f42ad", "_created": 0, "_modified": 0, "deviceId": "24", "channelId": "1", "count": 2, "date": "2015/09/17 08:00:00", "time": 1442476800000, "hour": 0}
+    ];
+
+    KaiFlow.generate(options, region10, flowData, bgImageUrl);
+}
+
+function generateReal(type) {
+
+    var regions = {"sourceName": "R1", "regions": [
+        {"name": "R1", "points": [
+            {"x": "0.792", "y": "0.013"},
+            {"x": "0.738", "y": "0.343"},
+            {"x": "0.980", "y": "0.613"},
+            {"x": "0.985", "y": "0.027"}
+        ]},
+        {"name": "R2", "points": [
+            {"x": "0.745", "y": "0.010"},
+            {"x": "0.690", "y": "0.363"},
+            {"x": "0.022", "y": "0.583"},
+            {"x": "0.233", "y": "0.027"}
+        ]},
+        {"name": "R3", "points": [
+            {"x": "0.020", "y": "0.667"},
+            {"x": "0.677", "y": "0.407"},
+            {"x": "0.960", "y": "0.673"},
+            {"x": "0.953", "y": "0.973"},
+            {"x": "0.030", "y": "0.967"}
+        ]}
+    ]};
+
+    var trafficFlowOutput = '{"evt":"tflow","time":"20141212T105317.414454Z","tios":[{"tioIdx":0,"counts":[14,11,17],"src2dst":[3,5],"dst2src":[5,8]}]}';
+    var nullOutput = '{"evt":"tflow","time":"20141212T105317.414454Z","tios":[{"tioIdx":0,"counts":[0,0,0],"src2dst":[0,0],"dst2src":[5,8]}]}';
+    var oneZeroOutput = '{"evt":"tflow","time":"20141212T105317.414454Z","tios":[{"tioIdx":0,"counts":[0,0,0],"src2dst":[6,0]}]}';
+
+    var jsonOutput = {};
+    switch (type) {
+        case  0:
+            jsonOutput = JSON.parse(trafficFlowOutput);
+            break;
+        case  1:
+            jsonOutput = JSON.parse(nullOutput);
+            break;
+        case  2:
+            jsonOutput = JSON.parse(oneZeroOutput);
+            break;
+    }
+
+    var flowData = KaiFlow.convertToFlowData(regions, jsonOutput);
+    KaiFlow.generate(options, regions, flowData, bgImageUrl);
+}
+
+</script>

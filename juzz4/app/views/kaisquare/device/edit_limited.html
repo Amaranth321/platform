@@ -1,0 +1,172 @@
+<script src="/public/javascripts/jquery.tagit.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/common/jquery.tagit.css"/>
+
+<div class="edit_node">
+    <div id="deviceEditForm">
+
+        <div class="group_box">
+            <div class="group_title_wrapper">
+                <span class="group_title">&{'device-details'}</span>
+            </div>
+
+            <div class="input_line">
+                <label for="name">&{'name'}</label>
+                <input name="name" class="k-input k-textbox" style="width: 170px"
+                       required validationMessage="&{'required'}"
+                       data-bind="value:name">
+            </div>
+
+            <div class="input_line">
+                <label for="addressEdw">&{'address'}</label>
+                <input id="addressEdw" name="address" class="k-input k-textbox" style="width: 170px"
+                       validationMessage="&{'required'}"
+                       data-bind="value:address">
+            </div>
+
+            <div class="input_line">
+                <label for="latitudeEdw">&{'latitude'}</label>
+                <input id="latitudeEdw" class="progress" name="latitude" style="width:170px;"
+                       required validationMessage="&{'invalid-value'}"
+                       data-bind="value:latitude">
+            </div>
+
+            <div class="input_line">
+                <label for="longitudeEdw">&{'longitude'}</label>
+                <input id="longitudeEdw" class="progress" name="longitude" style="width:170px;"
+                       required validationMessage="&{'invalid-value'}"
+                       data-bind="value:longitude">
+            </div>
+        </div>
+
+        <div class="separator1"></div>
+
+        <div class="input_line" style="display: none;">
+            <input id="labels" name="labels" data-bind="value:labels">
+        </div>
+    </div>
+
+    <div class="error_box">
+        <div id=geocode-error-box-edw class="error_msg_line">* &{'msg-address-not-found'}</div>
+    </div>
+
+    <div style="text-align: center;">
+        <a id="submitEdw" href="#" style="margin-right: 10px"
+           class="k-button">&{'update'}</a>
+        <a id=cancelEdw href="#" class="k-button">&{'close'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#geocode-error-box-edw").hide();
+    $("#deviceKey-host-msg").hide();
+    $("#cameraDetails").hide();
+
+    var vmEditDvc = kendo.observable({
+    	id: "${targetDevice.id}",
+        name: "${targetDevice.name}",
+        model: "${targetDevice.model.modelId}",
+        deviceKey: "${targetDevice.deviceKey}",
+        host: "${targetDevice.host}",
+        port: "${targetDevice.port}" == null || "${targetDevice.port}" == "" ? "" : parseInt("${targetDevice.port}"),
+        label: "${labelString}" == null ? "" : "${labelString}".replace(/[[\]]/g, ''),
+        login: "${targetDevice.login}",
+        password: "${targetDevice.password}",
+        address: "${targetDevice.address}",
+        latitude: "${targetDevice.latitude}",
+        longitude: "${targetDevice.longitude}",
+        cloudRecordingEnabled: ("${targetDevice.cloudRecordingEnabled}" == 'true')
+    });
+    
+    kendo.bind($("#deviceEditForm"), vmEditDvc);
+    var validator = $("#deviceEditForm").kendoValidator().data("kendoValidator");
+
+    $("#modelList").kendoDropDownList({
+        dataTextField: "name",
+        dataValueField: "modelId",
+        dataSource: {
+            transport: {
+                read: function (options) {
+                    getDeviceModels("", onSuccessGetDeviceModels, null);
+                    function onSuccessGetDeviceModels(responseData) {
+                        if (responseData.result == "ok" && responseData["model-list"] != null) {
+                            options.success(responseData["model-list"]);
+
+                            $("#modelList").data("kendoDropDownList").select(function (dataItem) {
+                                return dataItem.modelId == "${targetDevice.model.modelId}";
+                            });
+                        }
+                    }
+                }
+            }
+        },
+        change: function (e) {
+            var selectedModel = $("#modelList").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+            vmEditDvc.set("model", selectedModel.modelId);
+        }
+    });
+
+    $("#latitudeEdw").kendoNumericTextBox({
+        format: "n3",
+        decimals: 3
+    })
+
+    $("#longitudeEdw").kendoNumericTextBox({
+        format: "n3",
+        decimals: 3
+    })
+
+    //get list of label from backend for auto suggestions
+    deviceManager.WaitForReady(function () {
+        $("#labels").tagit({
+            placeholderText: localizeResource('label-info'),
+            availableTags: deviceManager.userDevicesLabels,
+            autocomplete: {autoFocus: true}
+        });
+    });
+
+    $("#submitEdw").click(function () {
+        $("#geocode-error-box-edw").hide();
+        $("#deviceKey-host-msg").hide();
+
+        if (validator.validate()) {
+            if (vmEditDvc.deviceKey == "" && (vmEditDvc.host == "" || vmEditDvc.port == "")) {
+                $("#deviceKey-host-msg").show();
+                return;
+            }
+
+            vmEditDvc.latitude = $("#latitudeEdw").val();
+            vmEditDvc.longitude = $("#longitudeEdw").val();
+            vmEditDvc.label = $("#labels").val().replace(/[[\]]/g, '');
+            updateDevice("", vmEditDvc, function (responseData) {
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'update-successful'}");
+                    closePopupWindow();
+                }
+                else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        }
+    });
+
+    $("#cancelEdw").click(function () {
+        closePopupWindow();
+    });
+
+    $('#btnGetLatlng').click(function () {
+        deviceManager.devicePageGeocode({'address': $('#addressEdw').val()},
+                {'lat': $('#latitudeEdw'), 'lng': $('#longitudeEdw'), 'errorBox': $('#geocode-error-box-edw')});
+
+    });
+	
+  	//update lat lng after address is changed
+    $("#addressEdw").blur(function () {
+    	deviceManager.devicePageGeocode({'address': $('#addressEdw').val()},
+                {'lat': $('#latitudeEdw'), 'lng': $('#longitudeEdw'), 'errorBox': $('#geocode-error-box-edw')});
+    });
+  
+    function closePopupWindow() {
+        $("#cancelEdw").closest(".k-window-content").data("kendoWindow").close();
+    }
+
+</script>

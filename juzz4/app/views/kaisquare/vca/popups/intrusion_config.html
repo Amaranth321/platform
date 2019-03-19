@@ -1,0 +1,199 @@
+<div class="popup_wrapper">
+    <div class="top_box">
+        <div class="enable_drawing">
+            <input id="chbEnable" type="checkbox" onclick="enableEditing(this.checked)">
+            <label for="chbEnable">&{'edit-configuration'}</label>
+        </div>
+    </div>
+
+    <div class="vca_content">
+        <div class="left_box">
+            <div class="poly_canvas_wrapper">
+                <div id="maskCanvas" class="mask_canvas"></div>
+            </div>
+        </div>
+
+        <div class="right_box">
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'sensitivity'}
+                </div>
+                <input id="maskSlider" style="width: 100%; margin:0px 0px 10px 0px;">
+            </div>
+
+            <div class="param_selection_box">
+                <div id="paramExpander">
+                    <div style="text-align: center;margin-top: 5px">
+                        <input id="moreParams" type="text" class="k-input k-textbox more_params"/>
+                        <span id="moreParamInfo" class="help_icon"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param_selection_box">
+                <div class="param_title">
+                &{'operating-schedule'}
+                    <a id="btnSchedule" href="javascript:scheduler.openScheduler()" class="btn_schedule"></a>
+                </div>
+                <span id="scheduleInfo"></span>
+            </div>
+
+            <div class="param_selection_box config_gmask">
+                <div class="param_title ">
+                &{'configure-gmask'}
+                    <span id="gmaskInfo" class="help_icon"></span>
+                    <a href="javascript:configureGmask()" class="btn_gmask"></a>
+                </div>
+                <div>
+                    <span class="regions">&{'none'}</span>
+                </div>
+            </div>
+
+            <div id="maskErrorBox" class="param_selection_box">
+                <div style="margin-bottom: 5px">
+                &{'error-old-mask-found'}
+                </div>
+                <a href="javascript:viewOldMask()" class="k-button">View old mask</a>
+            </div>
+
+            <div class="submit_btn_box">
+                <a id="btnRestart" href="javascript:restartVca()" class="k-button">&{'restart'}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var targetInstance = null;
+    var polygonTool = null;
+    var gmaskRegions = [];
+    var kendoElementList = [];
+
+    function initUiElements()
+    {
+        $("#paramExpander").kendoExpander({
+            name: "Expander",
+            title: localizeResource('additional-params'),
+            isExpanded: true
+        });
+
+        var maskSlider = $("#maskSlider").kendoSlider({
+            min: 1,
+            max: 10,
+            smallStep: 1,
+            largeStep: 1
+        }).data("kendoSlider");
+
+        kendoElementList.push(maskSlider);
+    }
+
+    function initTooltips()
+    {
+        utils.createTooltip("moreParamInfo", "bottom", localizeResource('msg-more-params-info'));
+        utils.createTooltip("gmaskInfo", "bottom", localizeResource('msg-gmask-info'));
+    }
+
+    function applyCurrentSettings()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+        $("#maskSlider").data("kendoSlider").value((110 - settings.maskPercent) / 10);
+        $("#moreParams").val(vca.convertParamsToString(settings["additional-params"]));
+
+        //mask regions
+        var regions = settings["mask-regions"];
+        if (regions)
+        {
+            polygonTool.addRegions(regions);
+        }
+        //for older versions
+        else
+        {
+            var $errorBox = $("#maskErrorBox");
+            $errorBox.show();
+        }
+
+        polygonTool.setCameraBackground(targetInstance.coreDeviceId, targetInstance.channelId);
+        scheduler.init("scheduleInfo", targetInstance.recurrenceRule);
+        gmaskRegions = settings["gmask-regions"];
+        VcaMgr.updateGmaskStatus(gmaskRegions);
+    }
+
+    function enableEditing(canEdit)
+    {
+        vca.enableConfigPage(kendoElementList, canEdit);
+        polygonTool.setEditable(canEdit);
+    }
+
+    function configureGmask()
+    {
+        VcaMgr.openGmaskTool(gmaskRegions, targetInstance.coreDeviceId, targetInstance.channelId,
+                function (saved, regionsDrawn)
+                {
+                    if (saved)
+                    {
+                        gmaskRegions = regionsDrawn;
+                        VcaMgr.updateGmaskStatus(gmaskRegions);
+                    }
+                })
+    }
+
+    function restartVca()
+    {
+        if (targetInstance == null)
+        {
+            return;
+        }
+
+        var maskValue = $("#maskSlider").data("kendoSlider").value();
+
+        var regions = polygonTool.getRegions();
+        if (regions.length == 0)
+        {
+            utils.popupAlert("&{'msg-no-mask-drawn'}")
+            return;
+        }
+
+        var additionalParams = vca.parseAdditionalParams($("#moreParams").val());
+        if (additionalParams == null)
+        {
+            utils.popupAlert(localizeResource("invalid-additional-params"));
+            return;
+        }
+
+        var jsonThresholds = {
+            "maskPercent": 100 - ((maskValue - 1) * 10),
+            "mask-regions": regions,
+            "gmask-regions": gmaskRegions,
+            "additional-params": additionalParams
+        };
+
+        utils.showLoadingOverlay();
+        kupapi.updateVca(
+                targetInstance.instanceId,
+                JSON.stringify(jsonThresholds),
+                scheduler.selectedRecurrenceRule,
+                vca.onUpdateAnalyticsSuccess
+        );
+    }
+
+    function viewOldMask()
+    {
+        var settings = JSON.parse(targetInstance.thresholds);
+        utils.displayBase64Image(settings["mask-base64"]);
+    }
+
+    $(function ()
+    {
+        polygonTool = PolygonTool("maskCanvas");
+        initUiElements();
+        initTooltips();
+
+        vca.getInstanceById("${instanceId}", function (instance)
+        {
+            targetInstance = instance;
+            applyCurrentSettings();
+            enableEditing(false);
+        })
+    });
+
+</script>

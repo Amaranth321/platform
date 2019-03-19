@@ -1,0 +1,141 @@
+<div style="font-size: 12px;font-family: verdana; width: 541px">
+    <div id="inventoryForm" class="kup-form-box" class="k-content" style="height: 180px">
+
+        <div class="k-edit-label"><label for="registrationName">&{'registration-number'}</label></div>
+        <div class="k-edit-field" data-container-for="registrationName">
+            <input type="text" class="k-input k-textbox" name="registrationName" style="width: 210px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:registrationName" maxlength='100'>
+        </div>
+
+        <div class="k-edit-label"><label for="model">&{'model'}</label></div>
+        <div class="k-edit-field" data-container-for="model">
+            <input id=modelList name="model" style="width: 210px">
+        </div>
+
+        <div class="k-edit-label"><label for="macAddress">&{'mac-address'}</label></div>
+        <div class="k-edit-field" data-container-for="macAddress">
+            <input id="macAddress" type="text" class="k-input k-textbox" required validationMessage="&{'required'}" 
+                   name="macAddress" style="width: 210px" data-validmask-msg="&{'incomplete'}"
+                   data-bind="value:macAddress">
+        </div>
+    </div>
+    <div align="center">
+        <a id="btnUpdate" href="#" class="k-button">&{'update'}</a> &nbsp;
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        "id": "${inventoryItem.id}",
+        "registrationName": "${inventoryItem.registrationNumber}",
+        "modelNumber": "",
+        "macAddress": "${inventoryItem.macAddress}",
+        "trim": function() {
+            this.registrationName = this.registrationName.trim();
+            this.refresh();
+        },
+        refresh: function() {
+            kendo.bind($("#inventoryForm"), this);
+        }
+    });
+    kendo.bind($("#inventoryForm"), viewModel);
+    $(function() {
+
+        loadKendoElements();
+        viewModel.refresh();
+        var validator = $("#inventoryForm").kendoValidator({
+            rules: {
+                validmask: function(input) {
+                    if (input.is("[data-validmask-msg]") && input.val() != "") {
+                        var maskedtextbox = input.data("kendoMaskedTextBox");
+                        return maskedtextbox.value().indexOf(maskedtextbox.options.promptChar) === -1;
+                    }
+
+                    return true;
+                }
+            }
+        }).data("kendoValidator");
+
+        $("#btnUpdate").click(function() {
+            viewModel.trim();
+            if (!validator.validate()) {
+                return;
+            }
+            if (viewModel.modelNumber == "" || viewModel.modelNumber == "&{'none'}") {
+                utils.popupAlert("&{'model-not-selected'}");
+                return;
+            }
+
+            updateInventory("", viewModel, function(responseData) {
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'inventory-updated'}");
+                    window.parent.$("#invGrid").data("kendoGrid").dataSource.read();
+                    closePopupWindow();
+                }
+                else {
+
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        });
+
+        $("#btnCancel").click(function() {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        }
+        ;
+    });
+
+
+    function loadKendoElements() {
+        $("#modelList").kendoDropDownList({
+            optionLabel: "&{'none'}",
+            dataTextField: "name",
+            dataValueField: "modelId",
+            dataSource: {
+                transport: {
+                    read: function(options) {
+                        getDeviceModels("", onSuccessGetDeviceModels, null);
+                        function onSuccessGetDeviceModels(responseData) {
+                            if (responseData.result == "ok" && responseData["model-list"] != null) {
+                                options.success(responseData["model-list"]);
+
+                                $("#modelList").data("kendoDropDownList").select(function(dataItem) {
+                                    viewModel.set("modelNumber", "");
+                                    if (dataItem.modelId == "${inventoryItem.modelNumber}") {
+                                        viewModel.set("modelNumber", dataItem.modelId);
+                                        return dataItem.modelId == "${inventoryItem.modelNumber}";
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            },
+            change: function(e) {
+                var selectedModel = $("#modelList").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+                if (selectedModel.name == "&{'none'}") {
+                    viewModel.set("modelNumber", "");
+                    return;
+                }
+                viewModel.set("modelNumber", selectedModel.modelId);
+            }
+        });
+
+        $("#macAddress").kendoMaskedTextBox({
+            mask: "@@:@@:@@:@@:@@:@@",
+            rules: {
+                "@": /[0-9a-fA-F]/
+            },
+            change: function(e) {
+                viewModel.set("macAddress", this.value());
+            }
+        });
+    }
+</script>

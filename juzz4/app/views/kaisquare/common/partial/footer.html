@@ -1,0 +1,28 @@
+<div class="hr">&nbsp;</div>
+<div class="tiles-content w100">
+    <div class="tiles tal-left">
+        v${platformVersion} Copyright © 2016
+
+    	#{if applicationType == 'cloud'}
+        	<a href="http://www.kaisquare.com/" target="_blank">KAI Square</a>
+        #{/if}
+        #{else}
+		    KAI Square
+		#{/else}
+
+        | &{'right-reserved'}
+
+        #{if applicationType == 'node'}
+        | <a href="javascript:DvcMgr.viewNodeLocalInfo()">&{'node-information'}</a>
+        #{/if}
+    </div>
+    <!-- End of tiles-->
+
+    <div class="tiles tal-center">&{'footer-info-massage'}</div>
+    <!-- End of tiles-->
+
+    <div class="tiles tal-right"><a href="/${HtmlPath}/footer/index" target="_blank" id="eula">&{'terms-privacy'}</a>
+    </div>
+    <!-- End of tiles-->
+</div>
+<!-- End of tiles-content-->

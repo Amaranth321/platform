@@ -1,0 +1,32 @@
+<style>
+    .node_stats {
+        min-height: 100px;
+        min-width: 50px;
+    }
+</style>
+
+<div class="node_stats">
+    <pre class="grid"></pre>
+</div>
+
+<script>
+    var nodeStats = {
+        nodeId: "${nodeId}",
+    };
+
+    nodeStats.init = function ()
+    {
+        ajaxPost(nodeStats.api, {"node-id": nodeStats.nodeId }, function (res)
+        {
+            var resData = res.stats;
+            var stats = resData ? JSON.stringify(resData.summaryStats, null, 2) : "";
+            $(".node_stats .grid").html(stats);
+            utils.centerKendoWin($(".node_stats"));
+        }, null);
+    };
+
+    $(function ()
+    {
+        nodeStats.init();
+    })
+</script>

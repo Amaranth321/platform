@@ -1,0 +1,67 @@
+<div class="occupancy_wrapper" style="display: none;">
+	<div class="vca_report_line_chart"> 
+		<div class="kupAnalysisReports">
+	         <div class="panel"  style="padding:20px 20px 20px 20px;">
+	             <div class="panel-title">
+	                 <h4 class="panel-heading">&{'current-occupancy'}</h4>
+	
+	             </div><!-- // end panel-title -->
+	
+	             <div class="panel-body">
+	
+	             <!--kupActionsGroup -->
+	             <div class="kupActionsGroup" >
+	
+	                 <!-- kupTimeSetup -->
+	                 <div class="kupTimeSetup">
+	                     <button id="intervalStatusBtn" class="btn btn-warning pull-left kupBtnPause"><i class="interval-status-icon fa fa-pause"></i></button>
+	                     <label class="title">&{'refresh-every'}</label>
+	                     <div class="input-group kupSpinner">
+	                         <input id="intervalTime" type="text">
+	                         <span class="input-group-btn">
+	                             <button id="saveIntervalBtn" class="btn btn-warning">&{'save'}</button>
+	                         </span>
+	                     </div>
+	
+	                 </div>
+	                 <!-- //end kupTimeSetup -->
+	
+	             </div><!-- // end kupActionsGroup -->
+	
+	                 <!-- eventResult -->
+	                 <div id="eventResult" class="dataList" role="tablist" aria-multiselectable="true">
+	
+	                     <!-- // Human Traffic Flow using-->
+	                     <!-- row -->
+	                     <div class="row">
+	
+	                         <table id="currentOccupancyTable" class="table table-bordered display nowrap dataTable" cellspacing="0" width="100%" data-search="true">
+	                             <thead>
+	                                 <tr>
+	                                     <th data-field="site" data-sortable="true">&{'site-name'}</th>
+	                                     <th data-field="occupancy" data-sortable="true">&{'current'}</th>
+	                                     <th data-field="min" data-sortable="true">&{'average-lowest'}</th>
+	                                     <th data-field="max" data-sortable="true">&{'average-highest'}</th>
+	                                 </tr>
+	                             </thead>
+	                             <tbody>
+	                                 <!-- <tr class="kupActive">
+	                                     <td>Thai Node 02</td>
+	                                     <td><span class="kupPoint">2,421</span></td>
+	                                     <td><span class="kupPoint">2,232</span> (9/1 13:00)</td>
+	                                     <td><span class="kupPoint">1500</span> (9/1 13:00)</td>
+	                                 </tr> -->
+	                             </tbody>
+	                         </table>
+	
+	                     </div><!-- // end row -->
+	
+	                 </div><!-- // end eventResult -->
+	
+	             </div>
+	
+	         </div><!-- // end panel -->
+	     </div><!-- // end kupAnalysisReports -->
+
+	</div>
+</div>

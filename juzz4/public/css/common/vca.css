@@ -1,0 +1,399 @@
+/* override start */
+
+.k-i-note {
+    margin-top: -3px;
+    margin-left: 5px;
+}
+
+#vcaInstanceGrid .k-loading-image {
+    background-image: none;
+}
+
+#vcaInstanceGrid .k-loading-color {
+    opacity: 0;
+}
+
+/* override end */
+
+.disable_edit_overlay {
+    position: absolute;
+    top: 35px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    display: block;
+    z-index: 100000;
+}
+
+.popup_wrapper {
+}
+
+.popup_wrapper .leaflet-container {
+    background-color: rgba(255, 0, 0, 0.0);
+}
+
+.popup_wrapper .float_right {
+    float: right;
+}
+
+.popup_wrapper .float_left {
+    float: left;
+}
+
+.popup_wrapper .top_box {
+    display: none;
+    background: #252525 url(kendo/textures/brushed-metal.png) 0 0 repeat;
+    border-bottom: 1px solid #444;
+    padding: 5px;
+    height: 32px;
+    margin: -6px -5px 5px -5px;
+}
+
+.popup_wrapper .top_box input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.popup_wrapper .vca_content {
+    color: #F6AE40;
+}
+
+.popup_wrapper label {
+    text-align: left;
+    line-height: 28px;
+    width: 130px;
+    display: inline-block;
+}
+
+.popup_wrapper span {
+    color: whitesmoke;
+}
+
+.popup_wrapper .left_box {
+    float: left;
+    min-width: 350px;
+}
+
+.popup_wrapper .left_box .mask_canvas {
+    width: 520px;
+    height: 390px;
+}
+
+.popup_wrapper .right_box {
+    float: left;
+    margin-left: 7px;
+    margin-bottom: 25px;
+    width: 350px;
+}
+
+.popup_wrapper .param_title {
+    margin-bottom: 8px;
+}
+
+.popup_wrapper .help_icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin: 0px 0px -3px 5px;
+    background: url(images/help.png) center center no-repeat;
+    background-size: 14px 14px;
+}
+
+.popup_wrapper .param_selection_box {
+    background: #303030 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    /*border: 1px solid #353535;*/
+    border-radius: 2px;
+    padding: 7px 10px 10px 10px;
+    margin-bottom: 7px;
+}
+
+.popup_wrapper .param_selection_box input[type=checkbox] {
+    margin: 0px 5px 0px 0px;
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.popup_wrapper .param_selection_box .trigger label {
+    width: 100%;
+}
+
+.popup_wrapper .param_label {
+    display: inline-block;
+    width: 70px;
+    margin-right: 7px;
+}
+
+.popup_wrapper .device_selection_top {
+    background: #303030 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    border: 1px solid #353535;
+    border-radius: 2px;
+    padding: 7px 0px 5px 20px;
+    margin-bottom: 7px;
+}
+
+.popup_wrapper .device_selection_top label {
+    width: 110px;
+    color: #F6AE40;
+}
+
+.popup_wrapper .drawing_wrapper {
+    background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    border: 1px solid #353535;
+    border-radius: 4px;
+    padding: 5px 5px 2px 5px;
+    width: 450px;
+    height: 349px;
+}
+
+.popup_wrapper .drawing_wrapper .title {
+    margin: 0px 5px 5px 5px;
+}
+
+.popup_wrapper .drawing_wrapper .toolbox {
+    width: 35px;
+    float: left;
+}
+
+.popup_wrapper .drawing_wrapper .k-button {
+    margin-top: 3px;
+    height: 30px;
+}
+
+.popup_wrapper .drawing_wrapper .k-button img {
+    width: 16px;
+    height: 16px;
+    margin: 3px 0px;
+}
+
+.popup_wrapper .drawing_box {
+    float: right;
+    border: 1px solid #353535;
+    border-radius: 0px;
+}
+
+.popup_wrapper .drawing_wrapper #drawingArea {
+    width: 400px;
+    height: 300px;
+    border: 0px;
+    margin-bottom: -3px;
+}
+
+.popup_wrapper .enable_drawing {
+    float: left;
+}
+
+.popup_wrapper .enable_drawing label {
+    display: inline-block;
+    width: 120px;
+    line-height: 26px;
+}
+
+.popup_wrapper .enable_drawing input {
+    margin: -2px 5px 0px 3px;
+}
+
+.popup_wrapper .leaflet_canvas_wrapper {
+    background: #303030 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    border: 1px solid #353535;
+    border-radius: 2px;
+    padding: 5px;
+}
+
+.popup_wrapper .poly_canvas_wrapper {
+    background: #303030 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    border: 1px solid #353535;
+    border-radius: 2px;
+}
+
+.popup_wrapper .leaflet_canvas_wrapper .title {
+    margin: 0px 5px 10px 2px;
+}
+
+.popup_wrapper .leaflet_canvas_box {
+    border: 1px solid #353535;
+    border-radius: 0px;
+}
+
+.popup_wrapper .submit_btn_box {
+    position: absolute;
+    bottom: 7px;
+    right: 7px;
+}
+
+.popup_wrapper .btn_schedule {
+    float: right;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(images/vca_schedule.png) no-repeat;
+    background-size: 20px 20px;
+}
+
+.popup_wrapper .btn_gmask {
+    float: right;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(images/leaflet_draw.png) no-repeat;
+    background-size: 20px 20px;
+}
+
+.popup_wrapper .btn_capture_size {
+    float: right;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(images/capture_size.png) no-repeat;
+    background-size: 20px 20px;
+}
+
+.popup_wrapper .config_gmask .regions .gmask_item {
+    display: inline-block;
+    border: 1px solid #643EBF;
+    border-radius: 2px;
+    background: #252525;
+    opacity: 0.9;
+    cursor: default;
+    margin-top: 4px;
+}
+
+.popup_wrapper .config_gmask .regions .gmask_item .name {
+    line-height: 26px;
+    margin: 0px 7px;
+}
+
+.popup_wrapper .config_gmask .regions .gmask_item .close {
+    margin: 0px 3px 0px 0px;
+}
+
+.popup_wrapper .config_gmask .k-button {
+    float: right;
+    height: 25px;
+}
+
+.popup_wrapper .config_gmask .k-button .edit {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(/public/css/common/images/edit_pencil.png) 50% 50% no-repeat;
+    background-size: 12px 12px;
+    vertical-align: middle;
+}
+
+/* vca grid */
+
+.vca_action_wrapper a span {
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    margin-bottom: -2px;
+}
+
+.vca_action_wrapper .button_slot {
+    display: inline-block;
+    width: 31px;
+}
+
+.vca_action_wrapper .start {
+    background: url(images/play2.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca_action_wrapper .stop {
+    background: url(images/stop.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca_action_wrapper .debugger {
+    background: url(images/vca_debug.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca_action_wrapper .config {
+    background: url(images/config.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca_action_wrapper .vca_logs {
+    width: 14px;
+    height: 14px;
+    background: url(images/vca_logs.png) 50% 50% no-repeat;
+    background-size: 14px 14px;
+    margin-bottom: -3px;
+}
+
+.vca_action_wrapper .delete {
+    background: url(images/vca_delete.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca_status_wrapper {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0px 0px -4px 1px;
+}
+
+.vca-state-WAITING {
+    /*background: #C35D15;*/
+    background: url(images/vca_status_loading.gif) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-state-RUNNING {
+    /*background: #74A402;*/
+    background: url(images/vca_status_running.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-state-ERROR {
+    /*background: #CD1625;*/
+    background: url(images/alert.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-state-NOT_SCHEDULED {
+    /*background: #4294DE;*/
+    width: 18px;
+    height: 18px;
+    background: url(images/vca_status_stopped.png) center center no-repeat;
+    background-size: 18px 18px;
+}
+
+.vca-state-DISABLED {
+    /*background: #353535;*/
+    background: url(images/vca_status_inactive.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.popup_wrapper #maskErrorBox {
+    display: none;
+    color: #FF4040;
+}
+
+.popup_wrapper .param_selection_box .schedule {
+    display: inline-block;
+    background: #222;
+    opacity: 0.9;
+    margin-top: 4px;
+    padding-right: 3px;
+}
+
+.popup_wrapper .param_selection_box .schedule .name {
+    display: inline-block;
+    line-height: 26px;
+    margin: 0px 7px;
+}
+
+.popup_wrapper .param_selection_box .schedule.close {
+    margin: 0px;
+    padding: 0px;
+}
+
+.popup_wrapper .param_selection_box .more_params {
+    width: 310px;
+    background: #555;
+    color: #f8f8ff;
+}

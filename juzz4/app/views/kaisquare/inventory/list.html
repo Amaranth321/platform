@@ -1,0 +1,341 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<style>
+    .k-dropdown-wrap span.k-input{
+        background-color: #ffffff !important;
+        color: #000000;
+    }
+    .k-dropdown .k-state-focused .k-input{
+        color: #000000 !important;
+    }
+    .k-dropdown .k-state-hover .k-input{
+        color: #000000 !important;
+    }
+    .k-dropdown-wrap span:hover{
+        color: #000000;
+    }
+    .k-combobox{
+        margin-left: 10px !important;
+    }
+    .invDiv{
+        float: left;
+        width: 24em;
+        text-align: right;
+    }
+
+    span.k-dropdown-wrap input{
+        margin: 0 !important;
+    }
+
+    .actions .k-button {
+        float: right;
+    }
+
+</style>
+<script type="text/x-kendo-template" id="actionBtnTemplate">
+    <span class="actions">
+        <a href="javascript:deleteInventory('#= data.id #')" class="k-button delete">&{'delete'}</a>
+
+    # if(activated == 'no') { #
+        <a href="javascript:editInventory('#= data.id #')" class="k-button edit">&{'edit'}</a>
+    # } #
+    </span>
+</script>
+
+<script type="text/x-kendo-template" id="modelNameTemplate">
+    # if(utils.isNullOrEmpty(modelName)) { #
+        <span class="model-unsupported">&{'Unsupported'}</span>
+    # } else {#
+        <span>#= modelName #</span>
+    # } #
+</script>
+<script type="text/x-kendo-template" id="statusTemplate">
+    # if(activated == 'yes') { #
+    <div align=center class="entry_status_gray">
+    yes
+    </div>
+    # } else {#
+    <div align=center class="entry_status_green">
+    no
+    </div>
+    # } #
+</script>
+<script type="text/x-kendo-template" id="modelNameTemplate">
+    # if(activated == 'yes') { #
+    <div align=center class="entry_status_gray">
+    yes
+    </div>
+    # } else {#
+    <div align=center class="entry_status_green">
+    no
+    </div>
+    # } #
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'inventory-management'}</span>
+</div>
+
+<div id=uploadBox class="inventory_upload_box">
+    <div class="inventory_title_uploader">&{'upload-inventory'}
+        <a id="downloadSample" style="height: 30px; font-size: 10px; color: #f5f5f5; float: right;"
+           href="/${bucket}/content/csvSample">
+            &{'sample'} <img src="${CdnPath}/common/images/download_blue.png" style="width:16px;">
+        </a>
+    </div>
+    <input id="csvFile" name="csvFile" type="file"/>
+</div>
+<div id=uploadBox class="inventory_upload_box">
+    <div style="width: 100%;">
+        <div class="inventory_title_uploader">&{'filter-inventory'}
+        </div>
+        <div class="search_box">
+            <div style="width: 33%; float: left;">
+                <div class="invDiv">
+                    <label>&{'activation'} :</label>
+                    <input id=activationFilter type="text">
+                </div>
+                <div class="invDiv">
+                    <label>&{'model-id'} :</label>
+                    <input style="margin:5px 0px 0px 10px;" id=modelidFilter type="text" class="k-input k-textbox">
+                </div>
+            </div>
+            <div style="width: 33%; float: left;">
+                <div class="invDiv">
+                    <label>&{'registration-number'} :</label>
+                    <input style="margin-left: 10px;" id=regFilter type="text" class="k-input k-textbox">
+                </div>
+                <div class="invDiv">
+                    <label>&{'bucket-name'} :</label>
+                    <input style="margin:5px 0px 0px 10px;" id=bucketnameFilter type="text" class="k-input k-textbox">
+                </div>
+            </div>
+            <div>
+                <div class="invDiv">
+                    <label>&{'mac-address'} :</label>
+                    <input style="margin-left: 10px;" id=macAddFilter type="text" class="k-input k-textbox">
+                </div>
+                <div class="invDiv">
+                    <label>&{'device-name'} :</label>
+                    <input style="margin:5px 0px 0px 10px;" id=devnameFilter type="text" class="k-input k-textbox">
+                </div>
+                <a id="clrFilter" class="k-button" style="float:right;margin: 1% 5% 0 0;">
+                    <span></span>&nbsp; &{'clear-location'}
+                </a>
+            </div>
+            <div id="autocomplete">
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="inventoryList" class="k-content" style="margin: 5px 10px 5px 5px">
+    <div id="invGrid"></div>
+</div>
+
+<script type="text/javascript">
+    var existingItems = [];
+    var showErrorColumn = false;
+    var deleteInventory = function(inventoryId) {
+        utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function(choice) {
+            if (choice) {
+                removeInventory("", inventoryId, function(responseData) {
+                    if (responseData.result == "ok") {
+                        $("#invGrid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        utils.popupAlert(responseData.reason, function() {
+                            $("#invGrid").data("kendoGrid").dataSource.read();
+                        });
+                    }
+                }, null);
+            }
+        });
+    }
+    var editInventory = function(inventoryId) {
+        var contentPage = "/inventory/edit/" + inventoryId;
+        utils.openPopup("&{'edit-inventory'}", contentPage, null, null, true, onPopupClosed);
+    }
+    
+    function onPopupClosed() {
+        $("#invGrid").data("kendoGrid").dataSource.read();
+    }
+    
+    $(function() {
+        $("#activationFilter").kendoComboBox({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: [
+                {text: "&{'yes'}", value: "yes"},
+                {text: "&{'no'}", value: "no"}
+            ],
+            change: filterResults
+        });
+
+        var showExistingItems = function(title) {
+            var contentPage = "/inventory/inventoryItem";
+            utils.openPopup(title, contentPage, null, null, true, onPopupClosed);
+        }
+
+        function onPopupClosed() {
+            $("#invGrid").data("kendoGrid").dataSource.read();
+        }
+
+        var grid = $("#invGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function(options) {
+                        getInventoryList("", onSuccessGetInventoryList, null);
+                        function onSuccessGetInventoryList(responseData) {
+                            if (responseData.result == "ok" && responseData["inventory-list"] != null) {
+                                var inventoryData = {};
+                                var inventoryDataList = [];
+                                $.each(responseData["inventory-list"], function(index, list) {
+                                    var inventoryData = {};
+                                    inventoryData.id = list.inventoryId;
+                                    if (list.activated == true)
+                                        inventoryData.activated = 'yes';
+                                    else
+                                        inventoryData.activated = 'no';
+                                    inventoryData.registrationNumber = list.registrationNumber;
+                                    inventoryData.modelNumber = list.modelNumber;
+                                    inventoryData.modelName = list.modelName;
+                                    inventoryData.macAddress = list.macAddress;
+                                    inventoryData.deviceName = list.deviceName;
+                                    inventoryData.bucketName = list.bucketName;
+                                    inventoryDataList.push(inventoryData);
+                                });
+                                options.success(inventoryDataList);
+                            }
+                            else {
+                                utils.throwServerError(responseData.reason);
+                                options.success([]);
+                            }
+                        }
+                    }
+                },
+                pageSize: 15
+            },
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: false
+            },
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: true,
+            columns: [
+                {field: "activated", width: "80px", title: "&{'activated'}", template: kendo.template($("#statusTemplate").html())},
+                {field: "registrationNumber", title: "&{'registration-number'}"},
+                {field: "modelNumber", width: "80px", title: "&{'model-id'}"},
+                {field: "modelName",  title: "&{'model-name'}", template: kendo.template($("#modelNameTemplate").html())},
+                {field: "macAddress", width: "130px", title: "&{'mac-address'}"},
+                {field: "deviceName", title: "&{'device-name'}"},
+                {field: "bucketName", title: "&{'bucket-name'}"},
+                {field: "activated", width: "160px", title: "&{'actions'}", template: kendo.template($("#actionBtnTemplate").html())}
+            ]
+        }).data("kendoGrid");
+
+
+        $("#csvFile").kendoUpload({
+            multiple: false,
+            async: {
+                saveUrl: "/api/" + kupBucket + "/uploadinventory",
+                autoUpload: true
+            },
+            localization: {
+                select: "&{'select-file'}"
+            },
+            upload: function(e) {
+                if (e.files[0].extension.toLowerCase() != ".csv") {
+                    utils.popupAlert("Only .csv files are allowed")
+                    e.preventDefault();
+                }
+
+                $("#uploadBox").find(".k-upload-files .k-reset").css("margin", "20px");
+            },
+            success: function(e) {
+                $("#uploadBox").find(".k-progress").css("visibility", "hidden");
+                showErrorColumn = false;
+                if (e.response.result == "ok" && e.response.existingItems.length > 0) {
+                    existingItems = e.response.existingItems;
+                    showExistingItems("&{'existing-inventory'}");
+                    return;
+                } else if (e.response.result == "error" && e.response.invalidInventories !== undefined
+                        && e.response.invalidInventories.length > 0) {
+                    existingItems = e.response.invalidInventories;
+                    showErrorColumn = true;
+                    showExistingItems("&{'invalid-inventory'}");
+                    return;
+                } else if (e.response.result == "error") {
+                    utils.popupAlert(e.response.reason);
+                    return;
+                }
+                $("#invGrid").data("kendoGrid").dataSource.read();
+            },
+            error: function(e) {
+                var errorText = "";
+                if (e.XMLHttpRequest.response)
+                    errorText = e.XMLHttpRequest.response;
+                else
+                    errorText = "Session has expired!";
+
+                utils.popupAlert(errorText);
+
+            }
+        });
+
+        function filterResults(event) {
+            var deviceFilter = {logic: "and", filters: []};
+            deviceFilter.filters.push({field: "registrationNumber", operator: "contains", value: $("#regFilter").val()});
+            deviceFilter.filters.push({field: "activated", operator: "contains", value: $("#activationFilter").val()});
+            deviceFilter.filters.push({field: "macAddress", operator: "contains", value: $("#macAddFilter").val()});
+            deviceFilter.filters.push({field: "modelNumber", operator: "contains", value: $("#modelidFilter").val()});
+            deviceFilter.filters.push({field: "deviceName", operator: "contains", value: $("#devnameFilter").val()});
+            deviceFilter.filters.push({field: "bucketName", operator: "contains", value: $("#bucketnameFilter").val()});
+
+            $("#invGrid").data("kendoGrid").dataSource.filter(deviceFilter);
+        }
+        $("#regFilter").keyup(filterResults);
+        $("#activationFilter").keyup(filterResults);
+        $("#macAddFilter").keyup(filterResults);
+        $("#modelidFilter").keyup(filterResults);
+        $("#devnameFilter").keyup(filterResults);
+        $("#bucketnameFilter").keyup(filterResults);
+
+
+        $("#clrFilter").click(function(e) {
+            $("#regFilter").val("");
+            $("#activationFilter").data("kendoComboBox").text("");
+            $("#activationFilter").data("kendoComboBox").value("");
+            $("#macAddFilter").val("");
+            $("#modelidFilter").val("");
+            $("#devnameFilter").val("");
+            $("#bucketnameFilter").val("");
+            $("#invGrid").data("kendoGrid").dataSource.filter([]);
+        });
+
+        $("#csvFile").width("100px");
+
+        $(".k-grid-clear").click(function() {
+            utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function(choice) {
+                if (choice) {
+                    removeAllInventory("", function(responseData) {
+                        if (responseData.result == "ok") {
+                            $("#invGrid").data("kendoGrid").dataSource.read();
+                        }
+                        else {
+                            utils.popupAlert(responseData.reason, function() {
+                                $("#invGrid").data("kendoGrid").dataSource.read();
+                            });
+                        }
+                    }, null);
+                }
+            });
+
+        });
+    });
+</script>

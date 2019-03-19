@@ -1,0 +1,262 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" type="text/css" href="/public/css/common/bootstrap/bootstrap-switch.min.css">
+<script type="text/javascript" src="/public/javascripts/bootstrap-switch.min.js"></script>
+<script type="text/x-kendo-template" id="holidayCalendarToolbarTmpl">
+    <div style="margin:5px 5px 5px 5px;">
+        <a class="k-button" id="btnAddHoliday"><span class="k-icon k-i-plus"> </span> &{'add-holidays'}</a>
+    </div>
+
+    <div class="event_filter_box" style="display: block;">
+        <div class="inventory_title_uploader">&{'filter-holiday'}</div>
+
+        <a id="clrFilter" class="k-button" style="float:right; margin-top: 6px;">
+            <span></span>&nbsp; &{'clear-location'}
+        </a>
+        <div style="margin-bottom:5px">
+            <label style="margin:0px 6px 0px 6px">&{'title'} :</label>
+            <input id="titleFilter" type="text" style="width:164px" class="k-input k-textbox">
+            <label style="margin:0px 0px 0px 30px">&{'description'} :</label>
+            <input id="descriptionFilter" type="text" style="width:164px" class="k-input k-textbox">
+            <label style="margin:0px 34px 0px 28px">Is :</label>
+            <input id="isFilter" type="text">
+        </div>
+        <div>
+            <label style="margin:0px 0px 0px 6px">&{'from'} :</label>
+            <input id="startDateTime" style="width:164px; margin-top:1px;" autocomplete="off">
+            <label style="margin:0px 47px 0px 32px">&{'to'} :</label>
+            <input id="endDateTime" style="width:164px; margin-top:1px;" autocomplete="off">
+            <label style="margin:0px 0px 0px 30px">&{'country'} :</label>
+            <input id="countryFilter" type="text" style="width:164px" class="k-input k-textbox">
+        </div>
+    </div>
+</script>
+
+<div class="default_title_bar">
+    <span class="title">&{'holiday-calendar'}</span>
+</div>
+<div id="holidayGrid"></div>
+
+<script>
+
+    var refreshHolidayGridFn = null;
+    var today = new Date();
+
+    function initializeNodesGrid() 
+    {
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: function(options) {
+                    getHolidays("", function(responseData) {
+                        if (responseData.result != "ok") {
+                            options.success([]);
+                            return;
+                        }
+
+                        var holidayList = [];
+                        $.each(responseData.datas, function(idx, element) {
+                            var holiday = {};
+                            holiday.id = element["_id"];
+                            holiday.title = element.title;
+
+                            var des = element.description;
+                            while (des.indexOf("\n") != -1) {
+                                des = des.replace("\n", "<br />");
+                            }
+                            holiday.des = des;
+                            holiday.isEvent = element.isEvent ? localizeResource('yes') : localizeResource('no');
+                            holiday.isHoliday = element.isHoliday ? localizeResource('yes') : localizeResource('no');
+                            holiday.isSignificant = element.isSignificant ? localizeResource('yes') : localizeResource('no');
+                            holiday.from = new Date(element.from);
+                            holiday.to = new Date(element.to);
+
+                            var countryList = element.countries;
+                            var countryStr = "";
+                            for (var i = 0; i < countryList.length; i++) {
+                                countryStr += countryList[i];
+                                if (i != countryList.length - 1) 
+                                    countryStr += ", ";
+                            }
+                            holiday.countries = countryStr;
+                            holidayList.push(holiday);
+                        });
+
+                        holidayList.sort(function(objA, objB) {
+                            return kendo.parseDate(objA.from, "dd/MM/yyyy") - kendo.parseDate(objB.from, "dd/MM/yyyy");
+                        });
+                        options.success(holidayList);
+                    }, null)
+                }//transport.read function
+            },
+            pageSize: 15,
+             schema  : {
+                model: {
+                    fields: {
+                        from: { type: 'date' },
+                        to  : { type: 'date' }
+                    }
+                }
+            }
+        });
+
+        var holidayGrid = $("#holidayGrid").kendoGrid({
+            dataSource: ds,
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+                refresh: true
+            },
+            sortable: true,
+            selectable: true,
+            resizable: true,
+            toolbar: kendo.template($("#holidayCalendarToolbarTmpl").html()),
+            columns: [{field: "title", title: localizeResource('title')},
+                      {field: "des", title: localizeResource('description'), encoded: false},
+                      {field: "isEvent", title: localizeResource('is-event'), width: "65px"},
+                      {field: "isHoliday", title: localizeResource('is-holiday'), width: "75px"},
+                      {field: "isSignificant", title: localizeResource('is-significant'), width: "115px"},
+                      {field: "from", title: localizeResource('from'), width: "90px", format: "{0:d}"},
+                      {field: "to", title: localizeResource('to'), width: "90px", format: "{0:d}"},
+                      {field: "countries", title: localizeResource('country')},
+                      {title: localizeResource('actions'), width: "200px", command: [
+                            {text: localizeResource('edit'), click: editHolidayFn},
+                            {text: localizeResource('delete'), click: deleteHolidayFn}]
+                      }]
+        }).data("kendoGrid");
+
+        refreshHolidayGridFn = function() {
+            holidayGrid.dataSource.read();
+        }
+    }
+
+    function deleteHolidayFn(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        utils.popupConfirm("&{'confirmation'}", "&{'confirm-delete'}?", function (choice) {
+            if (!choice) 
+                return;
+
+            kendo.ui.progress($("#holidayGrid"), true);
+            deleteHoliday(dataItem.id, function(responseData) {
+                if (responseData.result != "ok")
+                    utils.throwServerError(responseData);
+
+                refreshHolidayGridFn();
+                kendo.ui.progress($("#holidayGrid"), false);
+            }, null);
+
+        });
+    }
+
+    function editHolidayFn(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        utils.openPopup(localizeResource("edit-holidays"), "/support/addholiday?holidayId=" + dataItem.id, null, null, true, function(){
+            refreshHolidayGridFn();
+        });
+    }
+
+    function addHolidayFn() {
+        utils.openPopup(localizeResource("add-holidays"), "/support/addholiday", null, null, true, function(){
+            refreshHolidayGridFn();
+        });  //popup_title_name, page_request_path, width, height, isModel, onClose
+    }
+
+    function clearFilterFn() {
+        $("#titleFilter").val("");
+        $("#descriptionFilter").val("");
+        $("#isFilter").data("kendoComboBox").text("");
+        $("#isFilter").data("kendoComboBox").value("");
+        $("#startDateTime").data("kendoDatePicker").value("");
+        $("#endDateTime").data("kendoDatePicker").value("");
+        
+        var maxKendoDefaultDate = new Date(2099, 11, 31);
+        var minKendoDefaultDate = new Date(1900, 0, 1);
+        
+        var startDateTimerPicker = $("#startDateTime").data("kendoDatePicker");
+        startDateTimerPicker.value(null);
+        startDateTimerPicker.min(minKendoDefaultDate);
+        startDateTimerPicker.max(maxKendoDefaultDate);
+        
+        var endDateTimerPicker = $("#endDateTime").data("kendoDatePicker");
+        endDateTimerPicker.value(null);
+        endDateTimerPicker.min(minKendoDefaultDate);
+        endDateTimerPicker.max(maxKendoDefaultDate);
+        
+        $("#countryFilter").val("");
+        $("#holidayGrid").data("kendoGrid").dataSource.filter([]);
+    }
+
+    function filterFn() {
+        var filterList = [];
+        filterList.push({field: "title", operator: "contains", value: $("#titleFilter").val()});
+        filterList.push({field: "des", operator: "contains", value: $("#descriptionFilter").val()});
+        switch ($("#isFilter").val()) {
+            case "isEvent": filterList.push({field: "isEvent", operator: "contains", value: "Yes"});
+            break;
+            case "isHoliday": filterList.push({field: "isHoliday", operator: "contains", value: "Yes"});
+            break;
+            case "isSignificant": filterList.push({field: "isSignificant", operator: "contains", value: "Yes"});
+            break;
+        }
+        if ($("#startDateTime").data("kendoDatePicker").value()) {
+            filterList.push({field: "from", operator: "gte", value: $("#startDateTime").data("kendoDatePicker").value()});   
+        }
+        if ($("#endDateTime").data("kendoDatePicker").value()) {
+            filterList.push({field: "to", operator: "lte", value: $("#endDateTime").data("kendoDatePicker").value()});
+        }
+        filterList.push({field: "countries", operator: "contains", value: $("#countryFilter").val()});
+        $("#holidayGrid").data("kendoGrid").dataSource.filter(filterList);
+    }
+
+    $(document).ready(function() {
+        initializeNodesGrid();
+        $("#btnAddHoliday").bind("click", addHolidayFn);
+        $("#clrFilter").bind("click", clearFilterFn);
+
+        $("#isFilter").kendoComboBox({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: [
+                {text: "&{'is-event'}", value: "isEvent"},
+                {text: "&{'is-holiday'}", value: "isHoliday"},
+                {text: "&{'is-significant'}", value: "isSignificant"}
+            ],
+            change: filterFn
+        });
+
+        var start = $("#startDateTime").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            change: function (e) {
+                var startDate = start.value();
+                if (startDate) {
+                    startDate.setHours(0,0,0,0);
+                    start.value(startDate);
+                    end.min(startDate);
+                }
+
+                filterFn();
+            }
+        }).data("kendoDatePicker");
+
+        var end = $("#endDateTime").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            change: function (e) {
+                var endDate = end.value();
+                if (endDate) {
+                    endDate.setHours(23,59,59,999);
+                    end.value(endDate);
+                    start.max(endDate);
+                }
+
+                filterFn();
+            }
+        }).data("kendoDatePicker");
+
+        //Add keyup event in filter textfield
+        $("#titleFilter").keyup(filterFn);
+        $("#descriptionFilter").keyup(filterFn);
+        $("#countryFilter").keyup(filterFn);
+    });
+</script>

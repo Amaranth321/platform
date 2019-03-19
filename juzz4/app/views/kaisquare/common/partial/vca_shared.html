@@ -1,0 +1,141 @@
+<link rel="stylesheet" type="text/css" href="/public/css/common/vca.css"/>
+<script type="text/javascript" src="/public/javascripts/vca.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/public/javascripts/timecard/timecard.css"/>
+<script src="/public/javascripts/timecard/timecard.js"></script>
+<script type="text/javascript" src="/public/javascripts/pos.js"></script>
+<script src="${CdnRootPath}/public/javascripts/vca/gmaskTool.js"></script>
+<script src="${CdnRootPath}/public/javascripts/vca/polygonTool.js"></script>
+
+
+<script type="text/x-kendo-template" id="vcaToolbarTmpl">
+    <div class="toolbar" style="padding: 5px 0px 1px 0px">
+        <a class="k-button" id="btnAddAnalytics"><span class="k-icon k-i-plus"> </span> &{'add-analytics'}</a>
+
+        <div class="vca_filter_box" style="margin: 5px 2px 0px 2px">
+            <label class="vca_report_others_label">&{'device-name'} :</label>
+            <input id=nodenameFilter type="text" class="k-input k-textbox">
+            <label style="margin:0px 5px 0px 30px">&{'camera'} :</label>
+            <input id=cameraFilter type="text" class="k-input k-textbox">
+            <label style="margin:0px 5px 0px 30px">&{'location'} :</label>
+            <input id=locationFilter type="text" class="k-input k-textbox">
+            <a id="vaclrFilter" class="k-button" style="float:right;">&{'clear-location'}</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="reportDropDownTmpl">
+    <div style="margin:2px;line-height:20px;font-size: 12px;">
+        <p style="font-weight: bold">#= data.deviceName #</p>
+
+        # if(data.deviceName != localizeResource('historical')) {#
+        <p style="font-size: 10px;">&{'channel'}: #= data.channelName #</p>
+        # } #
+    </div>
+</script>
+
+<script type="text/x-kendo-template" id="reportMultiSelectTmpl">
+    # if(data.selectedOption) {#
+    #= data.labelName #
+    # } else {#
+    #= data.deviceName # - #= data.channelName #
+    # } #
+</script>
+
+<script type="text/x-kendo-template" id="vcaChartStepChoices">
+    <div class="vca_chart_header_bar">
+        <div class="vca_chart_step_box">
+            <ul>
+                <li class=hourChoice><input id="stepHours" value="hours" name="stepSize" type="radio"></li>
+                <li class=hourChoice><label for="stepHours">&{'hours'}</label></li>
+                <li><input id="stepDays" value="days" name="stepSize" type="radio"></li>
+                <li><label for="stepDays">&{'days'}</label></li>
+                <li><input id="stepWeeks" value="weeks" name="stepSize" type="radio"></li>
+                <li><label for="stepWeeks">&{'weeks'}</label></li>
+                <li><input id="stepMonths" value="months" name="stepSize" type="radio"></li>
+                <li><label for="stepMonths">&{'months'}</label></li>
+            </ul>
+        </div>
+    </div>
+    <div id="countChart"></div>
+</script>
+
+
+<script type="text/x-kendo-template" id="vcaStackChartStepChoices">
+    <div class="vca_chart_header_bar">
+        <div class="vca_chart_step_box">
+            <ul>
+                <li class=stackChartHourChoice>
+                    <input id="stackChartstepHours" value="hours" name="stackStepSize" type="radio"></li>
+                <li class=stackChartHourChoice><label for="stackChartstepHours">&{'hours'}</label></li>
+                <li><input id="stackChartstepDays" value="days" name="stackStepSize" type="radio"></li>
+                <li><label for="stackChartstepDays">&{'days'}</label></li>
+                <li><input id="stackChartstepWeeks" value="weeks" name="stackStepSize" type="radio"></li>
+                <li><label for="stackChartstepWeeks">&{'weeks'}</label></li>
+                <li><input id="stackChartstepMonths" value="months" name="stackStepSize" type="radio"></li>
+                <li><label for="stackChartstepMonths">&{'months'}</label></li>
+            </ul>
+        </div>
+    </div>
+    <div id="stackChart"></div>
+</script>
+
+<script type="text/x-kendo-template" id="vcaLineChartTooktip">
+    <table class="vca_chart_tooltip_container" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <th class="vca_chart_tooltip_category" colspan="2">
+                # if (typeof category.getMonth === 'function') { #
+                #: category.getMonth() + 1 #/#: category.getDate() #/#: category.getFullYear() #</div>
+                # } else { #
+                #: category #
+                # } #
+            </th>
+        </tr>
+        #
+        for (var i = 0; i < points.length; i++)
+        {
+        var point = points[i];
+        var options = point.options;
+        var format = options.tooltip != null && options.tooltip.format != null
+        ? options.tooltip.format : "{0}";
+        var colors = options.tooltip != null &&
+        Object.prototype.toString.call( options.tooltip.colors ) === '[object Array]'? options.tooltip.colors : [];
+        var color = i < colors.length ? "color: " + colors[i] + ";" : "";
+        #
+        <tr>
+            <td><b>#: points[i].series.name#</b> :</td>
+            <td><span style="#: color #">#: kendo.format(format, point.value) #<span></td>
+        </tr>
+        # } #
+    </table>
+</script>
+
+<script type="text/x-kendo-template" id="vcaLineChartStepChoices">
+    <div class="vca_chart_header_bar">
+        <div class="vca_chart_step_box">
+            <ul>
+                <li class=hourChoice><input id="lineChartStepHours" value="hours" name="lineStepSize" type="radio"></li>
+                <li class=hourChoice><label for="lineChartStepHours">&{'hours'}</label></li>
+                <li><input id="lineChartStepDays" value="days" name="lineStepSize" type="radio"></li>
+                <li><label for="lineChartStepDays">&{'days'}</label></li>
+                <li><input id="lineChartStepWeeks" value="weeks" name="lineStepSize" type="radio"></li>
+                <li><label for="lineChartStepWeeks">&{'weeks'}</label></li>
+                <li><input id="lineChartStepMonths" value="months" name="lineStepSize" type="radio"></li>
+                <li><label for="lineChartStepMonths">&{'months'}</label></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="kupActionGroup" id="displayRadioGroup" style="display:none;">
+        <span class="kupCheckbox">
+          <input type="radio" id="displayPeopleCounting" class="k-checkbox" name="displayRadio" value="pc" checked>
+          <label class="k-checkbox-label" for="kupAverage"> &{'people-counting'}</label>   
+        </span>
+        <span class="kupCheckbox">
+          <input type="radio" id="displayAverageOccupancy" class="k-checkbox" name="displayRadio" value="ao">
+          <label class="k-checkbox-label" for="kupAverage"> &{'average-occupancy'}</label>   
+        </span>
+    </div>
+
+    <div id="lineChart"></div>
+</script>

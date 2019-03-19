@@ -1,0 +1,202 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+<link rel="stylesheet" type="text/css" href="${CdnPath}/kup/monitoring/live_view.css" />
+<script type="text/javascript" src="/public/javascripts/jwplayer7/jwplayer.js"></script>
+<script type="text/javascript" src="/public/javascripts/jwplayer7/key.js"></script>
+<script type="text/javascript" src="/public/javascripts/devicetree/device_treeview.js"></script>
+<script type="text/javascript" src="/public/javascripts/live-view-v2.js"></script>
+<script type="text/javascript" src="/public/javascripts/kup-player.js"></script>
+<script type="text/javascript" src="/public/javascripts/screenfull.min.js"></script>
+<script> 
+var broswer = utils.detectBrowser();
+var isExistFlashPlayer = utils.checkFlashPlayer(broswer);
+
+if (!isExistFlashPlayer){
+	utils.popupAlert('<div class="row-fluid"><div class="span6">'+ localizeResource("no-flash-player-detected") +'</div><div class="span1"><img src="${CdnPath}/common/images/get_flash_player.gif"/></div></div>');
+}
+
+$(".span1 img").click(function(){
+	$(".row-fluid").text(localizeResource("after-install-flash-player-info"));
+	window.open("http://get.adobe.com/flashplayer/");
+});
+</script>
+<style>
+    .node-status-image{
+        float: left;
+        height: 14px;
+        margin-right: 19px;
+        margin-top: 7px;
+    }
+    .auto-rotation-label {
+        margin-right: 10px;
+    }
+    .leftMenu {
+        float: left;
+        background: #212121;
+    }
+    #autoRotationdiv{
+        margin-bottom: 29px;
+        padding: 13px 0 14px 0;
+    }
+    .view_block .ui-icon ui-icon-arrow-4-diag{
+        height: 20px;
+        width:20px;
+    }
+    .k-edit-label {
+        float: left;
+        padding: 6px;
+        text-align: left;
+        width: 47%;
+    }
+    span.k-numerictextbox {
+        margin-right: 4px;
+        width: 101px;
+    }
+    
+    .fullScreenFeature{
+    	display: none;
+    }
+
+    .device_description {
+        position: absolute;
+        top: 88%;
+        height: 0;
+        overflow: hidden;
+        background-color: rgba(0,0,0,0.8) transparent;
+        color: #EAAC00;
+        letter-spacing: 0.05em;
+        margin-left: 9px;
+    }
+    div img{
+    	/*margin-top:5px;*/
+		margin-left:10px;
+		cursor:pointer;
+	}
+        .k-item{
+            margin-bottom: 4px; 
+        }
+        .k-minus{
+            background-image: url("${CdnPath}/common/images/minus.png");
+            background-position: 9px 10px;
+            margin-right: 7px;
+            height: 29px;
+        }
+        .k-plus{
+            background-image: url("${CdnPath}/common/images/plus.png") ;
+            background-position: 9px 10px;
+            margin-right: 7px;
+            height: 29px;
+        }
+        .k-treeview .k-in{
+            margin-left: 0;
+            line-height: 27px;
+        }
+        .search_div{
+            background-color: #000000;
+            border: thin solid #4d4d4d;
+            margin-left: 5px;
+            width: 215px;
+        }
+        .search_box{
+            border: none;
+            color: #ffffff;
+            margin: 6px 2px 2px;
+            padding: 0 31px 2px 15px;
+        }
+    .k-state-active,
+    .k-state-active:hover,
+    .k-active-filter {
+        background-color: #212121;
+        border-color: #4d4d4d;
+        color: #ffffff;
+    }
+    
+    .msgdiv{
+        background-color: #212121;
+        width: 229px;
+        color:#d9d9d9;
+        padding: 15px 5px 5px;
+        margin: 1px 0 10px;
+        font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+        font-size: 1.02em;
+    }
+    #main {
+     padding: 0px !important;   
+    }
+    .k-i-search{
+        background-position: -32px -242px;
+    }
+    .closeIcon{
+	    position: absolute;
+	    right: 5px;
+	    top: 5px;
+	    width: 14px;
+	    height: 14px;
+	    background-image: url('${CdnPath}/common/images/ico_close_white.png/');
+	    cursor: pointer;
+    }
+    .videoBox9 .device_description {
+        top: 1%;
+    }
+
+    .videoBox4 .device_description {
+        top: 1%;
+    }
+
+    .videoBox1 .device_description {
+        top: 1%;
+    }
+
+    .jw-dock.jw-reset {
+        padding-top: 15px;
+    }
+</style>
+<div id="liveViewBox" class="view_list_box">
+    <div id="autoRotationdiv">
+        <div id="autoRotate"  style="float: right;">
+            <label class="auto-rotation-label">
+                <input id="autoRotation" type="checkbox" style="margin-right:5px;"/>&{'auto-rotate'}</label>
+            <label class="auto-rotation-label"></label>
+            <input id="timeInterval" type="number" value="15" min="15" max="3600" step="1" />
+            <a id="applyAutoRotate" href="#" class="k-button" style="margin-left: 3px">&{'set-time'}</a>
+        </div>
+    </div>
+    <div id="live-main">
+        #{doLayout /}
+    </div>
+</div>
+
+
+<div class="view_box">
+    <div class="view_block fullScreenFeature"><a id="fullScreen" onclick="liveViewMng.fullScreen(this.id)"><span
+                class="fullScreen">view_img</span><strong>&{'full-screen'}</strong></a></div>
+    <div class="view_block"><a id="view1link" href="/${bucket}/live/fullview/1"><span
+                class="view1">view_img</span><strong>1 &{'view'}</strong></a></div>
+    <div class="view_block"><a id="view4link" href="/${bucket}/live/fullview/4"><span
+                class="view4">view_img</span><strong>4 &{'views'}</strong></a></div>
+    <div class="view_block"><a id="view9link" href="/${bucket}/live/fullview/9"><span
+                class="view9">view_img</span><strong>9 &{'views'}</strong></a></div>
+<!--    <div class="view_block"><a id="view16link" href="/${bucket}/live/fullview/16"><span
+                class="view16">view_img</span><strong>16 &{'views'}</strong></a></div>-->
+</div>
+<!-- /view_box -->
+<script>
+    var maxCameraView = ${maxCameraLimit};
+    if(kupapi.applicationType != "cloud" && maxCameraView < 9){
+        $("#view9link").parent().hide();
+    }else{
+    	$("#view9link").parent().show();
+    }
+
+    var liveViewMng = new LiveViewManager(kupapi.applicationType, maxCameraView);
+    liveViewMng.init();
+
+    window.setInterval(function(){
+    	var players = getPlayerList();
+    	$.each(players, function(i, player){
+    		if (player.getState() == 'PLAYING') {
+    			player.stop(true);
+        		player.play(true);
+    		}
+    	}); 
+    }, refreshIntervalTime);
+</script>

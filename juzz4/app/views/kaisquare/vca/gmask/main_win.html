@@ -1,0 +1,51 @@
+<style>
+
+    .g_mask {
+        margin: -7px;
+    }
+
+    .g_mask .canvas_wrapper {
+        /*border-bottom: 1px solid #444;*/
+    }
+
+    .g_mask .btn_group {
+        text-align: right;
+        margin: 5px;
+    }
+
+    .g_mask .btn_group .k-button {
+        width: 70px;
+    }
+
+    .g_mask #gMaskDrawingFrame {
+        border: 0px;
+        width: 520px;
+        height: 390px;
+        padding: 0px;
+    }
+
+</style>
+
+<div class="g_mask">
+    <div class="canvas_wrapper">
+        <iframe id="gMaskDrawingFrame" name="gMaskDrawingFrame"></iframe>
+    </div>
+    <div class="btn_group">
+        <a href="javascript:gMaskTool.save()" class="k-button">&{'update'}</a>&nbsp;
+        <a id="btnCancel" href="javascript:gMaskTool.cancel()" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        gMaskTool.loading(true);
+        gMaskTool.prepareDrawingArea(function () {
+            gMaskTool.drawingArea.start();
+            gMaskTool.drawingArea.loadCurrent(gMaskTool.snapshotUrl, gMaskTool.currentRegions);
+            gMaskTool.loading(false);
+        });
+
+    })
+
+</script>

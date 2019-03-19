@@ -1,0 +1,400 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Map static resources from the /app/public folder to the /public path
+GET     /newui/                                  staticDir:frontend
+
+# Favicon
+GET     /favicon.ico                                staticFile:public/css/common/images/favicon.png
+
+# Crawlers
+GET     /robots.txt                                 staticFile:conf/robots.txt
+
+# Javascript and font files via CDN require the CORS header Access-Control-Allow-Origin
+GET       /public/javascripts/login/{filename}      web.cdn.javascripts
+GET       /public/javascripts/{filename}            web.cdn.javascripts
+GET       /public/css/common/login/fonts/{filename} web.cdn.fonts
+GET       /public/files/fonts/{filename}            web.cdn.fonts
+
+# Map static resources from the /app/public folder to the /public path
+GET       /public/                                staticDir:public
+
+# Map object-detecting images
+
+# ~~~ Web controller routes ~~~
+
+GET       /error/{status}/*                         web.error.index
+GET       /errorlanding/{action}                    web.errorlanding.{action}
+GET       /sso/{sessionKey}                         web.login.sso
+GET       /login/{action}/{options}                 web.login.{action}
+GET       /login/{action}/*                         web.login.{action}
+GET       /changepassword/?                         web.login.changepassword
+
+# ~~~ Real time event feeds ~~~
+WS      /ws/trafficflowfeed                     ws.VCAFeedController.trafficFlowFeed
+WS      /ws/peoplecountingfeed                  ws.VCAFeedController.peopleCountingFeed
+WS      /ws/passerbyfeed                        ws.VCAFeedController.passerbyFeed
+WS      /ws/crowddensityfeed                    ws.VCAFeedController.crowdDensityFeed
+WS      /ws/profilingfeed                       ws.VCAFeedController.profilingFeed
+WS      /ws/intrusionfeed                       ws.VCAFeedController.intrusionFeed
+WS      /ws/perimeterdefensefeed                ws.VCAFeedController.perimeterDefenseFeed
+WS      /ws/objectcountingfeed                  ws.VCAFeedController.objectCountingFeed
+WS      /ws/loiteringfeed                       ws.VCAFeedController.loiteringFeed
+WS      /ws/videoblurfeed                       ws.VCAFeedController.videoBlurFeed
+WS      /ws/faceindexingfeed                    ws.VCAFeedController.faceIndexingFeed
+
+# ~~~ API monitoring ~~~
+WS      /ws/trackrunningtasks                   ws.BackendMonitoring.trackRunningTasks
+WS      /ws/monitorvcainstancechange            ws.BackendMonitoring.monitorVcaInstanceChange
+WS      /ws/monitorOccupancyChange              ws.BackendMonitoring.monitorOccupancyChange
+
+
+# ~~~ API controller routes ~~~
+
+*       /api/{bucket}/login/?                       api.Login.login
+*       /api/{bucket}/keepalive/?                   api.Login.keepalive
+*       /api/{bucket}/logout/?                      api.Login.logout
+*       /api/{bucket}/getsessioninfo/?              api.Login.getsessioninfo
+*       /api/forgotpassword/?  					    api.Login.forgotpassword
+GET     /api/verifyresetkey/{key}/?  			    api.Login.verifyresetkey
+*       /api/resetpasswordwithkey/?  			    api.Login.resetpasswordwithkey
+
+*       /api/{bucket}/getbuckets/?                  api.PlatformController.getbuckets
+*       /api/{bucket}/addbucket/?                   api.PlatformController.addbucket
+*       /api/{bucket}/updatebucket/?                api.PlatformController.updatebucket
+*       /api/{bucket}/removebucket/?                api.PlatformController.removebucket
+*       /api/{bucket}/restorebucket/?               api.PlatformController.restorebucket
+*       /api/{bucket}/getbucketfeatures/?           api.PlatformController.getbucketfeatures
+*       /api/{bucket}/updatebucketfeatures/?        api.PlatformController.updatebucketfeatures
+*       /api/{bucket}/getallfeatures/?  	        api.PlatformController.getallfeatures
+*       /api/{bucket}/getbucketusers/?              api.PlatformController.getbucketusers
+*       /api/{bucket}/updatebucketsettings          api.PlatformController.updatebucketsettings
+*       /api/{bucket}/getbucketsetting              api.PlatformController.getbucketsetting
+*       /api/{bucket}/activatebucket                api.PlatformController.activatebucket
+*       /api/{bucket}/deactivatebucket              api.PlatformController.deactivatebucket
+*       /api/{bucket}/uploadlogobinarydata/?		api.PlatformController.uploadlogobinarydata
+*       /api/{bucket}/getbucketlogs/?		        api.PlatformController.getbucketlogs
+*       /api/{bucket}/exportusersfilebybucketid/?   api.PlatformController.exportusersfilebybucketid
+*       /api/{bucket}/exportnodesbybucketid/?       api.PlatformController.exportnodesbybucketid
+*       /api/{bucket}/getplatforminformation/?      api.PlatformController.getplatforminformation
+*       /api/{bucket}/getbucketpasswordpolicy/?     api.PlatformController.getbucketpasswordpolicy
+*       /api/{bucket}/updatebucketpasswordpolicy/?  api.PlatformController.updatebucketpasswordpolicy
+
+*       /api/{bucket}/getuserdevices/?          	api.DeviceProvisioning.getuserdevices
+*       /api/{bucket}/getuserdevicesbyuserid/?  	api.DeviceProvisioning.getuserdevicesbyuserid
+*       /api/{bucket}/getbucketdevices/?        	api.DeviceProvisioning.getbucketdevices
+*       /api/{bucket}/getbucketdevicelabels/?   	api.DeviceProvisioning.getbucketdevicelabels
+*       /api/{bucket}/adddevicetobucket/?       	api.DeviceProvisioning.adddevicetobucket
+*       /api/{bucket}/updatedevice/?            	api.DeviceProvisioning.updatedevice
+*       /api/{bucket}/removedevicefrombucket/?  	api.DeviceProvisioning.removedevicefrombucket
+*       /api/{bucket}/adddeviceuser/?           	api.DeviceProvisioning.adddeviceuser
+*       /api/{bucket}/removedeviceuser/?        	api.DeviceProvisioning.removedeviceuser
+*       /api/{bucket}/getdevicemodels/?         	api.DeviceProvisioning.getdevicemodels
+*       /api/{bucket}/uploadinventory/?         	api.DeviceProvisioning.uploadinventory
+*       /api/{bucket}/addinventory/?                api.DeviceProvisioning.addinventory
+*       /api/{bucket}/getinventorylist/?        	api.DeviceProvisioning.getinventorylist
+*       /api/{bucket}/updateinventory/?         	api.DeviceProvisioning.updateinventory
+*       /api/{bucket}/removeallinventory/?      	api.DeviceProvisioning.removeallinventory
+*       /api/{bucket}/removeinventory/?         	api.DeviceProvisioning.removeinventory
+*       /api/{bucket}/editnodecamera/?    	        api.DeviceProvisioning.editnodecamera
+*       /api/{bucket}/startautodiscovery/?    	    api.DeviceProvisioning.startautodiscovery
+*       /api/{bucket}/stopautodiscovery/?    	    api.DeviceProvisioning.stopautodiscovery
+*       /api/{bucket}/getdiscovereddevices/?    	api.DeviceProvisioning.getdiscovereddevices
+*       /api/{bucket}/getnodesettings/?    	        api.DeviceProvisioning.getnodesettings
+*       /api/{bucket}/getnodecameralist/?           api.DeviceProvisioning.getnodecameralist
+*       /api/{bucket}/getnodeanalyticslist/?        api.DeviceProvisioning.getnodeanalyticslist
+*       /api/{bucket}/getbucketdevicesbybucketid/?  api.DeviceProvisioning.getbucketdevicesbybucketid
+*       /api/{bucket}/getdevicelogs/?               api.DeviceProvisioning.getdevicelogs
+*       /api/{bucket}/getnodeinfooncloud/?          api.DeviceProvisioning.getnodeinfooncloud
+*       /api/{bucket}/getnodecamerastorage/?        api.DeviceProvisioning.getnodecamerastorage
+
+*       /api/{bucket}/getannouncementlist/?         api.AnnouncementController.getannouncementlist
+*       /api/{bucket}/addannouncement/?             api.AnnouncementController.addannouncement
+*       /api/{bucket}/updateannouncement/?          api.AnnouncementController.updateannouncement
+*       /api/{bucket}/removeannouncement/?          api.AnnouncementController.removeannouncement
+
+*       /api/{bucket}/getlivevideourl/?                 api.VideoProvisioning.getlivevideourl
+*       /api/{bucket}/keepalivelivevideourl/?           api.VideoProvisioning.keepalivelivevideourl
+*       /api/{bucket}/expirelivevideourl/?              api.VideoProvisioning.expirelivevideourl
+*       /api/{bucket}/getplaybackvideourl/?             api.VideoProvisioning.getplaybackvideourl
+*       /api/{bucket}/keepaliveplaybackvideourl/?       api.VideoProvisioning.keepaliveplaybackvideourl
+*       /api/{bucket}/expireplaybackvideourl/?          api.VideoProvisioning.expireplaybackvideourl
+*		/api/{bucket}/searchcloudrecordings/?           api.VideoProvisioning.searchcloudrecordings
+*		/api/{bucket}/requestcloudrecordings/?          api.VideoProvisioning.requestcloudrecordings
+*       /api/{bucket}/deletecloudrecordings/?           api.VideoProvisioning.deletecloudrecordings
+*       /api/{bucket}/findpendinguploadrequests/?       api.VideoProvisioning.findpendinguploadrequests
+*       /api/{bucket}/getrecordinguploadrequests/?      api.VideoProvisioning.getrecordinguploadrequests
+*		/api/{bucket}/getrecordedfilelist/?             api.VideoProvisioning.getrecordedfilelist
+*       /api/{bucket}/downloadzippedrecordings/?        api.VideoProvisioning.downloadzippedrecordings
+*       /api/{bucket}/usbexportrecordings/?             api.VideoProvisioning.usbexportrecordings
+
+*       /api/{bucket}/getevents/?                           api.Reports.getevents
+*       /api/{bucket}/getanalyticsreport/?		            api.Reports.getanalyticsreport
+*       /api/{bucket}/getpossalesreport/?		            api.Reports.getpossalesreport
+*       /api/{bucket}/updatepossalesdata/?		            api.Reports.updatepossalesdata
+*       /api/{bucket}/listposnames/?		                api.Reports.listposnames
+*       /api/{bucket}/getreportqueryhistory/?               api.Reports.getreportqueryhistory
+*       /api/{bucket}/savereportqueryhistory/?              api.Reports.savereportqueryhistory
+*       /api/{bucket}/getdashboard/?                        api.Reports.getdashboard
+*       /api/{bucket}/geteventswithbinary/?                 api.Reports.geteventswithbinary
+*       /api/{bucket}/getpossettings/?                      api.Reports.getpossettings
+*       /api/{bucket}/updatepossettings/?                   api.Reports.updatepossettings
+*       /api/{bucket}/getdata/?                             api.Reports.getdata
+
+*       /api/{bucket}/exporttrafficflowpdf                  api.ReportGeneration.exporttrafficflowpdf
+*       /api/{bucket}/exportcrowddensitypdf                 api.ReportGeneration.exportcrowddensitypdf
+*       /api/{bucket}/exportpeoplecountingpdf               api.ReportGeneration.exportpeoplecountingpdf
+*       /api/{bucket}/exportaudienceprofilingpdf            api.ReportGeneration.exportaudienceprofilingpdf
+*       /api/{bucket}/exportfaceindexingpdf                 api.ReportGeneration.exportfaceindexingpdf
+*       /api/{bucket}/exportvcasecuritypdf                  api.ReportGeneration.exportvcasecuritypdf
+*       /api/{bucket}/exportdatalogs                        api.ReportGeneration.exportdatalogs
+*       /api/{bucket}/exportaggregatedcsvreport            	api.ReportGeneration.exportaggregatedcsvreport
+*		/api/{bucket}/geteventbinarydata/?			        api.ReportGeneration.geteventbinarydata
+
+
+*       /api/{bucket}/getsimpleauditreport/?        api.Audit.getsimpleauditreport
+*       /api/{bucket}/getauditlog                   api.Audit.getauditlog
+*       /api/{bucket}/getauditlogdetails            api.Audit.getauditlogdetails
+*       /api/{bucket}/exportauditlog                api.Audit.exportauditlog
+
+
+*       /api/{bucket}/isusernameavailable/?                 api.UserManagement.isusernameavailable
+*       /api/{bucket}/adduser/?                             api.UserManagement.adduser
+*       /api/{bucket}/updateuser/?                          api.UserManagement.updateuser
+*       /api/{bucket}/activateuser/?                        api.UserManagement.activateuser
+*       /api/{bucket}/deactivateuser/?                      api.UserManagement.deactivateuser
+*       /api/{bucket}/removeuser/?                          api.UserManagement.removeuser
+*       /api/{bucket}/getuserprofile/?                      api.UserManagement.getuserprofile
+*       /api/{bucket}/updateuserprofile/?                   api.UserManagement.updateuserprofile
+*       /api/{bucket}/changepassword/?  		            api.UserManagement.changepassword
+*       /api/{bucket}/getuserprefs/?  		                api.UserManagement.getuserprefs
+*       /api/{bucket}/saveuserprefs/?  			            api.UserManagement.saveuserprefs
+*       /api/{bucket}/getbucketuserlabels/?                 api.UserManagement.getbucketuserlabels
+*       /api/{bucket}/exportuserlist                        api.UserManagement.exportuserlist
+*       /api/{bucket}/getbucketusersbybucketid/?            api.UserManagement.getbucketusersbybucketid
+*       /api/{bucket}/getusernotificationsettings/?         api.UserManagement.getusernotificationsettings
+*       /api/{bucket}/updateusernotificationsettings/?      api.UserManagement.updateusernotificationsettings
+
+*       /api/{bucket}/getbucketroles/?  	        api.RoleManagement.getbucketroles
+*       /api/{bucket}/addbucketrole/?  	            api.RoleManagement.addbucketrole
+*       /api/{bucket}/editbucketrole/?  	        api.RoleManagement.editbucketrole
+*       /api/{bucket}/removerole/?  	            api.RoleManagement.removerole
+*       /api/{bucket}/getrolefeatures/?  	        api.RoleManagement.getrolefeatures
+*       /api/{bucket}/updaterolefeatures/?          api.RoleManagement.updaterolefeatures
+*       /api/{bucket}/getuserfeatures/?  	        api.RoleManagement.getuserfeatures
+*       /api/{bucket}/getuserrolesbyuserid/?        api.RoleManagement.getuserrolesbyuserid
+*       /api/{bucket}/updateuserroles/?  	        api.RoleManagement.updateuserroles
+*       /api/{bucket}/getassignablerolefeatures/?   api.RoleManagement.getassignablerolefeatures
+
+*       /api/{bucket}/recvcometnotification/?               api.NotificationController.recvcometnotification
+*       /api/{bucket}/getbucketnotificationsettings/?       api.NotificationController.getbucketnotificationsettings
+*       /api/{bucket}/updatebucketnotificationsettings/?    api.NotificationController.updatebucketnotificationsettings
+*       /api/{bucket}/restorebucketnotificationsettings/?   api.NotificationController.restorebucketnotificationsettings
+*       /api/{bucket}/exportalerts/?                        api.NotificationController.exportalerts
+*       /api/{bucket}/getalerts/?                           api.NotificationController.getalerts
+*       /api/{bucket}/getalertdetails/?                     api.NotificationController.getalertdetails
+*       /geteventvideo/{filename}                           api.NotificationController.geteventvideo
+*       /api/{bucket}/getallowednotifymethods/?             api.NotificationController.getallowednotifymethods
+*       /api/{bucket}/getlabeloccupancysettings/?           api.NotificationController.getlabeloccupancysettings
+*       /api/{bucket}/updatelabeloccupancysettings/?        api.NotificationController.updatelabeloccupancysettings
+*       /api/{bucket}/getlabelnotifications/?               api.NotificationController.getlabelnotifications
+*       /api/{bucket}/acknowledgenotification/?             api.NotificationController.acknowledgenotification
+
+
+*       /api/{bucket}/registerapnsdevice/?          api.MobileController.registerapnsdevice
+*       /api/{bucket}/registergcmdevice/?           api.MobileController.registergcmdevice
+*       /api/{bucket}/unregisterapnsdevice/?        api.MobileController.unregisterapnsdevice
+*       /api/{bucket}/unregistergcmdevice/?         api.MobileController.unregistergcmdevice
+*       /api/{bucket}/getusermobiledevices/?    	api.MobileController.getusermobiledevices
+*       /api/{bucket}/removemobiledeviceofuser/?    api.MobileController.removemobiledeviceofuser
+*       /api/{bucket}/updatemobiledeviceinfo/?      api.MobileController.updatemobiledeviceinfo
+
+*       /api/{bucket}/getlivelocation/?             api.Location.getlivelocation
+*       /api/{bucket}/getbucketpois/?               api.Location.getbucketpois
+*       /api/{bucket}/addpoi/?                      api.Location.addpoi
+*       /api/{bucket}/updatepoi/?                   api.Location.updatepoi
+*       /api/{bucket}/removepoi/?                   api.Location.removepoi
+
+*       /api/{bucket}/addschedulepreset/?           api.Scheduling.addschedulepreset
+*       /api/{bucket}/removeschedulepreset/?        api.Scheduling.removeschedulepreset
+*       /api/{bucket}/getschedulepresets/?          api.Scheduling.getschedulepresets
+
+*       /api/{bucket}/listnodeupdateschedules/?     api.TaskScheduleController.listnodeupdateschedules
+*       /api/{bucket}/schedulenodeupdates/?         api.TaskScheduleController.schedulenodeupdates
+*       /api/{bucket}/deletenodeupdateschedule/?    api.TaskScheduleController.deletenodeupdateschedule
+*       /api/{bucket}/getnodeupdateschedule/?       api.TaskScheduleController.getnodeupdateschedule
+
+# ~~~ Deprecated old VCA APIs. ~~~
+*       /api/{bucket}/addareaintrusion              api.VcaController.addvca(type:'INTRUSION')
+*       /api/{bucket}/updateareaintrusion           api.VcaController.updatevca
+*       /api/{bucket}/removeareaintrusion           api.VcaController.removevca
+*       /api/{bucket}/activateareaintrusion         api.VcaController.activatevca
+*       /api/{bucket}/deactivateareaintrusion       api.VcaController.deactivatevca
+*       /api/{bucket}/addperimeterdefense           api.VcaController.addvca(type:'PERIMETER')
+*       /api/{bucket}/updateperimeterdefense        api.VcaController.updatevca
+*       /api/{bucket}/removeperimeterdefense        api.VcaController.removevca
+*       /api/{bucket}/activateperimeterdefense      api.VcaController.activatevca
+*       /api/{bucket}/deactivateperimeterdefense    api.VcaController.deactivatevca
+*       /api/{bucket}/addarealoitering              api.VcaController.addvca(type:'LOITERING')
+*       /api/{bucket}/updatearealoitering           api.VcaController.updatevca
+*       /api/{bucket}/removearealoitering           api.VcaController.removevca
+*       /api/{bucket}/activatearealoitering         api.VcaController.activatevca
+*       /api/{bucket}/deactivatearealoitering       api.VcaController.deactivatevca
+*       /api/{bucket}/addobjectcounting             api.VcaController.addvca(type:'OBJCOUNTING')
+*       /api/{bucket}/updateobjectcounting          api.VcaController.updatevca
+*       /api/{bucket}/removeobjectcounting          api.VcaController.removevca
+*       /api/{bucket}/activateobjectcounting        api.VcaController.activatevca
+*       /api/{bucket}/deactivateobjectcounting      api.VcaController.deactivatevca
+*       /api/{bucket}/addvideoblur                  api.VcaController.addvca(type:'VIDEOBLUR')
+*       /api/{bucket}/updatevideoblur               api.VcaController.updatevca
+*       /api/{bucket}/removevideoblur               api.VcaController.removevca
+*       /api/{bucket}/activatevideoblur             api.VcaController.activatevca
+*       /api/{bucket}/deactivatevideoblur           api.VcaController.deactivatevca
+*       /api/{bucket}/addfaceindexing               api.VcaController.addvca(type:'FACE')
+*       /api/{bucket}/updatefaceindexing            api.VcaController.updatevca
+*       /api/{bucket}/removefaceindexing            api.VcaController.removevca
+*       /api/{bucket}/activatefaceindexing          api.VcaController.activatevca
+*       /api/{bucket}/deactivatefaceindexing        api.VcaController.deactivatevca
+*       /api/{bucket}/addpeoplecounting             api.VcaController.addvca(type:'PCOUNTING')
+*       /api/{bucket}/updatepeoplecounting          api.VcaController.updatevca
+*       /api/{bucket}/removepeoplecounting          api.VcaController.removevca
+*       /api/{bucket}/activatepeoplecounting        api.VcaController.activatevca
+*       /api/{bucket}/deactivatepeoplecounting      api.VcaController.deactivatevca
+*       /api/{bucket}/addtrafficflow                api.VcaController.addvca(type:'TRAFFIC')
+*       /api/{bucket}/updatetrafficflow             api.VcaController.updatevca
+*       /api/{bucket}/removetrafficflow             api.VcaController.removevca
+*       /api/{bucket}/activatetrafficflow           api.VcaController.activatevca
+*       /api/{bucket}/deactivatetrafficflow         api.VcaController.deactivatevca
+*       /api/{bucket}/addcrowddetection             api.VcaController.addvca(type:'CROWD')
+*       /api/{bucket}/updatecrowddetection          api.VcaController.updatevca
+*       /api/{bucket}/removecrowddetection          api.VcaController.removevca
+*       /api/{bucket}/activatecrowddetection        api.VcaController.activatevca
+*       /api/{bucket}/deactivatecrowddetection      api.VcaController.deactivatevca
+*       /api/{bucket}/addaudienceprofiling          api.VcaController.addvca(type:'PROFILING')
+*       /api/{bucket}/updateaudienceprofiling       api.VcaController.updatevca
+*       /api/{bucket}/removeaudienceprofiling       api.VcaController.removevca
+*       /api/{bucket}/activateaudienceprofiling     api.VcaController.activatevca
+*       /api/{bucket}/deactivateaudienceprofiling   api.VcaController.deactivatevca
+#                --- DO NOT ADD MORE APIs here ---
+
+# ~~~ Vca Management APIs ~~~
+*       /api/{bucket}/addvca                        api.VcaController.addvca
+*       /api/{bucket}/updatevca                     api.VcaController.updatevca
+*       /api/{bucket}/activatevca                   api.VcaController.activatevca
+*       /api/{bucket}/deactivatevca                 api.VcaController.deactivatevca
+*       /api/{bucket}/removevca                     api.VcaController.removevca
+*       /api/{bucket}/listrunninganalytics          api.VcaController.listrunninganalytics
+*       /api/{bucket}/listanalyticsbybucketid       api.VcaController.listanalyticsbybucketid
+*       /api/{bucket}/getvcacommands                api.VcaController.getvcacommands
+*       /api/{bucket}/getvcaerrors                  api.VcaController.getvcaerrors
+*       /api/{bucket}/getvcaconcurrencystatus       api.VcaController.getvcaconcurrencystatus
+
+*		/api/{bucket}/generatesyncfile					    api.SyncService.generateSyncFile
+*		/api/{bucket}/pullnodelog						    api.NodeSupportController.pullnodelog
+*		/api/downloadnodelogfile/{filename}				    api.NodeSupportController.downloadnodelogfile
+*		/api/{bucket}/getnodeloglist					    api.NodeSupportController.getnodeloglist
+
+*		/api/{bucket}/uploadsoftwareupdate/?			    api.SoftwareUpdateController.uploadSoftwareUpdate
+*		/api/{bucket}/removesoftwareupdate				    api.SoftwareUpdateController.removeSoftwareUpdate
+*		/api/{bucket}/getsoftwareupdatelist				    api.SoftwareUpdateController.getSoftwareUpdateList
+*		/api/{bucket}/downloadsoftwareupdate/{filename}	    api.SoftwareUpdateController.downloadSoftwareUpdate
+*       /api/{bucket}/updatenodesoftware                    api.SoftwareUpdateController.updatenodesoftware
+
+*       /api/{bucket}/getaccesskeylist/?            api.PlatformAccess.getaccesskeylist
+*       /api/{bucket}/generateaccesskey/?           api.PlatformAccess.generateaccesskey
+*       /api/{bucket}/removeaccesskey/?             api.PlatformAccess.removeaccesskey
+
+*       /api/{bucket}/startremoteshell/?            api.RemoteShellController.startremoteshell
+*       /api/{bucket}/stopremoteshell/?             api.RemoteShellController.stopremoteshell
+*       /api/{bucket}/getremoteshelllist/?          api.RemoteShellController.getremoteshelllist
+
+*       /api/{bucket}/checklicensestatus/?          api.LicenseProvisioning.checklicensestatus
+*       /api/{bucket}/getnodelicenses/?             api.LicenseProvisioning.getnodelicenses
+*       /api/{bucket}/addnodelicense/?              api.LicenseProvisioning.addnodelicense
+*       /api/{bucket}/updatenodelicense/?           api.LicenseProvisioning.updatenodelicense
+*       /api/{bucket}/deletenodelicense/?           api.LicenseProvisioning.deletenodelicense
+*       /api/{bucket}/suspendnodelicense/?          api.LicenseProvisioning.suspendnodelicense
+*       /api/{bucket}/unsuspendnodelicense/?        api.LicenseProvisioning.unsuspendnodelicense
+*       /api/{bucket}/getnodelicenselogs/?          api.LicenseProvisioning.getnodelicenselogs
+*       /api/{bucket}/exportlicenselist          	api.LicenseProvisioning.exportlicenselist
+*       /api/{bucket}/getassignablenodefeatures     api.LicenseProvisioning.getassignablenodefeatures
+
+*       /api/{bucket}/addholiday                    api.HolidayController.addholiday
+*       /api/{bucket}/getholidays                   api.HolidayController.getholidays
+*       /api/{bucket}/deleteholiday                 api.HolidayController.deleteholiday
+*       /api/{bucket}/updateholiday                 api.HolidayController.updateholiday
+*       /api/{bucket}/getcountrylist                api.HolidayController.getcountrylist
+
+# ~~~ Nodes to Cloud only ~~~
+
+*       /api/{bucket}/registernode/?                api.NodeToCloud.registernode
+*       /api/{bucket}/replacenode/?                 api.NodeToCloud.replacenode
+*       /api/{bucket}/notifynodereset/?             api.NodeToCloud.notifynodereset
+
+
+# ~~~ KAI Node API controller routes ~~~
+
+*		/nodeapi/getnetworkstatus		    		api.node.Status.getNetworkStatus
+*		/nodeapi/getnodeinfo					    api.node.Status.getNodeInfo
+*		/nodeapi/getnodeversion					    api.node.Status.getNodeVersion
+*		/nodeapi/reset				                api.node.Status.reset
+*		/nodeapi/storageexpansionstarted            api.node.Status.storageExpansionStarted
+
+*		/nodeapi/checklicensestatus				    api.node.Registration.checklicensestatus
+*		/nodeapi/register				            api.node.Registration.register
+*		/nodeapi/replace				            api.node.Registration.replace
+
+# ~~~ OTP access ~~~
+*       /api/otplogin/?                                     api.login.otplogin
+
+# ~~~ Geo Services ~~~
+*       /api/reversegeocode/?                               api.GeoServices.reversegeocode
+
+# ~~~ label management ~~~
+*       /api/{bucket}/getlabels/?                       api.LabelController.getlabels
+*       /api/{bucket}/getuseraccessiblelabels/?         api.LabelController.getuseraccessiblelabels
+*       /api/{bucket}/getlabelsbybucketid/?             api.LabelController.getlabelsbybucketid
+*       /api/{bucket}/addlabel/?                        api.LabelController.addlabel
+*       /api/{bucket}/updatelabel/?                     api.LabelController.updatelabel
+*       /api/{bucket}/removelabel/?                     api.LabelController.removelabel
+*       /api/{bucket}/assignchannellabel/?              api.LabelController.assignchannellabel
+*       /api/{bucket}/unassignchannellabel/?            api.LabelController.unassignchannellabel
+
+# ~~~ Content download and access ~~~
+*       /api/{bucket}/downloadexportedfile/?            api.ContentController.downloadexportedfile
+
+# ~~~ Cloud management ~~~
+POST     /api/{bucket}/searchregisterednodes/?          api.CloudServerManagement.searchregisterednodes
+POST     /api/{bucket}/getserverconfigurations/?        api.CloudServerManagement.getserverconfigurations
+POST     /api/{bucket}/updateserverconfigurations/?     api.CloudServerManagement.updateserverconfigurations
+
+# ~~~ For debugging use ~~~
+POST     /api/{bucket}/getplaystatus/?                  api.Debugging.getplaystatus
+POST     /api/{bucket}/getcommandqueues/?               api.Debugging.getcommandqueues
+POST     /api/{bucket}/getcommandlogs/?                 api.Debugging.getcommandlogs
+POST     /api/{bucket}/getsynctasksstatus/?             api.Debugging.getsynctasksstatus
+POST     /api/{bucket}/getrejectedevents/?              api.Debugging.getrejectedevents
+POST     /api/{bucket}/browseeventvideos/?              api.Debugging.browseeventvideos
+POST     /api/{bucket}/getunsyncedevents/?              api.Debugging.getunsyncedevents
+POST     /api/{bucket}/getunsyncedeventvideos/?         api.Debugging.getunsyncedeventvideos
+POST     /api/{bucket}/geteventvideorequests/?          api.Debugging.geteventvideorequests
+POST     /api/{bucket}/deleteeventvideo/?               api.Debugging.deleteeventvideo
+POST     /api/{bucket}/getallnotifications/?            api.Debugging.getallnotifications
+POST     /api/{bucket}/getdeliveryjobsstatus/?          api.Debugging.getdeliveryjobsstatus
+POST     /api/{bucket}/getmigrationerrorlogs/?          api.Debugging.getmigrationerrorlogs
+POST     /api/{bucket}/getserverstatus/?                api.Debugging.getserverstatus
+
+# ~~~ For monitoring server only ~~~
+POST     /api/{bucket}/fetchnodesformonitoring/?        api.SiteMonitoring.fetchnodesformonitoring
+
+# ~~~ OS and System ~~~
+*       /api/{bucket}/getusbdrives/?                    api.SystemController.getusbdrives
+
+# ~~~ Catch all ~~~
+GET     /{bucket}/{controller}/{action}/{target}/{id}/?     web.{controller}.{action}
+GET     /{bucket}/{controller}/{action}/{id}/?              web.{controller}.{action}
+GET     /{bucket}/{controller}/{action}/?                   web.{controller}.{action}
+GET     /{bucket}/{controller}/?                            web.{controller}.index
+GET     /{bucket}/?                                         web.login.index
+GET     /                                                   web.login.index

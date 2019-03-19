@@ -1,0 +1,243 @@
+/* kendo customizations */
+
+.vca-list .tab_strip {
+    background: #333;
+    border: 0px;
+    margin-top: 5px;
+}
+
+.vca-list .tab_strip .k-state-active {
+    background: #F6AE40;
+    border: 0px;
+}
+
+.vca-list .tab_strip ul {
+}
+
+.vca-list .tab_strip li {
+    text-align: center;
+}
+
+.vca-list .tab_strip li .k-link {
+    padding: 2px 25px 3px 25px;
+}
+
+.vca-list .tab_content {
+    background: #222;
+    padding: 1px 0px 0px 0px;
+    margin: 0px;
+}
+
+.vca-list .k-grid > table > tbody > tr:hover,
+.vca-list .k-grid-content > table > tbody > tr:hover {
+    background: #151515;
+}
+
+.vca-list th.k-header, .k-grid-toolbar, .k-grid-header, .k-pager-wrap, .k-grid-pager {
+    background: #212121;
+}
+
+.vca-list .k-grid {
+    border-left: 0;
+    border-right: 0;
+}
+
+.vca-list .k-tabstrip-items {
+    margin-left: 5px;
+}
+
+.vca-list .k-grid tbody tr {
+    height: 30px;
+}
+
+.vca-list .k-grid td {
+    white-space: nowrap;
+}
+
+/* Page Styling */
+
+.vca-list {
+    display: none;
+}
+
+.vca-list .header {
+    background-color: #212121;
+    padding: 10px 0px 20px 20px;
+}
+
+.vca-list .header .title {
+    font-size: 18px;
+    color: #bbb;
+}
+
+.vca-list .header_box {
+    background: #212121 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+}
+
+.vca-list .header_box .k-button {
+    margin-right: 8px;
+    padding: 3px 8px;
+}
+
+.vca-list .header_box .actions {
+    padding: 8px;
+}
+
+.vca-list .header_box .actions .btn_add {
+    padding-left: 20px;
+    background: url("/public/css/common/images/vca_add.png") 0 50% no-repeat;
+    background-size: 13px 13px;
+}
+
+.vca-list .header_box .float_right {
+    float: right;
+    padding-top: 5px;
+}
+
+.vca-list .header_box .float_right .k-button {
+    display: none;
+    padding: 6px 10px;
+}
+
+.vca-list .filter_box {
+    border-top: 1px solid #000000;
+    padding: 8px 8px 8px 10px;
+}
+
+.vca-list .filter_box .filter_entry {
+    display: inline-block;
+}
+
+.vca-list .filter_box .filter_entry label {
+    margin-right: 8px;
+}
+
+.vca-list .filter_box .filter_entry input {
+    margin-right: 30px;
+    width: 180px;
+    height: 24px;
+    background: #eee;
+}
+
+.vca-list .vca_action_wrapper a span {
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    margin-bottom: -2px;
+}
+
+.vca-list .vca_action_wrapper .button_slot {
+    display: inline-block;
+    width: 31px;
+}
+
+.vca-list .vca_action_wrapper .start {
+    background: url(/public/css/common/images/play2.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca-list .vca_action_wrapper .stop {
+    background: url(/public/css/common/images/stop.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca-list .vca_action_wrapper .debugger {
+    background: url(/public/css/common/images/vca_debug.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca-list .vca_action_wrapper .config {
+    background: url(/public/css/common/images/config.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca-list .vca_action_wrapper .vca_logs {
+    width: 14px;
+    height: 14px;
+    background: url(/public/css/common/images/vca_logs.png) 50% 50% no-repeat;
+    background-size: 14px 14px;
+    margin-bottom: -3px;
+}
+
+.vca-list .vca_action_wrapper .delete {
+    background: url(/public/css/common/images/vca_delete.png) no-repeat;
+    background-size: 12px 12px;
+}
+
+.vca-list .vca_status_wrapper {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0px 0px -4px 1px;
+}
+
+.vca-list .vca-state-WAITING {
+    background: url(/public/css/common/images/vca_status_loading.gif) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-list .vca-state-RUNNING {
+    background: url(/public/css/common/images/vca_status_running.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-list .vca-state-ERROR {
+    background: url(/public/css/common/images/alert.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-list .vca-state-NOT_SCHEDULED {
+    width: 18px;
+    height: 18px;
+    background: url(/public/css/common/images/vca_status_stopped.png) center center no-repeat;
+    background-size: 18px 18px;
+}
+
+.vca-list .vca-state-DISABLED {
+    background: url(/public/css/common/images/vca_status_inactive.png) center center no-repeat;
+    background-size: 16px 16px;
+}
+
+.vca-list .vca-state-OFFLINE {
+    background: url(/public/css/common/images/vca_status_offline.png) center center no-repeat;
+    background-size: 16px 16px;
+    margin-left: 10px;
+}
+
+.vca-list .data_search {
+    padding: 10px;
+}
+
+.vca-list .data_search .device_list {
+    width: 165px;
+    margin-right: 40px;
+}
+
+.vca-list .data_search .channel_list {
+    width: 165px;
+    margin-left: 5px;
+}
+
+.vca-list .data_search .start_time, .end_time {
+    width: 165px;
+}
+
+.vca-list .data_search .btn_group {
+    float: right;
+}
+
+.data_search .btn_group .k-button {
+    min-width: 70px;
+}
+
+.data_search .btn_group .pdf {
+    padding-left: 24px;
+    background: url("/public/css/common/images/export-pdf.png") 0px 50% no-repeat;
+    background-size: 16px 16px;
+}
+
+.data_search .btn_group .csv {
+    padding-left: 24px;
+    background: url("/public/css/common/images/export-excel.png") 0px 50% no-repeat;
+    background-size: 16px 16px;
+}

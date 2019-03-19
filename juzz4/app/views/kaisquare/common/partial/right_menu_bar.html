@@ -1,0 +1,513 @@
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        var intialRequest = true;
+        var menuBar = $("#menu-panelbar").kendoPanelBar({
+            expandMode: "single",
+            animation: {
+                expand: {
+                    duration: 300,
+                    effects: "expandVertical"
+                }
+            },
+            select: function (e)
+            {
+                var item = $("#menu-panelbar").data("kendoPanelBar").select();
+                var _menu = $(e.item);
+                var _url = _menu.attr("url");
+                if (_url === undefined)
+                {
+                    if (item.hasClass("k-state-active"))
+                    {
+                        $("#menu-panelbar").data("kendoPanelBar").collapse(item);
+                        item.children("span").removeClass("k-state-selected");
+                        item.children("span").removeClass("k-state-focused");
+                    }
+                    return;
+                }
+                if ((_url.indexOf("live/fullview") !== -1 && location.href.indexOf("live/fullview") !== -1))
+                {
+                    $("#menu-panelbar").data("kendoPanelBar").select($("#liveViewTab").parent().parent());
+                    window.intializeSubmenu(0);
+                }
+                else if ((_url.indexOf("label/list") !== -1) && (location.href.indexOf("label/list") !== -1))
+                {
+                    $("#menu-panelbar").data("kendoPanelBar").select($("#labelManagementTab").parent().parent());
+                    window.intializeSubmenu(0);
+                }
+                else if (_url.indexOf("/report#") !== -1)
+                {
+                    if (location.href.indexOf("/report#") === -1)
+                    {
+                        window.location.href = _url;
+                    }
+                    else
+                    {
+                        var reportType = (!!_url.split("#")[1]) ? _url.split("#")[1] : '',
+                                vcaEventType = KUP.widget.report.getMap('vcaEventType')[reportType],
+                                getReportHtmlOpt = {
+                                    data: {
+                                        'reportType': reportType
+                                    },
+                                    onSuccess: function (data)
+                                    {
+                                        $('#main-charts').html(data);
+                                    }
+                                },
+                                listRunningAnalyticsOpt = {
+                                    sessionKey: '',
+                                    analyticsType: KUP.widget.report.getMap('vcaAnalyticsType')[reportType],
+                                    onSuccess: function (data)
+                                    {
+                                        var opt = KUP.widget.report.getOpt();
+                                        opt.apiRunningAnalyticsList = data.instances || [];
+                                        KUP.widget.report.setOpt(opt);
+                                    },
+                                    onFailure: function ()
+                                    {
+                                    }
+                                },
+                                getReportQueryHistoryOpt = {
+                                    eventType: vcaEventType,
+                                    onSuccess: function (data)
+                                    {
+                                        var opt = KUP.widget.report.getOpt();
+                                        opt.apiQueryHistoryData = data.query || {};
+                                        KUP.widget.report.setOpt(opt);
+                                    },
+                                    onFailure: function ()
+                                    {
+                                    }
+                                };
+                        if (!$('#main').data()['blockUI.isBlocked'])
+                        {
+                            KUP.utils.block.popup('#main', KUP.utils.i18n('retrieving-data'));
+                        }
+                        $.when(
+                                KUP.request.getReportHtml(getReportHtmlOpt),
+                                window.listRunningAnalytics(
+                                        listRunningAnalyticsOpt.sessionKey,
+                                        listRunningAnalyticsOpt.analyticsType,
+                                        listRunningAnalyticsOpt.onSuccess,
+                                        listRunningAnalyticsOpt.onFailure
+                                ),
+                                window.getReportQueryHistory(
+                                        getReportQueryHistoryOpt.eventType,
+                                        getReportQueryHistoryOpt.onSuccess,
+                                        getReportQueryHistoryOpt.onFailure
+                                )
+                        ).always(function ()
+                                {
+                                    var opt = KUP.widget.report.getOpt();
+                                    opt.reportType = reportType;
+                                    KUP.widget.report.setOpt(opt);
+
+                                    //set data
+                                    $("#search-term").val("");
+                                    $('#search-term').trigger("keyup");
+                                    KUP.widget.report.setData.defaultItemDataList();
+                                    KUP.widget.report.setData.defaultElementList();
+                                    KUP.widget.report.setData.defaultDateRange();
+                                }).done(function ()
+                                {
+                                    KUP.utils.block.close('#main',
+                                            function ()
+                                            {
+                                                //switch tree report need to re-initialize
+                                                KUP.widget.report.type[reportType].loadSetUI();
+                                                KUP.widget.report.type[reportType].loadUpdateUI();
+
+                                                //waiting device tree initialize
+                                                var deviceTreeInterval = setInterval(function(){
+                                                    var opt = KUP.widget.report.getOpt();
+                                                    if (opt.isDeviceTreeViewinitialized) {
+                                                        //after initialized need to clear current interval
+                                                        clearInterval(deviceTreeInterval);
+
+                                                        //drag and drop device tree view
+                                                        KUP.widget.report.setUI.onDragFuc();
+                                                        KUP.widget.report.setUI.onDropFuc();
+
+                                                        //generate report
+                                                        if (Object.keys(opt.defaultItemDataList).length > 0)
+                                                        {
+                                                            KUP.widget.report.exec.generateReport();
+                                                        }
+                                                    }
+                                                }, 1000);
+                                            }
+                                    );
+                                    $("#menu-panelbar").data("kendoPanelBar").select($("#attentionReportTab").parent().parent());
+                                    window.intializeSubmenu(0);
+
+                                    //set export csv
+                                    (function ()
+                                    {
+                                        $('#csvOutput, #csvOutputDetail li').show();
+
+                                        $('#timecard').on('click', function (event)
+                                        {
+                                            event.preventDefault();
+                                            $('#csvOutput, #csvOutputDetail li').hide();
+                                        });
+                                        $('#charts').on('click', function (event)
+                                        {
+                                            event.preventDefault();
+                                            $('#csvOutput, #csvOutputDetail li').show();
+                                        });
+
+                                        if (reportType === 'trafficflow' || reportType === 'crowd')
+                                        {
+                                            $('#csvOutputForD').hide();
+                                            $('#csvOutputForW').hide();
+                                            $('#csvOutputForM').hide();
+                                        }
+                                        else
+                                        {
+                                            $('#csvOutputForD').show();
+                                            $('#csvOutputForW').show();
+                                            $('#csvOutputForM').show();
+                                        }
+                                    })();
+                                }).fail(function ()
+                                {
+                                    KUP.utils.default.popupAlert(KUP.utils.i18n('server-error'));
+                                });
+                    }
+                }
+                else if (_url.indexOf("/realtime#") !== -1)
+                {
+                    if (location.href.indexOf("/realtime#") === -1)
+                    {
+                        window.location.href = _url;
+                    }
+                    else if (location.href.indexOf(KUP.widget.realtime.getOpt().monitorType) === -1)
+                    {
+                        window.location.href = _url;
+                    }
+                    else
+                    {
+						intializeSubmenu(300);
+                    }
+                }
+                else
+                {
+                    window.location.href = _url;
+                }
+            }
+        });
+
+        $("#menu-panelbar").show();
+    });
+</script>
+<style type="text/css">
+    .font-tab-header {
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .font-tab-child {
+        font-size: 12.2px;
+        font-weight: normal;
+        color: #d9d8d8;
+    }
+
+    .k-link > span {
+        line-height: 25px;
+    }
+
+    #menu-panelbar {
+        visibility: hidden;
+    }
+</style>
+<ul id="menu-panelbar" class="toggle-panels">
+<li id=liveMonitoringTab>
+&{'monitoring'}
+    <ul class="font-tab-child">
+        <li id=liveViewTab url="/${bucket}/live/fullview">
+            <i class="live-view left-menu-image"></i> &{'live-view'}
+            <span id="liveviewSubMenu" class="sub_menu_icon"></span>
+        </li>
+        <li id=currentOccupancyTab url="/${bucket}/realtime#currentoccupancy">
+            <a href="/${bucket}/realtime#currentoccupancy">
+                <i class="current-occupancy left-menu-image"></i> &{'current-occupancy'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=liveTrackTab url="/${bucket}/location/track">
+            <i class="live-track left-menu-image"></i> &{'live-track'}
+        </li>
+        <li id=poiTab url="/${bucket}/poi/list">
+            <i class="points-of-interest left-menu-image"></i> &{'point-of-interests'}
+        </li>
+    </ul>
+</li>
+<li id=recordingTab>
+&{'recording'}
+    <ul class="font-tab-child">
+        <li id=cloudPlaybackTab url="/${bucket}/playback/cloud">
+            <i class="cloud-playback left-menu-image"></i> &{'cloud-playback'}
+        </li>
+        <li id=nodePlaybackTab url="/${bucket}/playback/node">
+            <i class="node-playback left-menu-image"></i> &{'node-playback'}
+        </li>
+    </ul>
+</li>
+<li id=biTab>
+&{'video-analytics'}
+    <ul class="font-tab-child">
+        <li id="vcaBiTitle" disabled="disabled">
+            <span class="tab-inline-title">&{'business-intelligence'}</span>
+            <span class="hr" style="margin: 0px 10px; display: block;"></span>
+        </li>
+
+        <li id=trafficFlowTab url="/${bucket}/vca/trafficflow">
+            <i class="event-vca-traffic left-menu-image"></i> &{'analytics-traffic-flow'}
+        </li>
+        <li id=peopleCountingTab url="/${bucket}/vca/peoplecounting">
+            <i class="event-vca-people-counting left-menu-image"></i> &{'analytics-people-counting'}
+        </li>
+        <li id=passerbyTab url="/${bucket}/vca/passerby">
+            <i class="analytics-passerby left-menu-image"></i>
+        &{'analytics-passerby'} <sup style="color: #FF4040">&{'beta'}</sup>
+        </li>
+        <li id=crowdDetectionTab url="/${bucket}/vca/crowd">
+            <i class="event-vca-crowd left-menu-image"></i> &{'analytics-crowd-detection'}
+        </li>
+        <li id=profilingTab url="/${bucket}/vca/profiling">
+            <i class="event-vca-audienceprofiling left-menu-image"></i> &{'analytics-audience-profiling'}
+        </li>
+        
+        
+
+        <li id="vcaSecurityTitle" disabled="disabled">
+            <span class="tab-inline-title">&{'security'}</span>
+            <span class="hr" style="margin: 0px 10px; display: block;"></span>
+        </li>
+
+        <li id=intrusionTab url="/${bucket}/vca/areaintrusion">
+            <i class="event-vca-intrusion left-menu-image"></i> &{'analytics-area-intrusion'}
+        </li>
+        <li id=perimeterDefenseTab url="/${bucket}/vca/pdefense">
+            <i class="event-vca-perimeter left-menu-image"></i> &{'analytics-perimeter-defense'}
+        </li>
+        <li id=areaLoiteringTab url="/${bucket}/vca/loitering">
+            <i class="event-vca-loitering left-menu-image"></i> &{'analytics-area-loitering'}
+        </li>
+        <li id=objectCountingTab url="/${bucket}/vca/objectcounting">
+            <i class="event-vca-object-counting left-menu-image"></i> &{'analytics-object-counting'}
+        </li>
+        <li id=blurVideoTab url="/${bucket}/vca/blur">
+            <i class="event-vca-video-blur left-menu-image"></i> &{'analytics-video-blur'}
+        </li>
+        <li id=faceIndexingTab url="/${bucket}/vca/faceindexing">
+            <i class="event-vca-face left-menu-image"></i> &{'analytics-face-indexing'}
+        </li>
+        <li id=objDetectTab url="/${bucket}/vca/objectdetection">
+            <i class="event-vca-audienceprofiling left-menu-image"></i> &{'analytics-object-detection'}
+        </li>
+    </ul>
+</li>
+<li id=reportTab>
+&{'reports'}
+    <ul class="font-tab-child">
+        <!-- VCA INTEL -->
+        <li id="biReportTitle" disabled="disabled">
+            <span class="tab-inline-title">&{'business-intelligence'}</span>
+            <span class="hr" style="margin: 0px 10px; display: block;"></span>
+        </li>
+        <li id=trafficReportTab url="/${bucket}/report#trafficflow">
+            <a href="/${bucket}/report#trafficflow">
+                <i class="event-vca-traffic left-menu-image"></i> &{'report-traffic-flow'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=pCountingReportTab url="/${bucket}/report#peoplecounting">
+            <a href="/${bucket}/report#peoplecounting">
+                <i class="event-vca-people-counting left-menu-image"></i> &{'report-people-counting'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=passerbyReportTab url="/${bucket}/report#passerby">
+            <a href="/${bucket}/report#passerby">
+                <i class="analytics-passerby left-menu-image"></i>
+            &{'analytics-passerby'} <sup style="color: #FF4040">&{'beta'}</sup>
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=crowdReportTab url="/${bucket}/report#crowd">
+            <a href="/${bucket}/report#crowd">
+                <i class="event-vca-crowd left-menu-image"></i> &{'report-crowd-detection'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=profilingReportTab url="/${bucket}/report#profiling">
+            <a href="/${bucket}/report#profiling">
+                <i class="event-vca-audienceprofiling left-menu-image"></i> &{'report-audience-profiling'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=attentionReportTab url="/${bucket}/report#attention">
+            <a href="/${bucket}/report#attention">
+                <i class="report-audience-attention left-menu-image"></i> &{'report-audience-attention'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <!-- <li id=objDetectReportTab url="/${bucket}/report#objdetect">
+            <a href="/${bucket}/report#objdetect">
+                <i class="report-audience-attention left-menu-image"></i> &{'report-object-detection'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li> -->
+        
+
+        <!-- VCA SECURITY -->
+        <li id="securityReportTitle" disabled="disabled">
+            <span class="tab-inline-title">&{'security'}</span>
+            <span class="hr" style="margin: 0px 10px; display: block;"></span>
+        </li>
+        <li id=intrusionReportTab url="/${bucket}/report#intrusion">
+            <a href="/${bucket}/report#intrusion">
+                <i class="event-vca-intrusion left-menu-image"></i> &{'report-area-intrusion'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=pdefenseReportTab url="/${bucket}/report#pdefense">
+            <a href="/${bucket}/report#pdefense">
+                <i class="event-vca-perimeter left-menu-image"></i> &{'report-perimeter-defense'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=loiteringReportTab url="/${bucket}/report#loitering">
+            <a href="/${bucket}/report#loitering">
+                <i class="event-vca-loitering left-menu-image"></i> &{'report-area-loitering'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=objCountingReportTab url="/${bucket}/report#objcounting">
+            <a href="/${bucket}/report#objcounting">
+                <i class="event-vca-object-counting left-menu-image"></i> &{'report-object-counting'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=videoBlurReportTab url="/${bucket}/report#videoblur">
+            <a href="/${bucket}/report#videoblur">
+                <i class="event-vca-video-blur left-menu-image"></i> &{'report-video-blur'}
+                <span class="sub_menu_icon"></span>
+            </a>
+        </li>
+        <li id=faceReportTab url="/${bucket}/report/faceindexing">
+            <i class="event-vca-face left-menu-image"></i> &{'report-face-indexing'}
+        </li>
+        
+
+        <!-- OTHERS -->
+        <li id="otherReportTitle" disabled="disabled">
+            <span class="tab-inline-title">&{'other'}</span>
+            <span class="hr" style="margin: 0px 10px; display: block;"></span>
+        </li>
+        <li id=periodicReportListTab url="/${bucket}/report/listperiodicreports">
+            <i class="periodic-report-generate left-menu-image"></i> &{'periodic-reports'}
+        </li>
+    </ul>
+</li>
+<li id=adminSettingsTab>
+&{'admin-settings'}
+    <ul class="font-tab-child">
+        <li id=bucketListTab url="/${bucket}/bucket/manager">
+            <i class="bucket-management left-menu-image"></i> &{'bucket-management'}
+        </li>
+        <li id=userListTab url="/${bucket}/user/list">
+            <i class="user-management left-menu-image"></i> &{'user-management'}
+        </li>
+        <li id=roleListTab url="/${bucket}/role/list">
+            <i class="role-management left-menu-image"></i> &{'role-management'}
+        </li>
+        <li id=deviceListTab url="/${bucket}/device/list">
+            <i class="device-management left-menu-image"></i> &{'device-management'}
+        </li>
+        <li id=nodeListTab url="/${bucket}/node/list">
+            <i class="device-list left-menu-image"></i> &{'kai-nodes'}
+        </li>
+        <li id=inventoryTab url="/${bucket}/inventory/list">
+            <i class="inventory-management left-menu-image"></i> &{'inventory-management'}
+        </li>
+        <li id=softwareUpdateTab url="/${bucket}/softwareupdate/list">
+            <i class="software-update left-menu-image"></i> &{'software-update-management'}
+        </li>
+        <li id=accessKeysTab url="/${bucket}/access/list">
+            <i class="one_time_pass left-menu-image"></i> &{'access-key-management'}
+        </li>
+        <li id=announcementListTab url="/${bucket}/announcement/list">
+            <i class="announcement-management left-menu-image"></i> &{'announcement-management'}
+        </li>
+        <li id=auditlogTab url="/${bucket}/auditlog/list">
+            <i class="audit-log left-menu-image"></i> &{'audit-log'}
+        </li>
+        <li id=periodicReportTab url="/${bucket}/report/periodicsettings">
+            <i class="periodic-report-config left-menu-image"></i> &{'periodic-report-management'}
+        </li>
+        <li id=POSReportTab url="/${bucket}/report/possettings">
+            <i class="periodic-report-config left-menu-image"></i> &{'pos-management'}
+        </li>
+        <li id=localLicensesTab url="/${bucket}/license/localnodelicenses">
+            <i class="license_management left-menu-image"></i> &{'local-license-management'}
+        </li>
+        <li id=labelManagementTab url="/newui/#/main/label">
+            <i class="label-management left-menu-image"></i> &{'label-management'}
+            <span id="labelManagementTab" class="sub_menu_icon"></span>
+        </li>
+    </ul>
+</li>
+<li id=notificationManagementTab>&{'notification-management'}
+    <ul class="font-tab-child">
+        <li id=historicalalertTab url="/${bucket}/notification/securityalerts">
+            <i class="historical-alerts left-menu-image"></i> &{'historical-alerts'}
+        </li>
+
+        <li id=labelSettingsTab url="/${bucket}/notification/labelsettings">
+            <i class="label-management left-menu-image"></i> &{'label-settings'}
+        </li>
+        <li id=labelNotificationsTab url="/${bucket}/notification/labelnotifications">
+            <i class="label-management left-menu-image"></i> &{'label-notifications'}
+        </li>
+    </ul>
+</li>
+<li id=customerSupportTab>&{'customer-support'}
+    <ul class="font-tab-child">
+        <li id=remoteShellTab url="/${bucket}/support/remoteshell">
+            <i class="customer-support left-menu-image"></i> &{'remote-shell'}
+        </li>
+        <li id=pullnodelog url="/${bucket}/support/nodeloglist">
+            <i class="node-log-management left-menu-image"></i> &{'node-log-management'}
+        </li>
+        <li id=globalLicensesTab url="/${bucket}/license/globalnodelicenses">
+            <i class="license_management left-menu-image"></i> &{'global-license-management'}
+        </li>
+        <li id=accountStatements url="/${bucket}/support/accountstatements">
+            <i class="account-statement left-menu-image"></i> &{'account-statements'}
+        </li>
+        <li id=nodeInformation url="/${bucket}/support/nodeinformation">
+            <i class="node-information left-menu-image"></i> &{'node-information'}
+        </li>
+        <li id=holidayCalendar url="/${bucket}/support/holidaycalendar">
+            <i class="holiday-calendar left-menu-image"></i> &{'holiday-calendar'}
+        </li>
+        <li id=scheduleTasks url="/${bucket}/scheduletask/list">
+            <i class="customer-support left-menu-image"></i> &{'schedule-tasks'}
+        </li>
+    </ul>
+</li>
+
+<li id=cloudServerTab>&{'cloud-server-management'}
+    <ul class="font-tab-child">
+        <li id=nodeBrowser url="/${bucket}/cloudmanager/nodebrowser">
+            <i class="node-browser left-menu-image"></i> &{'node-browser'}
+        </li>
+
+        <li id=internalSettings url="/${bucket}/cloudmanager/settings">
+            <i class="node-browser left-menu-image"></i> &{'server-internal-settings'}
+        </li>
+    </ul>
+</li>
+</ul>

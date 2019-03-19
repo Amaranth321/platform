@@ -1,0 +1,66 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<script src="/public/javascripts/software.manager.js"></script>
+
+<style>
+    .soft_mgr .title_bar {
+        height: 55px;
+        background-color: #212121;
+        padding: 10px 0px 0px 15px;
+    }
+
+    .soft_mgr .title_bar .title {
+        font-size: 18px;
+        color: #bbb;
+    }
+
+    .soft_mgr .header {
+        background: #212121 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+        padding: 5px;
+        border-top: 2px solid #000000;
+    }
+
+    .header .uploader .input_area {
+        min-height: 75px;
+        width: 500px;
+    }
+
+    .header .uploader .input_area .k-upload-button {
+        width: 170px;
+        padding: 5px 0px;
+    }
+
+    .soft_mgr .tabstrip .tab_title {
+        padding: 3px 10px;
+    }
+</style>
+
+<script type="text/x-kendo-template" id="modelGroupHeaderTmpl">
+    <span class='table_group_title'>#= value #</span>
+</script>
+
+<div class="soft_mgr">
+    <div class="title_bar">
+        <span class="title">&{'software-update-management'}</span>
+    </div>
+
+    <div class="header">
+        <div class="uploader">
+            <div class="input_area">
+                <input id="updateFile" name="updateFile" type="file"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid_files"></div>
+</div>
+
+<script>
+
+    $(function ()
+    {
+        var sftMgr = new SftMgr();
+        sftMgr.generate();
+    });
+
+</script>

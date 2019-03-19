@@ -1,0 +1,25 @@
+#{extends HtmlPath + '/common/templates/not_logged_in.html'/}
+
+<style>
+
+    .maintenance {
+        line-height: 60px;
+        background: rgba(33, 33, 33, .6);
+        color: #eaac40;
+        text-align: center;
+        margin: 0px auto;
+        font-size: 20px;
+    }
+
+</style>
+
+<div class="wrapper-holder">
+    <div class="maintenance">
+        <div>${error}</div>
+        <p><a href="/${bucket == null? "": bucket}">&{'go-to-login'}</a></p>
+    </div>
+</div>
+
+<div id="footer-wrapper">
+#{include HtmlPath + '/common/partial/login_footer_cloud.html'/}
+</div>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KUP</title>
+#{include HtmlPath + '/common/partial/kup_headers.html'/}
+#{include HtmlPath + '/common/partial/kendo_headers.html'/}
+
+    <link rel="stylesheet" type="text/css" href="${CdnPath}/common/iframe_popup.css"/>
+
+    <script>
+        kupapi.CdnPath = "${CdnPath}";
+        kupapi.applicationType = "${applicationType}";
+        busyOverlayVisibility = true;
+        kupInit('${bucket}', utils.throwServerError);
+        deviceManager.initialize();
+    </script>
+
+</head>
+<body style="font-size: 12px;font-family: verdana">
+<div id="iframePopup" style="font-size: 11px">
+#{doLayout /}
+</div>
+
+#{include HtmlPath + '/common/partial/hidden_divs.html'/}
+
+</body>
+</html>

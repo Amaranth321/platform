@@ -1,0 +1,713 @@
+/*
+    Bucket Model styles
+*/
+.bucket_model_container {
+    width: 390px;
+    margin: -6px;
+}
+
+.bucket_model_form {
+    padding: 10px 5px 15px 5px;
+    background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    border-bottom: 1px solid #444;
+}
+
+.bucket_model_form label {
+    display: inline-block;
+    width: 90px;
+    line-height: 30px;
+    margin-left: 20px;
+}
+
+.bucket_model_form input {
+    display: inline-block;
+    width: 170px;
+    margin-right: 5px;
+}
+
+.bucket_model_form textarea {
+    width: 170px;
+    height: 70px;
+    padding: 5px;
+    margin-top: 2px;
+    vertical-align: top;
+}
+
+.bucket_model_form .k-button {
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    padding: 0;
+}
+
+.bucket_model_form .k-button:hover {
+    background-color: #7b7b7b;
+}
+
+.bucket_model_form .k-button .edit {
+    display: block;
+    width: 22px;
+    height: 22px;
+    background: url("../../images/vca/action_icons.png") -177px -24px no-repeat;
+    vertical-align: middle;
+    border: none;
+    cursor: pointer;
+}
+
+.bucket_model_container .button_group {
+    margin: 5px auto;
+    text-align: center;
+}
+
+.bucket_model_container .button_group .k-button {
+    display: inline-block;
+    width: 70px;
+}
+
+/*
+    Bucket Selector Tool
+*/
+
+.bucket_selector {
+    margin: -6px;
+}
+
+.bucket_selector .no_bucket_msg {
+    display: none;
+    color: #eaac00;
+    font-size: 14px;
+    text-align: center;
+    padding-top: 20px;
+    margin-bottom: -20px;
+}
+
+.bucket_selector .bucket_tree {
+    background: #252525 url(/public/css/common/kendo/textures/brushed-metal.png) 0 0 repeat;
+    padding: 5px 5px 0px 4px;
+}
+
+.bucket_selector #bucketSelectorTree {
+    width: 350px;
+    height: 350px;
+    border-bottom: 1px solid #444;
+}
+
+.bucket_selector .button_group {
+    margin: 5px auto;
+    text-align: center;
+}
+
+.bucket_selector .button_group .k-button {
+    display: inline-block;
+    width: 60px;
+}
+
+/*
+    Bucket Tree Search box
+*/
+
+.bucket_tree .search_bar {
+    margin-bottom: 5px;
+}
+
+.bucket_tree .search_bar .input {
+    display: none;
+    margin: 0px;
+}
+
+.bucket_tree .search_bar .k-autocomplete.k-header {
+    height: 24px;
+    width: 100%;
+    margin: 0px;
+}
+
+.bucket_tree .collapse {
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    margin-left: 8px;
+    background: url(/public/css/common/images/collapse_all.png) 50% 50% no-repeat;
+    background-size: 20px 20px;
+    border: 1px solid #444;
+}
+
+.bucket_tree .collapse:hover {
+    background-color: #F6AE40;
+}
+
+/*
+    Bucket Tree Styling
+*/
+
+.bucket_tree .k-image {
+    height: 20px;
+    width: 18px;
+    vertical-align: middle;
+    margin-left: 0px;
+}
+
+.bucket_tree .k-item {
+    padding-left: 19px;
+    border-left: 1px solid #444;
+}
+
+.bucket_tree .suspended {
+    color: #FF2E12;
+}
+
+.bucket_tree .k-plus {
+    background: url("/public/css/common/images/plus_square_brown.png") 50% 50% no-repeat !important;
+    margin: 0px 0px 0px -12px;
+    padding: 0px;
+    height: 29px;
+    width: 20px;
+}
+
+.bucket_tree .k-minus {
+    background: url("/public/css/common/images/minus_square_brown.png") 50% 50% no-repeat !important;
+    margin: 0px 0px 0px -12px;
+    padding: 0px;
+    height: 29px;
+    width: 20px;
+}
+
+.bucket_tree .k-state-selected {
+    background: #F6AE40;
+    border-radius: 2px;
+}
+
+.bucket_tree .tree_item {
+    height: 20px;
+    margin: 5px 0px;
+}
+
+.bucket_tree .tree_item .name {
+    color: #f5f5f5;
+}
+
+.bucket_tree .lineage_line {
+    border-left: 1px solid #444;
+    border-bottom: 1px solid #444;
+    width: 21px;
+    margin: 0px;
+    padding: 2px 0px 2px 1px;
+}
+
+.bucket_tree .separate_root {
+    /*margin-top: 10px;*/
+}
+
+.bucket_tree .tree_item span {
+    display: inline-block;
+    min-width: 70px;
+    height: 24px;
+    line-height: 24px;
+    padding-right: 5px;
+    margin-left: -5px;
+}
+
+/*
+    Bucket Manager
+*/
+
+.bucket_manager {
+    width: 100%;
+    margin: 10px auto;
+}
+
+.bucket_manager a {
+    outline: none;
+}
+
+.bucket_manager .title_bar {
+    height: 55px;
+    background-color: #212121;
+    padding: 10px 0px 0px 15px;
+}
+
+.bucket_manager .title_bar .title {
+    font-size: 18px;
+    color: #aaa;
+}
+
+.bucket_manager .toolbar {
+    margin-top: 1px;
+    background-color: #212121;
+    padding: 4px;
+}
+
+.bucket_manager .toolbar .add_btn {
+    margin-bottom: 1px;
+}
+
+.bucket_manager .toolbar .display_deleted {
+    color: #f5f5f5;
+    margin-bottom: 1px;
+}
+
+.bucket_manager .toolbar .display_deleted input[type=checkbox] {
+    margin: 0px 0px 0px 15px;
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.bucket_manager .left_panel {
+    display: none;
+    float: left;
+    width: 280px;
+    height: 100%;
+    padding-left: 5px;
+    margin-top: 5px;
+    background-color: #212121;
+}
+
+.bucket_manager .left_panel .btn_group {
+    height: 24px;
+    overflow-y: hidden;
+}
+
+.bucket_manager .left_panel .btn_group .refresh {
+    float: right;
+    margin-top: -1px;
+    margin-right: 1px;
+}
+
+.bucket_manager .left_panel #bucketMgrTree {
+    height: 500px;
+}
+
+.bucket_manager .ui.popup {
+    color: #ffffff;
+    font-size: 10px;
+    font-size: 0.625rem;
+    padding: 0.25em 0.45em !important;
+    background: #000000;
+    border: 1px solid #ffffff;
+    opacity: .8;
+}
+
+.bucket_manager .ui.popup:before {
+    background: #000000;
+}
+
+.bucket_manager .ui.popup.inverted.bottom {
+    margin: 0.2em 0.2em;
+}
+
+.bucket_manager .ui.popup.inverted.bottom:before {
+    box-shadow: -1px -1px 0 0 #ffffff !important;
+}
+
+.bucket_manager .ui.popup.inverted.bottom.center.transition .content {
+    font-size: 10px;
+    font-size: 0.625rem;
+}
+
+.bucket_manager .bucket_details {
+    padding-left: 280px;
+    width: 100%;
+    height: auto !important;
+}
+
+.bucket_manager .bucket_details .details_tab {
+    position: relative;
+    height: auto !important;
+}
+
+.bucket_manager .bucket_details .tab_strip {
+    display: none;
+    background: #333;
+    height: 100%;
+    border: 0px;
+}
+
+.bucket_manager .bucket_details .tab_strip .k-content {
+    background: #333;
+    border: 1px solid #151515;
+    overflow: hidden;
+}
+
+.bucket_manager .bucket_details .tab_strip .k-content .logoSetting {
+    position: relative;
+}
+
+.bucket_manager .bucket_details .tab_strip .k-content .logoSetting:hover #cameraIcon {
+    visibility: visible;
+}
+
+.bucket_manager .bucket_details .tab_strip .k-content .logoSetting .k-button.upload {
+    display: block;
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    left: 201px;
+    top: 19px;
+    bottom: 4px;
+    width: 25px;
+    height: 25px;
+    opacity: 1;
+    background: #000000 url("../../images/vca/action_icons.png") -201px -21px no-repeat;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border: none;
+    -webkit-box-shadow: 4px 4px 5px 0px rgba(50, 50, 50, 0.27);
+    -moz-box-shadow: 4px 4px 5px 0px rgba(50, 50, 50, 0.27);
+    box-shadow: 4px 4px 5px 0px rgba(50, 50, 50, 0.27);
+}
+
+.bucket_manager .bucket_details .tab_strip .tab_title {
+    width: 90px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.bucket_manager .bucket_details .tab_strip .overview {
+    background: url("/public/css/common/images/features/bucket-management.png") 10px 50% no-repeat;
+    background-size: 20px 20px;
+    padding-left: 35px;
+    width: 110px;
+}
+
+.bucket_manager .bucket_details .tab_strip .users {
+    background: url("/public/css/common/images/features/user-management.png") 10px 50% no-repeat;
+    background-size: 20px 20px;
+    padding-left: 40px;
+    width: 90px;
+}
+
+.bucket_manager .bucket_details .tab_strip .analytics {
+    background: url("/public/css/common/images/analytics_graph.png") 10px 50% no-repeat;
+    background-size: 16px 16px;
+    padding-left: 35px;
+    width: 150px;
+}
+
+.bucket_manager .bucket_details .tab_strip .notifications {
+    background: url(/public/css/common/images/leftmenu/historical_alerts.png) 10px 50% no-repeat;
+    background-size: 16px 16px;
+    padding-left: 35px;
+    width: 170px;
+}
+
+.bucket_manager .bucket_details .tab_strip .change_history {
+    background: url(/public/css/common/images/features/log_files.png) 10px 50% no-repeat;
+    background-size: 18px 18px;
+    padding-left: 0px;
+    width: 150px;
+}
+.bucket_manager .bucket_details .tab_strip .password_policy {
+    background: url("/public/css/common/images/features/role-management.png") 10px 50% no-repeat;
+    background-size: 20px 20px;
+    padding-left: 35px;
+    width: 150px;
+}
+
+.bucket_manager .bucket_details .tab_strip .log_changes {
+    padding: 5px 10px;
+    border-left: 1px solid #333;
+}
+
+.bucket_manager .bucket_details .logo {
+    display: inline-block;
+    width: 221px;
+    height: 34px;
+    margin-top: 10px;
+    margin-left: 5px;
+    background-size: contain !important;
+}
+
+.bucket_manager .bucket_details a.k-button {
+    background: #4d4d4d;
+}
+
+.bucket_manager .bucket_details a.k-button:hover {
+    background: #454545;
+}
+
+.bucket_manager .bucket_details a.k-button.modify {
+    border: none;
+    padding: 0px;
+    margin-left: 5px;
+    background: #000000;
+}
+
+.bucket_manager .bucket_details a.k-button.suspend, .bucket_manager .bucket_details a.k-button.activate {
+    display: none;
+    margin-left: 10px;
+    padding: 5px 7px;
+}
+
+.bucket_manager .bucket_details .delete, .btn_restore {
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    padding: 4px 7px !important;
+    background: #4d4d4d;
+    float: right;
+}
+
+.bucket_manager .bucket_details .delete:hover {
+    background: #454545;
+}
+
+.bucket_manager .bucket_details .button_group {
+    text-align: right;
+    display: none;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.bucket_manager .bucket_details .button_group .k-button {
+    display: inline-block;
+    width: auto !important;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+.bucket_manager .bucket_details .button_group .k-button.update {
+    margin-right: 5px;
+    background: #f6ae40;
+}
+
+.bucket_manager .bucket_details .button_group .k-button.update:hover {
+    background: #f29f1f;
+}
+
+.bucket_manager .bucket_details .button_group .k-button.cancel {
+    background: #4d4d4d;
+}
+
+.bucket_manager .bucket_details .button_group .k-button.cancel:hover {
+    background: #454545;
+}
+
+.bucket_manager .bucket_details .info {
+    margin-top: 20px;
+    border-top: 1px solid #565656;
+    border-bottom: none !important;
+    height: auto !important;
+    overflow: hidden;
+}
+
+.bucket_manager .bucket_details .info .left_box {
+    float: left;
+    width: 50%;
+    height: 100%;
+    padding: 10px 10px;
+}
+
+.bucket_manager .bucket_details .info .left_box label {
+    display: inline-block;
+    width: 130px;
+    text-align: right;
+    padding-right: 15px;
+    line-height: 24px;
+}
+
+.bucket_manager .bucket_details .info .left_box span {
+    /* display: inline-block; */
+
+    line-height: 24px;
+    vertical-align: top;
+}
+
+.bucket_manager .bucket_details .info .left_box .active {
+    color: #91D100;
+}
+
+.bucket_manager .bucket_details .info .left_box .suspended {
+    color: #FF2E12;
+}
+
+.bucket_manager .bucket_details .info .k-button {
+    border: none;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+.bucket_manager .bucket_details .info .k-button .edit {
+    display: block;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    background: url("../../images/vca/action_icons.png") -177px 0 no-repeat;
+    background-size: auto;
+}
+
+.bucket_manager .bucket_details .info .title {
+    margin-bottom: 15px;
+}
+
+.bucket_manager .bucket_details .info .title span {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 25px;
+    vertical-align: middle;
+}
+
+.bucket_manager .bucket_details .info .title .k-button {
+    padding: 0;
+}
+
+.bucket_manager .bucket_details .info .title .k-button:hover {
+    background: #454545;
+}
+
+
+
+/*
+	Password details
+*/
+.bucket_manager .bucket_details .password_details {
+    margin-top: 10px;
+    margin-left: 10px;
+    border-bottom: none !important;
+    height: auto !important;
+    overflow: hidden;
+    padding: 10px 10px;
+    width: 100%;
+    
+}
+.bucket_manager .bucket_details .password_details label {
+    display: inline-block;
+    width: 250px;
+    text-align: right;
+    padding-right: 15px;
+    line-height: 24px;
+}
+.bucket_manager .bucket_details .password_details .help_icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin: 0px 0px -3px 5px;
+    background: url("/public/css/common/images/help.png") center center no-repeat;
+    background-size: 14px 14px;
+}
+.bucket_manager .bucket_details .password_details .active {
+    color: #91D100;
+}
+.bucket_manager .bucket_details .password_details .suspended {
+    color: #FF2E12;
+}
+.bucket_manager .bucket_details .password_details .k-button {
+    border: none;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+.bucket_manager .bucket_details .password_details .k-button .edit {
+    display: block;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    background: url("../../../images/vca/action_icons.png") -177px 0 no-repeat;
+    background-size: inherit;
+}
+.bucket_manager .bucket_details .password_details .title {
+    margin-bottom: 15px;
+}
+.bucket_manager .bucket_details .password_details .title span {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 25px;
+    vertical-align: middle;
+}
+.bucket_manager .bucket_details .password_details .button_group {
+    margin-left: auto;
+    margin-right: 50%;
+}
+
+/*
+    Feature Tree Styling
+*/
+
+.bucket_manager .features {
+    float: left;
+    width: 50%;
+    height: 100%;
+    border-left: 1px solid #565656;
+    padding: 10px;
+}
+
+.bucket_manager .features .tree {
+    margin-top: 5px;
+    height: 415px;
+    overflow: auto;
+}
+
+.bucket_manager .features .tree_item {
+    height: 20px;
+}
+
+.bucket_manager .features .tree_item span {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    padding-right: 10px;
+    color: #f5f5f5;
+}
+
+.bucket_manager .features .k-image {
+    height: 20px;
+    width: 20px;
+    vertical-align: middle;
+    margin-right: 0px;
+}
+
+.bucket_manager .features ul.k-treeview-lines li.k-item div span.k-in img.k-image {
+    display: none;
+}
+
+.bucket_manager .features ul.k-treeview-lines li ul li.k-item div span.k-in img.k-image {
+    display: inline-block;
+}
+
+.left_box {
+}
+
+.left_box.defaultStatus input[type="text"],
+.left_box.defaultStatus textarea[type="text"],
+.left_box.defaultStatus input[name="userLimit"],
+.left_box.defaultStatus input[name="mapsource"],
+.left_box.defaultStatus .k-button.update,
+.left_box.defaultStatus .k-button.cancel, .k-widget.k-dropdown.k-header {
+    display: none !important;
+}
+
+.left_box.modifyStatus .title .edit,
+.left_box.modifyStatus .delete,
+.left_box.modifyStatus .path,
+.left_box.modifyStatus .description,
+.left_box.modifyStatus .parentName,
+.left_box.modifyStatus .userLimit,
+.left_box.modifyStatus .mapSource {
+    display: none !important;
+}
+
+.left_box.modifyStatus input[type="text"],
+.left_box.modifyStatus textarea[type="text"],
+.left_box.modifyStatus input[name="userLimit"],
+.left_box.modifyStatus input[name="mapsource"] {
+    /*  display: inline-block !important;*/
+}
+
+/*
+    Analytics Tab
+*/
+
+.analytics_tab {
+    width: 100%;
+}
+
+.k-widget.k-tooltip.k-tooltip-validation.k-invalid-msg {
+    margin-left: 10px;
+}
+
+.k-widget.k-numerictextbox span.k-numeric-wrap {
+    border: 1px solid #454545;
+}

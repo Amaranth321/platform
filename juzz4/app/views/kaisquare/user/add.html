@@ -1,0 +1,165 @@
+<script src="/public/javascripts/jquery.tagit.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="${CdnPath}/common/jquery.tagit.css"/>
+<style>
+    ul.tagit {
+    	max-height: 2.12em;
+    	overflow-x: hidden;
+    	overflow-y: scroll;
+    	width: 67%;
+	}
+	.ui-corner-all {
+    	border-radius: 0;
+    	margin-top: 0;
+		margin-bottom: 0;
+	}
+	ul.tagit input[type="text"] {
+	    width: 146%;
+	}
+    
+</style>
+<div id="addUserWin" style="width:550px;">
+    <div id=formAuw class="kup-form-box">
+        <div class="k-edit-label"><label for="username">&{'username'} :</label></div>
+        <div class="k-edit-field" data-container-for="username">
+            <input type="text" class="k-input k-textbox" name="username" style="width: 215px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:username" maxlength = '100'>
+        </div>
+
+        <div class="k-edit-label"><label for="fullname">&{'full-name'} :</label></div>
+        <div class="k-edit-field" data-container-for="fullname">
+            <input type="text" class="k-input k-textbox" name="fullname" style="width: 215px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:name" maxlength = '100'>
+        </div>
+
+        <div class="k-edit-label"><label for="email">&{'email'} :</label></div>
+        <div class="k-edit-field" data-container-for="email">
+            <input type="email" class="k-input k-textbox" name="email" style="width: 215px"
+                   required data-email-msg="&{'invalid-email'}"
+                   required validationMessage="&{'required'}" data-bind="value:email">
+        </div>
+        
+        <div class="k-edit-label label"><label for="fullname">&{'phone'} :</label></div>
+		<div class="k-edit-field" data-container-for="phone">
+			<input type="text" class="k-input k-textbox" name="phone"
+				style="width: 215px" placeholder="+11234567891" pattern="^[0-9\-\+]\d{7,15}$"
+				data-pattern-msg="&{'validation.phone'}" data-bind="value:phone">
+		</div>
+
+        <div class="k-edit-label" style="float: left"><label for="label">&{'label'} :</label></div>
+        <div class="k-edit-field" data-container-for="label">
+            <input id="labels" type="text" class="k-input k-textbox" name="label" style="width: 215px"
+            		value="&{'label-info'}"
+                   data-bind="value:label">
+        </div>
+        <div class="k-edit-label"><label for="password1">&{'password'} :</label></div>
+        <div class="k-edit-field" data-container-for="password1">
+            <input type="password" class="k-input k-textbox" name="password1" style="width: 215px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:password1">
+        </div>
+
+        <div class="k-edit-label"><label for="password2">&{'confirm-password'} :</label></div>
+        <div class="k-edit-field" data-container-for="password2">
+            <input type="password" class="k-input k-textbox" name="password2" style="width: 215px"
+                   required validationMessage="&{'required'}"
+                   data-bind="value:password2">
+        </div>
+    </div>
+
+    <div align="center">
+        <a id="submitAuw" href="#" class="k-button" style="margin-right: 10px">&{'submit'}</a>
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+<script>
+    $(function(){
+
+        var viewModel = kendo.observable({
+            name: "",
+            username: "",
+            email: "",
+            phone: "",
+            label: "",
+            password1: "",
+            password2: ""
+        });
+
+        kendo.bind($("#formAuw"), viewModel);
+        var validator = $("#formAuw").kendoValidator().data("kendoValidator");
+        
+        //var contentPage = "/api/" + kupBucket + "/getBucketUserLabels";
+        
+
+
+        $("#submitAuw").click(function () {
+            if (validator.validate()) {
+                if (viewModel.password1 != viewModel.password2) {
+                    utils.popupAlert(localizeResource("pass-dont-match"));
+                    viewModel.set("password1", "");
+                    viewModel.set("password2", "");
+                    return;
+                }
+
+                function onAddUserSuccess(responseData) {
+                    if (responseData.result == "ok") {
+                        utils.slideDownInfo("&{'user-added'}");
+                        closePopupWindow();
+                    }
+                    else {
+                        utils.throwServerError(responseData);
+                    }
+                }
+                viewModel.label = $("#labels").val();
+                addUser("",
+                        viewModel.name,
+                        viewModel.username,
+                        viewModel.email,
+                        viewModel.phone,
+                        viewModel.label,
+                        viewModel.password1,
+                        onAddUserSuccess,
+                        null);
+            }
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        $("input[name=username]").change(onUsernameChanged);
+        function onUsernameChanged() {
+            isUsernameAvailable("", this.value, onSuccess, onFailure);
+            function onSuccess(responseData) {
+                if (responseData.result == "no") {
+                    utils.popupAlert("&{'username-in-use'}");
+                    viewModel.set("username", "");
+                }
+            }
+
+            function onFailure(responseData) {
+            }
+        }
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+        
+        
+     //get list of label from backend for auto suggestions
+		var label_array = null;
+		getBucketUserLabels("", onSuccess, null);
+   	function onSuccess(responseData){
+   		if(responseData.result == "ok" && responseData.labels != null){
+   			label_array = responseData.labels;
+   			$("#labels").tagit({
+        		placeholderText: localizeResource('label-info'),
+        	    availableTags: label_array,
+        	    autocomplete: {autoFocus: true}
+        	});
+   		}
+   	}
+	});
+</script>

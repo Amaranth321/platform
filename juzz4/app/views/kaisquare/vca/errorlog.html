@@ -1,0 +1,93 @@
+<style>
+    .error_win {
+        width: 800px;
+        min-height: 402px;
+    }
+
+    #errorGrid {
+        overflow: hidden;
+        margin: -5px;
+    }
+
+</style>
+
+<div class="error_win">
+    <div id="errorGrid"></div>
+</div>
+
+<script type="text/javascript">
+
+    var vcaLogs = {
+        instanceId: "${instanceId}",
+        totalCount: 0
+    };
+
+    vcaLogs.initUI = function () {
+
+        $("#errorGrid").kendoGrid({
+            dataSource: {
+                pageSize: 15,
+                serverPaging: true,
+                serverSorting: false,
+                transport: {
+                    read: function (options) {
+                        getVcaErrors(vcaLogs.instanceId, options.data.skip, options.data.take,
+                                function (responseData) {
+                                    if (responseData.result != "ok") {
+                                        options.success([]);
+                                        utils.throwServerError(responseData);
+                                        return;
+                                    }
+
+                                    vcaLogs.totalCount = responseData["total-count"];
+                                    options.success(vcaLogs.processErrors(responseData.errors));
+                                }, null);
+                    }
+                },
+                schema: {
+                    total: function () {
+                        return vcaLogs.totalCount;
+                    }
+                }
+            },
+            pageable: {
+                input: true,
+                numeric: false,
+                pageSizes: [15, 30, 50],
+                refresh: true
+            },
+            sortable: false,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            height: 407,
+            columns: [
+                {field: "time", title: localizeResource('time'), width: "140px"},
+                {field: "source", title: localizeResource('source'), width: "120px"},
+                {field: "error", title: localizeResource('description')}
+            ]
+        });
+
+    }
+
+    vcaLogs.processErrors = function (errorList) {
+        var results = [];
+        $.each(errorList, function (idx, err) {
+            //change timezone
+            var localTime = new Date(err.time);
+
+            results.push({
+                time: kendo.toString(localTime, kupapi.TIME_FORMAT),
+                source: err.source,
+                error: err.error
+            });
+        });
+
+        return results;
+    }
+
+    $(function () {
+        vcaLogs.initUI();
+    });
+
+</script>

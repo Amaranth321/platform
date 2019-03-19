@@ -1,0 +1,117 @@
+#{extends HtmlPath + '/common/templates/viewing_area.html'/}
+
+<link rel="stylesheet" href="/public/javascripts/vca/vca_concurrency.css"/>
+<script src="/public/javascripts/vca/vcaConcurrency.js"></script>
+
+<link rel="stylesheet" href="/public/javascripts/device/device_listing_page.css"/>
+<script src="/public/javascripts/device/deviceListingPage.js"></script>
+
+<script type="text/x-kendo-template" id="nodeDeviceActionsTmpl">
+    <span class="device_options_wrapper">
+
+    # if(limitedAccess){ #
+
+        <a href="javascript:dvcListingPage.openLimitedEdit('#= data.platformDeviceId #')"
+           class="k-button" title="&{'edit'}"
+           style="min-width: 0px; min-height: 0px;">
+            <span class="edit"></span>
+        </a>
+
+    # } else { #
+
+        # if(data.isKaiNode){ #
+            <a href="javascript:dvcListingPage.viewNodeInfo('#= data.platformDeviceId #')"
+               class="k-button" title="&{'node-info'}"
+               style="min-width: 0px; min-height: 0px;">
+                <span class="cameras"></span>
+            </a>
+            <a href="javascript:dvcListingPage.openLimitedEdit('#= data.platformDeviceId #')"
+               class="k-button" title="&{'edit'}"
+               style="min-width: 0px; min-height: 0px;">
+                <span class="edit"></span>
+            </a>
+        # } else { #
+            <a href="javascript:utils.viewSnapshot('#= data.coreDeviceId #', 0)"
+               class="k-button" title="&{'view-snapshot'}"
+               style="min-width: 0px; min-height: 0px;">
+                <span class="snapshot"></span>
+            </a>
+            <a href="javascript:dvcListingPage.editDevice('#= data.platformDeviceId #')"
+               class="k-button" title="&{'edit'}"
+               style="min-width: 0px; min-height: 0px;">
+                <span class="edit"></span>
+            </a>
+        # } #
+
+        <a href="javascript:dvcListingPage.showLogs('#= data.platformDeviceId #')"
+           class="k-button" title="&{'device-logs'}"
+           style="min-width: 0px; min-height: 0px;">
+            <span class="logs"></span>
+        </a>
+
+        <a href="javascript:dvcListingPage.deleteDevice('#= data.platformDeviceId #')"
+           class="k-button" title="&{'delete'}"
+           style="min-width: 0px; min-height: 0px;">
+            <span class="delete"></span>
+        </a>
+
+    # } #
+
+    </span>
+</script>
+
+
+<div class="dvc_listing">
+    <div class="default_title_bar">
+        <span class="title"></span>
+    </div>
+
+    <div class="tab_strip">
+        <ul>
+            <li>&{'devices'}</li>
+            <li>&{'models'}</li>
+        </ul>
+        <div class="tab_content">
+            <div class="header_box">
+                <div class="filters">
+                    <div class="label_filter">
+                        <label>&{'camera-labels'}</label>
+                        <span class="ms_wrapper"><select class="multi_select"></select></span>
+                    </div>
+
+                    <label>&{'device-name'}</label>
+                    <input id="inputNameSearch" type="text" class="k-input k-textarea"/>
+
+                    <label class="right_align">&{'model'}</label>
+                    <input id="inputModelSearch" type="text" class="k-input k-textarea"/>
+                </div>
+                <div class="dvc_toolbox">
+                    <a href="javascript:dvcListingPage.addDevice()" class="k-button add">&{'add-camera'}</a>
+                    <a href="javascript:dvcListingPage.clearSearch()" class="k-button btn_clear">&{'clear-filters'}</a>
+                </div>
+            </div>
+            <div class="device_grid"></div>
+        </div>
+        <div class="tab_content">
+            <div class="model_grid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    //for add button visibility
+    var allowAddDevice = ${addDeviceAllowed};
+
+    //for 'Device List' page
+    var limitedAccess = ${limitedAccess};
+
+    var pageTitle = limitedAccess ? localizeResource("device-list") : localizeResource("device-management");
+    var dvcListingPage = new DeviceListingPage(pageTitle, allowAddDevice, limitedAccess);
+
+    $(function ()
+    {
+        dvcListingPage.generate();
+    });
+
+</script>

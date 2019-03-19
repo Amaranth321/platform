@@ -1,0 +1,109 @@
+<div style="font-size: 12px;font-family: verdana; width: 530px">
+    <div id="announcementForm" class="kup-form-box" class="k-content" style="height: 180px">
+
+        <div class="k-edit-label"><label for="announcementType">&{'announcement-type'} :</label></div>
+        <div class="k-edit-field" data-container-for="announcementType">
+            <input id="announcementType" type="text" name="announcementType" style="width: 200px">
+        </div>
+
+        <div class="k-edit-label"><label for="domain">&{'domain'} :</label></div>
+        <div class="k-edit-field" data-container-for="domain">
+            <input id="domain" type="text" name="domain" data-bind="value:domain" required validationMessage="&{'required'}" style="width: 200px">
+        </div>
+
+        <div class="k-edit-label"><label for="description">&{'description'} :</label></div>
+        <div class="k-edit-field" data-container-for="description">
+            <textarea type="text" class="k-textbox" name="description" maxlength="140"
+                      style="width: 200px;height: 100px; vertical-align: top; margin-top: -4px"
+                      required validationMessage="&{'required'}"
+                      data-bind="value:description"></textarea>
+        </div>
+    </div>
+    <div align="center">
+        <a id="btnUpdate" href="#" class="k-button">&{'update'}</a> &nbsp;
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        "id": "${targetAnnouncement._id}",
+        "type": "${targetAnnouncement.type}",
+        "domain": "${targetAnnouncement.domain}",
+        "description": "${targetAnnouncement.description}",
+        "trim": function () {
+            this.type = this.type.trim();
+            this.description = this.description.trim();
+            this.domain = this.domain.trim();
+            this.refresh();
+        },
+        refresh: function () {
+            kendo.bind($("#announcementForm"), this);
+        }
+    });
+    
+    var type = [
+                { text: "&{'critical'}", value: "&{'critical'}" },
+                { text: "&{'news'}", value: "&{'news'}" }
+            ];
+
+    $(function () {
+
+        loadKendoElements();
+        viewModel.refresh();
+        $("#announcementType").data("kendoDropDownList").value("${targetAnnouncement.type}");
+        kendo.bind($("#announcementForm"), viewModel);
+        var validator = $("#announcementForm").kendoValidator().data("kendoValidator");
+        
+        $("#btnUpdate").click(function () {
+        	viewModel.trim();
+            if (!validator.validate()) {
+                return;
+            }
+            if (viewModel.type == "" || viewModel.type == "None") {
+            	 utils.popupAlert(localizeResource("type-not-selected"));
+                return;
+            }
+            updateAnnouncement("", viewModel, function (responseData) {
+                if (responseData.result == "ok") {
+                    utils.slideDownInfo("&{'announcement-updated'}");
+                    window.parent.$("#announcementGrid").data("kendoGrid").dataSource.read();
+                    closePopupWindow();
+                }
+                else {
+                	
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+    });
+
+
+    function loadKendoElements(){
+    	$("#announcementType").kendoDropDownList({
+    		optionLabel: "None",
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: type,
+            index: 0,
+            change: function(e){
+            	 var dataItem = $("#announcementType").data("kendoDropDownList").dataItem(e.sender.selectedIndex);
+                 if (dataItem.name == "None") {
+                     viewModel.set("type", "");
+                     return;
+                 }
+
+                 viewModel.set("type", dataItem.value);
+            }
+        });
+    }
+</script>

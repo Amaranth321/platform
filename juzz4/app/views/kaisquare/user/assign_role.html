@@ -1,0 +1,113 @@
+<div>
+
+    <div id=roleGrid style="width:610px;height: 330px;"></div>
+
+    <div align="center" style="margin-top: 10px">
+        <a id="btnUpdate" href="#" class="k-button" style="margin-right: 10px">&{'update'}</a>
+        <a id="btnCancel" href="#" class="k-button">&{'cancel'}</a>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    var userId = "${userId}";
+    var orgList = [];
+    $("#roleWin_wnd_title").css("height", "30px");
+
+    var dsUser = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+                getUserRolesByUserId("", userId, function (responseData) {
+                    if (responseData.result == "ok" && responseData.roles != null) {
+                        options.success(responseData.roles);
+
+                        $.each(responseData.roles, function (index, item) {
+                            document.getElementById("chb" + item.id).checked = true;
+                            orgList.push(item.id);
+                        });
+                    }
+                    else {
+                        utils.throwServerError(responseData.reason);
+                        options.success([]);
+                        orgList = [];
+                    }
+                }, null);
+            }
+        }
+    });
+
+    var dsAll = new kendo.data.DataSource({
+        transport: {
+            read: function (options) {
+                getBucketRoles("", function (responseData) {
+                    if (responseData.result == "ok" && responseData.roles != null) {
+                        options.success(responseData.roles);
+
+                        setTimeout(function () {
+                            dsUser.read()
+                        }, 300);
+                    }
+                    else {
+                        utils.throwServerError(responseData.reason);
+                        options.success([]);
+                    }
+                }, null);
+            }
+        }
+    });
+
+    $(function () {
+        var grid = $("#roleGrid").kendoGrid({
+            dataSource: dsAll,
+            pageable: false,
+            sortable: true,
+            filterable: false,
+            selectable: true,
+            resizable: false,
+            columns: [
+                { field: "name", title: "&{'role'}", width: "150px" },
+                { field: "description", title: "&{'description'}" },
+                {
+                    title: "&{'assign'}",
+                    "template": "<input type='checkbox' id='chb#= id #' />",
+                    width: "80px",
+                    attributes: {style: "text-align:center;"}
+                }
+            ]
+        }).data("kendoGrid");
+
+        $("#btnUpdate").click(function () {
+
+            var toUpdate = [];
+
+            $.each(dsAll.data(), function (index, item) {
+                if (document.getElementById("chb" + item.id).checked == true) {
+                    toUpdate.push(item.id + "");
+
+                }
+            });
+
+            updateUserRoles("", userId, JSON.stringify(toUpdate), function (responseData) {
+                if (responseData.result == "ok") {
+//                    window.parent.location.reload();
+                    utils.slideDownInfo("&{'update-successful'}");
+                    closePopupWindow();
+                }
+                else {
+                    utils.throwServerError(responseData);
+                }
+            }, null);
+
+        });
+
+        $("#btnCancel").click(function () {
+            closePopupWindow();
+        });
+
+        function closePopupWindow() {
+            $("#btnCancel").closest(".k-window-content").data("kendoWindow").close();
+        };
+
+    });
+</script>

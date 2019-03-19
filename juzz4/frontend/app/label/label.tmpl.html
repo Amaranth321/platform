@@ -1,0 +1,188 @@
+<div id="kupSidebar" class="sidebar sidebar-sub sidebar-sub-animation" ui-m-custom-scrollbar style="height:100%"><div class="kupSubSidebar"><div class="btn-group kupTreeTitle"><a href="" class="btn btn-link" ng-click="labelCtrl.fn.showMainMenu(!mainCtrl.data.navbar.isIconLeftArrow)"><span ng-class="mainCtrl.data.navbar.isIconLeftArrow ? 'kup-subLeftArrow' : 'kup-subRightArrow'"></span> <i class="navIcons LabelManagement"></i>{{ 'label-management' | translate }}</a></div><div class="searchGroup kupSearchDefault"><div class="input-group"><input id="labelSearch" type="text" class="form-control searchbar" placeholder="{{'search' | translate}}" ng-model="labelCtrl.data.uiTreeview.searchValue"> <span class="input-group-btn"><button id="labelSearchBtn" class="btn btn-link kupSearchBtn"><span class="fa fa-search"></span></button></span></div></div><div class="kupItemsOrder clearfix"><div class="dropdown pull-right kupArrange" uib-dropdown is-open="labelCtrl.data.uiFilterVca.isOpen"><a class="btn btn-link dropdown-toggle kupSortItems" type="button" uib-dropdown-toggle>{{'filter-by' | translate}} <span class="kupSortSelected">{{labelCtrl.fn.getCurrectFilterVca().name | translate}}</span> <span class="fa fa-caret-down"></span></a><ul class="dropdown-menu angle angleRight kupSortChecked" aria-labelledby="kupSortItems"><li ng-repeat="(i, list) in labelCtrl.data.uiFilterVca.list" ng-click="labelCtrl.fn.setCurrectFilterVca(i);"><a href=""><span class="fa" ng-class="{'fa-check':list.isActive}"></span>{{list.name | translate}}</a></li></ul></div></div><div class="kupNodevice" ng-show="labelCtrl.fn.isEmptyDevice()"><section><figure><img src="static/images/assets/common/themes/reports/NoDevice.png" alt="{{'device-not-available' | translate}}"></figure><h4>{{'device-not-available' | translate}}</h4><p>{{'device-not-available-info' | translate}}</p></section></div><div id="labelTreeview" kendo-tree-view="labelCtrl.data.uiTreeview.data" k-options="labelCtrl.data.uiTreeview.options" ng-show="!labelCtrl.fn.isEmptyDevice()" style="min-height:400px"></div></div></div><section class="container-fluid" id="labelSection"><h1 class="page-header kupManagement">{{'label-management' | translate}}<div class="kupManageHeader"><span class="fa fa-gear"></span></div></h1><div class="content" id="Labels"><div class="kupDropArea" id="labelDragTarget" ng-show="labelCtrl.data.uiDragTarget.isShow" kendo-droptarget="labelCtrl.data.uiDragTarget.data" k-options="labelCtrl.data.uiDragTarget.options"><div class="kupDropBox"><div class="kupDropInfo"><i class="kup-dropherePlus"></i> <span>{{'drop-here' | translate}}</span></div><div class="kupDropCircle animate-dropScale"></div></div></div><div class="subContainer"><div class="kupColumn kupLabelItems" id="kupResizerTop"><div class="searchGroup"><div class="input-group"><input type="text" class="form-control searchbar" placeholder="{{'search-labels' | translate}}" ng-model="labelCtrl.data.uiLabels.searchLabelValue"> <span class="input-group-btn"><button class="btn btn-link kupSearchBtn"><span class="fa fa-search"></span></button></span></div></div><div class="kupBoxInfo animate-opacity" ng-class="{'animate-fadeout':!labelCtrl.data.uiLabels.listByFilter.length}" ng-show="!labelCtrl.data.uiLabels.list.length"><span><h4 class="kupTitle">{{'create-your-first-label' | translate}} !</h4><p class="kupSubInfo">{{'click-label-now' | translate}}</p></span></div><div class="kupItemsGroup" ui-m-custom-scrollbar><div class="col-xs-5 col-sm-5 col-md-4 col-lg-3 kupItemBox kupAdd"><div class="kupnNewItem" ng-click="labelCtrl.fn.showAddLabel()"><i class="fa fa-plus"></i>{{'create-new-label' | translate}}</div></div><div class="col-xs-5 col-sm-5 col-md-4 col-lg-3 kupItemBox" ng-repeat="(i, list) in labelCtrl.data.uiLabels.listByFilter" ng-class="labelCtrl.fn.getLabelClass(list.labelId)" ng-click="labelCtrl.fn.selectLabelById(list.labelId)" ng-mouseover="hover_kupItemBox=list.labelId;" ng-mouseleave="hover_kupItemBox=false;"><div class="kupActionGroup" ng-show="hover_kupItemBox===list.labelId"><button class="btn btn-link" uib-tooltip="{{'edit' | translate}}" tooltip-placement="bottom" ng-click="labelCtrl.fn.showUpdateLabel(list.labelId)"><i class="fa fa-pencil"></i></button> <button class="btn btn-link" uib-tooltip="{{'delete' | translate}}" tooltip-placement="bottom" ng-click="labelCtrl.fn.deleteLabel(list,$event)"><i class="fa fa-trash-o"></i></button></div><div class="kupModel kupLabelItem"><i class="fa fa-tag" ng-class="labelCtrl.fn.getLabelTagClass(list.data.type)"></i><div class="kupItemName"><span class="item-text">{{ list.text }}</span></div></div></div></div></div><div class="kupColumn kupDeviceItems" id="kupResizerButtom"><div ng-show="labelCtrl.fn.getSelectLabel() && labelCtrl.data.uiLabels.listByFilter.length"><h5 class="kupColumnHeader">{{ 'cameras-in'| translate }} {{ 'label' | translate }} {{ labelCtrl.fn.getSelectLabel().text }}</h5><div class="searchGroup"><div class="input-group"><input type="text" class="form-control searchbar" placeholder="{{'search-node-camera' | translate}}" ng-model="labelCtrl.data.uiLabels.searchCameraValue"> <span class="input-group-btn"><button class="btn btn-link kupSearchBtn"><span class="fa fa-search"></span></button></span></div></div><div class="kupBoxInfo" ng-show="!labelCtrl.data.uiLabels.selectCameraListByFilter.length"><span><h4 class="kupTitle">{{'the-label-has-no-devices' | translate}} !</h4><p class="kupSubInfo">{{'drag-the-devices-from-left-side-to-this-label' | translate}}</p></span></div><div class="kupItemsGroup" ng-show="labelCtrl.data.uiLabels.selectCameraListByFilter.length"><div class="col-xs-5 col-sm-5 col-md-4 col-lg-3 kupItemBox" ng-repeat="(i, camera) in labelCtrl.data.uiLabels.selectCameraListByFilter" ng-mouseover="hover_camera = camera.cameraId;" ng-mouseleave="hover_camera = false;"><div class="kupActionGroup" ng-show="hover_camera === camera.cameraId"><button class="btn btn-link" uib-tooltip="{{'delete' | translate}}" tooltip-placement="bottom" ng-click="labelCtrl.fn.deleteCamera(camera,$event)"><i class="fa fa-trash-o"></i></button></div><div class="kupDevice"><span class="kupNode" ng-show="camera.isCamera"><i class="kup-node"></i>{{ camera.deviceName }} </span><span class="kupCamera"><i class="fa fa-video-camera"></i>{{ camera.text }}</span></div><div class="kupVCAStatus"><ul><li ng-repeat="(j, vca) in camera.vca" uib-tooltip="{{vca.analyticsType | translate}}" tooltip-placement="bottom">{{vca.label}}</li></ul></div></div></div></div></div></div><div class="kupGuider animate-opacity" ng-class="{'animate-fadeout':!labelCtrl.fn.showGuiderCheck()}" ng-show="labelCtrl.fn.showGuiderCheck()"><p class="kupTitle">{{'drag-to-add-camera-or-node-into-label' | translate}} !</p><img src="static/images/assets/component/pages/labels/labels_guider.png"><br><button class="btn btn-warning" ng-click="labelCtrl.fn.showGuider(false)">{{'got-it' | translate}}!</button></div></div></section><script type="text/ng-template" id="labelModal.tmpl.html"><!-- //mdal widget start -->
+    <form role="form" name="labelForm" novalidate>
+        <div class="modal-header" ng-show="labelModalCtrl.data.currectStep !== 3">
+            <button type="button" ng-click="labelModalCtrl.fn.closeModal()" class="close">×</button>
+            <h4 class="modal-title" ng-show="!labelModalCtrl.data.isUpdateMode">{{'create-new-label-popup' | translate}}</h4>
+            <h4 class="modal-title" ng-show="labelModalCtrl.data.isUpdateMode">{{'update-label' | translate}}</h4>
+        </div>
+        <div class="modal-header modal-title-center" ng-show="labelModalCtrl.data.currectStep === 3">
+            <button type="button" data-dismiss="modal" class="close pull-left" ng-click="labelModalCtrl.fn.goStep(2)">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </button>
+            <h4 class="modal-title">{{'location' | translate}}</h4>
+            <button class="btn btn-warning pull-right" ng-show="labelModalCtrl.data.uiModal.isShowSaveMap" ng-click="labelModalCtrl.fn.saveMap()">{{'save' | translate}}</button>
+        </div>
+        <div id="labelStep1" class="modal-body clearfix" ng-show="labelModalCtrl.data.currectStep === 1">
+            <!-- //kupGroup start -->
+            <div class="kupGroup kupForm">
+                <label>{{'label-name' | translate}}</label>
+                <input type="text" name="labelName" class="form-control" required placeholder="{{'label-name' | translate}}" ng-model="labelModalCtrl.data.uiLabelForm.labelName" ng-maxlength="30">
+                <span class="fa fa-exclamation-circle" ng-show="labelForm.labelName.$invalid && labelForm.labelName.$error.required">{{'label-name-missing' | translate}}.</span>
+                <span class="fa fa-exclamation-circle" ng-show="labelForm.labelName.$invalid && labelForm.labelName.$error.maxlength">{{'label-name-less-length' | translate}}.</span>
+                <span class="fa fa-exclamation-circle" ng-show="labelModalCtrl.fn.isLabelExist()">{{'label-name-exist' | translate}}.</span>
+            </div>
+            <!-- // end kupGroup -->
+            <!--//    origin  kupItemGroup start -->
+            <div class="kupItemsGroup kupGroup">
+                <label>{{'label-type' | translate}}</label>
+                <!-- //kupItemsList start -->
+                <div class="kupItemsList">
+                    <!-- //kupItemBox start -->
+                    <div class="kupItemBox" ng-repeat="(i, type) in labelModalCtrl.data.uiLabelForm.labelType" ng-click="labelModalCtrl.fn.selectLabelType(i)" ng-show="type.isShow">
+                        <div class="kupBigBtn">
+                            <div class="fa" ng-class="type.isSelect ? 'fa-check-circle' : 'fa-circle-thin'"></div>
+                            <i class="fa" ng-class="type.class"></i>
+                            <span class="kupText">{{type.name | translate}}</span>
+                        </div>
+                    </div>
+                    <!-- // end kupItemBox -->
+                </div>
+                <!-- // end kupItemsList -->
+            </div>
+            <!--// end kupItemGroup -->
+        </div>
+        <div id="labelStep2" class="modal-body clearfix" ng-show="labelModalCtrl.data.currectStep === 2">
+            <!-- //kupGroup start -->
+            <div class="kupGroup kupLeftInput">
+                <label>{{'location' | translate}}</label>
+                <div class="row actions">
+                    <div class="col-lg-12 kupForm">
+                        <div class="input-group">
+                            <input type="text" id="labelSearchBox" required name="labelSearchBox" class="form-control" placeholder="{{'location' | translate}}" ng-model="labelModalCtrl.data.uiLabelForm.location.address">
+                            <input type="hidden" id="labelTimeZoneId" required name="labelTimeZoneId" ng-model="labelModalCtrl.data.uiLabelForm.location.timeZoneId">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default fa fa-map kupRightBtn" type="button" uib-tooltip="{{'map' | translate}}" tooltip-placement="bottom" ng-click="labelModalCtrl.fn.goStep(3)" ng-disabled="!labelModalCtrl.data.isMapSuccessLoad"></button>
+                            </span>
+                        </div>
+                        <span class="fa fa-exclamation-circle" ng-show="labelForm.labelSearchBox.$invalid && labelForm.labelSearchBox.$dirty">{{'location-missing' | translate}}.</span>
+                        <span ng-if="labelModalCtrl.data.isMapSuccessLoad" class="fa fa-exclamation-circle" ng-show="labelForm.labelSearchBox.$valid && labelForm.labelTimeZoneId.$invalid && labelForm.labelTimeZoneId.$dirty">{{'invalid-location' | translate}}.</span>
+                    </div>
+                </div>
+            </div>
+            <!-- // end kupGroup -->
+            <!-- //kupGroup start -->
+            <div class="kupGroup">
+                <label>{{'weekend-setting' | translate}}
+                    <br/>
+                    <label class="kupDescription">{{'please-select-the-holidays-of-the-week' | translate}}</label>
+                </label>
+                <div class="kupSwitchController">
+                    <!-- //btn-group start -->
+                    <div class="btn-group">
+                        <label class="btn btn-default" ng-repeat="(i, day) in labelModalCtrl.data.uiLabelForm.holidays" ng-model="labelModalCtrl.data.uiLabelForm.holidays[i].isSelect" uib-btn-checkbox>{{day.name | translate}}
+                        </label>
+                    </div>
+                    <!-- //end btn-group -->
+                </div>
+            </div>
+            <!-- //end kupGroup -->
+            <!-- // kupGroup kupRadioOptionList start -->
+            <div class="kupGroup kupRadioOptionList">
+                <label>{{'opening-hours' | translate}}</label>
+                <!-- // end btn-group kupRadioBtnList -->
+                <div class="btn-group kupRadioBtnList">
+                    <span class="btn btn-link" ng-class="labelModalCtrl.data.uiLabelForm.periods.everyday.isSelect ? 'active' : ''" ng-click="labelModalCtrl.fn.selectPeriods('everyday')">
+                            <i class="fa" ng-class="labelModalCtrl.data.uiLabelForm.periods.everyday.isSelect ? 'fa-check-circle' : 'fa-circle-o'"></i>{{'everyday-from' | translate}}
+                            <!-- // kupType start -->
+                            <div class="kupType">
+                                <select ng-model="labelModalCtrl.data.uiLabelForm.periods.everyday.rule[0].timeStart" ng-options="data.value as data.name for data in labelModalCtrl.data.timePicker" class="selectpicker">
+                                </select>
+                            </div>
+                            <!-- // end kupType -->
+                            {{'to' | translate}}
+                            <!-- // kupType start -->
+                            <div class="kupType">
+                                <select ng-model="labelModalCtrl.data.uiLabelForm.periods.everyday.rule[0].timeEnd">
+                                    <option ng-repeat="data in labelModalCtrl.data.timePicker" value="{{data.value}}" ng-selected="data.value == labelModalCtrl.data.uiLabelForm.periods.everyday.rule[0].timeEnd" ng-disabled="data.value < (labelModalCtrl.data.uiLabelForm.periods.everyday.rule[0].timeStart+1)">{{data.name}}</option>
+                                </select>
+                            </div>
+                            <!-- // end kupType -->
+                        </span>
+                    <!-- // end btn btn-link active -->
+                </div>
+                <!-- // end btn-group kupRadioBtnList -->
+                <div class="btn-group kupRadioBtnList">
+                    <span class="btn btn-link" ng-class="labelModalCtrl.data.uiLabelForm.periods.nonStop.isSelect ? 'active' : ''" ng-click="labelModalCtrl.fn.selectPeriods('nonStop')">
+                    <i class="fa" ng-class="labelModalCtrl.data.uiLabelForm.periods.nonStop.isSelect ? 'fa-check-circle' : 'fa-circle-o'"></i>{{'24hours' | translate}},  {{'the-lowest-hour-is-at' | translate}}
+                    <!-- // kupType start -->
+                    <div class="kupType">
+                        <select ng-model="labelModalCtrl.data.uiLabelForm.periods.nonStop.rule.timeLowest" ng-options="data.value as data.name for data in labelModalCtrl.data.timePicker" class="selectpicker">
+                                </select>
+                        </div>
+                    <!-- // end kupType -->
+
+                  </span>
+                    <!-- // end btn btn-link active -->
+                    <label class="kupDescription" ng-show="labelModalCtrl.data.uiLabelForm.periods.nonStop.isSelect">{{'for-stores-which-operated-24-hours' | translate}}, {{'there-might-be-build-up-of-a-small-counting-inaccuracy-over-an-extended-period-of-time' | translate}}. {{'this-is-offset-at-the-lowest-traffic-hour-to-provide-better-results' | translate}}.
+                    </label>
+                </div>
+                <!-- // btn-group start -->
+                <div class="btn-group">
+                    <div class="kupRadioBtnList">
+                        <span class="btn btn-link" ng-class="labelModalCtrl.data.uiLabelForm.periods.custom.isSelect ? 'active' : ''" ng-click="labelModalCtrl.fn.selectPeriods('custom')">
+                                <i class="fa" ng-class="labelModalCtrl.data.uiLabelForm.periods.custom.isSelect ? 'fa-check-circle' : 'fa-circle-o'"></i>{{'customized' | translate}}
+                            </span>
+                        <!-- // end btn btn-link active -->
+                    </div>
+                    <!-- // kupRadioBtn start -->
+                    <div class="kupRadioBtn" ng-repeat="(i, rule) in labelModalCtrl.data.uiLabelForm.periods.custom.rule" ng-show="labelModalCtrl.data.uiLabelForm.periods.custom.isSelect">
+                        <!-- // kupType start -->
+                        <div class="kupType">
+                            <select ng-model="rule.weekStart" ng-options="data.value as data.nameFull | translate for data in labelModalCtrl.data.uiLabelForm.holidays" class="selectpicker">
+                            </select>
+                        </div>
+                        <!-- // end kupType -->
+                        {{'to' | translate}}
+                        <!-- // kupType start -->
+                        <div class="kupType">
+                            <select ng-model="rule.weekEnd" ng-options="data.value as data.nameFull | translate for data in labelModalCtrl.data.uiLabelForm.holidays" class="selectpicker">
+                            </select>
+                        </div>
+                        <!-- // end kupType -->
+                        ,
+                        <!-- // kupType start -->
+                        <div class="kupType">
+                            <select ng-model="rule.timeStart" ng-options="data.value as data.name for data in labelModalCtrl.data.timePicker" class="selectpicker">
+                            </select>
+                        </div>
+                        <!-- // end kupType -->
+                        {{'to' | translate}}
+                        <!-- // kupType start -->
+                        <div class="kupType">
+                            <select ng-model="rule.timeEnd" class="selectpicker">
+                                <option ng-repeat="data in labelModalCtrl.data.timePicker" value="{{data.value}}" ng-selected="data.value===rule.timeEnd" ng-disabled="data.value < (rule.timeStart+1)">{{data.name}}</option>
+                            </select>
+                            <!-- <select ng-model="rule.timeEnd" ng-options="data.value as data.name for data in labelModalCtrl.data.timePicker" class="selectpicker">
+                            </select> -->
+                        </div>
+                        <!-- // end kupType -->
+                        <a href="" class="btn btn-link" uib-tooltip="{{'delete' | translate}}" tooltip-placement="bottom" ng-click="labelModalCtrl.fn.delCustomized(i)" ng-show="i!== 0">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                    <!-- // end kupRadioBtn -->
+                    <!-- // kupRadioBtn start-->
+                    <div class="kupRadioBtn" ng-show="labelModalCtrl.data.uiLabelForm.periods.custom.isSelect">
+                        <div class="actions kupBtnAddmore">
+                            <button class="btn btn-default" uib-tooltip="{{'add-more' | translate}}" tooltip-placement="bottom" ng-click="labelModalCtrl.fn.addCustomized()">{{'add-more' | translate}}
+                            </button>
+                        </div>
+                    </div>
+                    <!-- // end kupRadioBtn -->
+                </div>
+                <!-- // end btn-group -->
+            </div>
+            <!-- // end kupGroup -->
+        </div>
+        <div id="labelStep3" class="modal-body clearfix" ng-show="labelModalCtrl.data.currectStep === 3">
+            <input id="labelSearchBoxForMap" class="kupMapSearch" type="text" placeholder="{{'search-box' | translate}}">
+            <div id="labelSearchMap" class="kupModalMap" style="height:350px;"></div>
+        </div>
+        <div class="modal-footer" ng-show="labelModalCtrl.data.currectStep !== 3">
+            <a class="btn btn-default cancel" ng-show="labelModalCtrl.data.uiModal.isShowCancel" ng-click="labelModalCtrl.fn.goStep(0);labelModalCtrl.fn.cancelModal();">{{'cancel' | translate}}</a>
+            <a data-dismiss="modal" class="btn btn-default cancel" ng-show="labelModalCtrl.data.uiModal.isShowPrev" ng-click="labelModalCtrl.fn.goStep(1)">{{'previous' | translate}}</a>
+            <a class="btn btn-warning" ng-show="labelModalCtrl.data.uiModal.isShowNext" ng-click="labelModalCtrl.fn.goStep(2)" ng-disabled="labelModalCtrl.fn.isLabelExist()">{{'next' | translate}}</a>
+            <a class="btn btn-warning" ng-show="labelModalCtrl.data.uiModal.isShowSave" ng-click="labelModalCtrl.fn.saveModal()" ng-disabled="labelModalCtrl.fn.isLabelExist() || labelModalCtrl.fn.isCustomOperationHourInvalid() || (labelModalCtrl.data.uiLabelForm.periods.everyday.rule[0].timeEnd<=labelModalCtrl.data.uiLabelForm.periods.everyday.rule[0].timeStart && labelModalCtrl.data.currectStep == 2 && labelModalCtrl.data.uiLabelForm.periods.everyday.isSelect) ">{{'save' | translate}}</a>
+        </div>
+    </form>
+    <!-- // end mdal widget --></script>
